@@ -81,7 +81,7 @@ export function StudentDashboardModern({ userId, classId }: StudentDashboardProp
           const data = await res.json()
           const timetable = data.data?.timetable
           
-          if (!timetable || !timetable.Atoms) {
+          if (!timetable || !timetable.Days) {
             setBakalariSubjects([])
             return
           }
@@ -119,10 +119,19 @@ export function StudentDashboardModern({ userId, classId }: StudentDashboardProp
           // Determine current week cycle (odd/even)
           const currentDate = new Date()
           const weekNumber = getWeekNumber(currentDate)
-          const isOddWeek = weekNumber % 2 === 1
+          const isEvenWeek = weekNumber % 2 === 0
           
-          // Extract lessons from Atoms and filter by cycle
-          let atoms = timetable.Atoms || []
+          // Find today's day in the Days array
+          const today = currentDate.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+          const todayData = timetable.Days.find((day: any) => day.DayOfWeek === today)
+          
+          if (!todayData || !todayData.Atoms) {
+            setBakalariSubjects([])
+            return
+          }
+          
+          // Extract lessons from today's Atoms and filter by cycle
+          let atoms = todayData.Atoms || []
           
           // Filter lessons by cycle - cycle 0 = even week, cycle 1 = odd week
           atoms = atoms.filter((lesson: any) => {
@@ -130,14 +139,18 @@ export function StudentDashboardModern({ userId, classId }: StudentDashboardProp
               return true // No cycle restriction
             }
             
-            const cycleId = lesson.CycleIds[0]
+            // Check if lesson applies to current week
+            const hasEven = lesson.CycleIds.includes('0') || lesson.CycleIds.includes(0)
+            const hasOdd = lesson.CycleIds.includes('1') || lesson.CycleIds.includes(1)
             
-            // Match cycle with current week
-            if (isOddWeek) {
-              return cycleId === 1 || cycleId === '1' // Odd week
-            } else {
-              return cycleId === 0 || cycleId === '0' // Even week
+            if (hasEven && hasOdd) {
+              return true // Both weeks
+            } else if (hasEven) {
+              return isEvenWeek
+            } else if (hasOdd) {
+              return !isEvenWeek
             }
+            return false
           })
           
           // Sort by HourId

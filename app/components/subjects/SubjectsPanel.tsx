@@ -125,8 +125,7 @@ export default function SubjectsPanel() {
     // Create map of next lessons by subject ID from all days (find next lesson from now onward)
     const nextLessons: Record<string, any> = {}
     if (Array.isArray(days)) {
-  const now = new Date()
-  let futureAtoms: Array<{ atom: any; dayDate: Date; dayName: string; lessonStart: Date }> = []
+      let futureAtoms: Array<{ atom: any; dayDate: Date; dayName: string; lessonStart: Date }> = []
       days.forEach((day: any, dayIndex: number) => {
         const dayAtoms = day.Atoms || []
         const dayDate = day.Date ? new Date(day.Date) : null
@@ -161,9 +160,12 @@ export default function SubjectsPanel() {
           // Compare by exact lesson start datetime (day date + hour BeginTime)
           const hour = hoursLookup.find((h: any) => h.Id === atom.HourId);
           const beginStr = hour?.BeginTime || hour?.Begin || '00:00'
+          const endStr = hour?.EndTime || hour?.End || '23:59'
           if (dayDate) {
             const lessonStart = combineDateAndTime(dayDate, beginStr)
-            if (lessonStart >= now) {
+            const lessonEnd = combineDateAndTime(dayDate, endStr)
+            // Include lessons that haven't ended yet (start time can be in past, but end time must be in future)
+            if (lessonEnd > now) {
               futureAtoms.push({ atom, dayDate, dayName, lessonStart })
             }
           }
@@ -222,8 +224,11 @@ export default function SubjectsPanel() {
             if (nextWeekDate) {
               const hour = hoursLookup.find((h: any) => h.Id === atom.HourId);
               const beginStr = hour?.BeginTime || hour?.Begin || '00:00'
+              const endStr = hour?.EndTime || hour?.End || '23:59'
               const lessonStart = combineDateAndTime(nextWeekDate, beginStr)
-              if (lessonStart >= now) {
+              const lessonEnd = combineDateAndTime(nextWeekDate, endStr)
+              // Include lessons that haven't ended yet
+              if (lessonEnd > now) {
                 nextWeekAtoms.push({ atom, dayDate: nextWeekDate, dayName, lessonStart })
               }
             }
