@@ -1,0 +1,348 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/lib/generated/"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String               @id @default(cuid())
+  email                  String               @unique
+  name                   String
+  role                   UserRole             @default(STUDENT)
+  classId                String?
+  grade                  Int?
+  bakalariId             String?              @unique
+  bakalariToken          String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  achievementAwardsGiven AchievementAward[]   @relation("AchievementAwardedBy")
+  achievementAwards      AchievementAward[]
+  enrollments            Enrollment[]
+  eventParticipations    EventParticipation[]
+  jobs                   Job[]
+  jobAssignments         JobAssignment[]
+  moneyTransactions      MoneyTx[]
+  purchases              Purchase[]
+  systemLogs             SystemLog[]
+  teacherDailyBudgets    TeacherDailyBudget[]
+  class                  Class?               @relation(fields: [classId], references: [id])
+  xpAudits               XPAudit[]
+
+  @@index([role])
+  @@index([classId])
+  @@index([bakalariId])
+  @@index([grade])
+}
+model LeaderboardView {
+  id        String   @id
+  name      String
+  classId   String?
+  grade     Int?
+  role      UserRole
+  class_name String?
+  total_xp  Int
+
+  @@map("LeaderboardView")
+}
+
+model Class {
+  id          String       @id @default(cuid())
+  name        String
+  grade       Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  enrollments Enrollment[]
+  users       User[]
+
+  @@index([grade])
+}
+
+model Subject {
+  id                  String               @id @default(cuid())
+  name                String
+  code                String               @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  enrollments         Enrollment[]
+  jobs                Job[]
+  teacherDailyBudgets TeacherDailyBudget[]
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  userId    String
+  subjectId String
+  classId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subjectId])
+  @@index([userId])
+  @@index([subjectId])
+  @@index([classId])
+}
+
+model Job {
+  id          String          @id @default(cuid())
+  title       String
+  description String
+  subjectId   String
+  teacherId   String
+  xpReward    Int
+  moneyReward Int
+  status      JobStatus       @default(OPEN)
+  maxStudents Int             @default(1)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  closedAt    DateTime?
+  subject     Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher     User            @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  assignments JobAssignment[]
+
+  @@index([subjectId])
+  @@index([teacherId])
+  @@index([status])
+}
+
+model JobAssignment {
+  id          String              @id @default(cuid())
+  jobId       String
+  studentId   String
+  status      JobAssignmentStatus @default(APPLIED)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  completedAt DateTime?
+  job         Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  student     User                @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, studentId])
+  @@index([jobId])
+  @@index([studentId])
+  @@index([status])
+}
+
+model TeacherDailyBudget {
+  id        String   @id @default(cuid())
+  teacherId String
+  subjectId String
+  date      DateTime @db.Date
+  budget    Int
+  used      Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher   User     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, subjectId, date])
+  @@index([teacherId])
+  @@index([subjectId])
+  @@index([date])
+}
+
+model XPAudit {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  reason    String
+  requestId String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([requestId])
+}
+
+model MoneyTx {
+  id        String      @id @default(cuid())
+  userId    String
+  amount    Int
+  type      MoneyTxType
+  reason    String
+  requestId String?
+  createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([requestId])
+}
+
+model Item {
+  id          String     @id @default(cuid())
+  name        String
+  description String
+  price       Int
+  rarity      ItemRarity @default(COMMON)
+  type        ItemType
+  imageUrl    String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  purchases   Purchase[]
+
+  @@index([rarity])
+  @@index([type])
+  @@index([isActive])
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  userId    String
+  itemId    String
+  price     Int
+  createdAt DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([itemId])
+}
+
+model Achievement {
+  id          String             @id @default(cuid())
+  name        String
+  description String
+  badgeUrl    String?
+  criteria    String?
+  isActive    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  awards      AchievementAward[]
+
+  @@index([isActive])
+}
+
+model AchievementAward {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  awardedBy     String?
+  requestId     String?
+  createdAt     DateTime    @default(now())
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  awardedByUser User?       @relation("AchievementAwardedBy", fields: [awardedBy], references: [id])
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@index([requestId])
+}
+
+model Event {
+  id             String               @id @default(cuid())
+  description    String?
+  xpBonus        Int                  @default(0)
+  isActive       Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  endsAt         DateTime?
+  rarityReward   ItemRarity?
+  startsAt       DateTime
+  title          String
+  participations EventParticipation[]
+
+  @@index([startsAt])
+  @@index([endsAt])
+  @@index([isActive])
+}
+
+model EventParticipation {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  requestId String?
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId])
+  @@index([userId])
+  @@index([requestId])
+}
+
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     LogLevel @default(INFO)
+  message   String
+  userId    String?
+  requestId String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([level])
+  @@index([userId])
+  @@index([requestId])
+  @@index([createdAt])
+}
+
+model ExternalRef {
+  id         String   @id @default(cuid())
+  type       String
+  externalId String
+  internalId String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([type, externalId])
+  @@index([type])
+  @@index([internalId])
+}
+
+enum UserRole {
+  OPERATOR
+  TEACHER
+  STUDENT
+}
+
+enum JobStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+  CANCELLED
+}
+
+enum JobAssignmentStatus {
+  APPLIED
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+enum MoneyTxType {
+  EARNED
+  SPENT
+  REFUND
+}
+
+enum ItemRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum ItemType {
+  COSMETIC
+  BOOST
+  COLLECTIBLE
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
