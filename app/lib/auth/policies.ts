@@ -123,6 +123,20 @@ export const routePolicies: RoutePolicy[] = [
     description: 'Job listing operations'
   },
   
+  // Absence route - All authenticated users
+  {
+    pattern: /^\/api\/absence(\/.*)?$/,
+    roles: [UserRole.STUDENT, UserRole.TEACHER, UserRole.OPERATOR],
+    description: 'Student absence data proxy'
+  },
+  
+  // Homeworks route - All authenticated users
+  {
+    pattern: /^\/api\/homeworks(\/.*)?$/,
+    roles: [UserRole.STUDENT, UserRole.TEACHER, UserRole.OPERATOR],
+    description: 'Student homeworks data proxy'
+  },
+  
   // Class jobs routes - All authenticated users
   {
     pattern: /^\/api\/classes\/\d+\/jobs$/,

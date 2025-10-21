@@ -63,6 +63,15 @@ export function StudentDashboardModern({ userId, classId }: StudentDashboardProp
   }>({ subjects: {}, teachers: {}, rooms: {} })
   const [currentTime, setCurrentTime] = React.useState(new Date())
   
+  // Helper function to get ISO week number
+  const getWeekNumber = React.useCallback((date: Date): number => {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+    const dayNum = d.getUTCDay() || 7
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+  }, [])
+  
   // Update current time every second for countdown
   useEffect(() => {
     const timer = setInterval(() => {
@@ -169,23 +178,8 @@ export function StudentDashboardModern({ userId, classId }: StudentDashboardProp
       
       // Initial fetch
       fetchBakalariSubjects()
-      
-      // Auto-refresh every 5 minutes
-      const interval = setInterval(() => {
-        fetchBakalariSubjects()
-      }, 5 * 60 * 1000)
-      
-      return () => clearInterval(interval)
-    }, [])
+    }, [getWeekNumber])
   
-  // Helper function to get ISO week number
-  const getWeekNumber = (date: Date): number => {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-    const dayNum = d.getUTCDay() || 7
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum)
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
-  }
   const loadDashboard = async () => {
     const [jobsResponse, xpResponse] = await Promise.all([
       fetch("/api/jobs"),
@@ -478,6 +472,11 @@ export function StudentDashboardModern({ userId, classId }: StudentDashboardProp
                                   <div className="flex items-center gap-1">
                                     <span>👤</span>
                                     <span className="truncate">{teacher.Abbrev || teacher.Name}</span>
+                                  </div>
+                                )}
+                                {lesson.Theme && (
+                                  <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                                    <span className="font-medium">Téma:</span> {lesson.Theme}
                                   </div>
                                 )}
                               </div>
