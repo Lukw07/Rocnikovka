@@ -13,9 +13,33 @@ import {
   ChevronRight,
   ShoppingCart,
   X,
-  Settings
+  Settings,
+  Users,
+  Coins,
+  Server,
+  Database,
+  Activity
 } from 'lucide-react';
 import { ThemeToggle } from "@/app/components/theme/ThemeToggle"
+
+// Map of icon names to components
+const ICON_MAP = {
+  Home,
+  BookOpen,
+  Trophy,
+  Award,
+  ListChecks,
+  FileText,
+  ShoppingCart,
+  Settings,
+  Users,
+  Coins,
+  Server,
+  Database,
+  Activity
+};
+
+export type IconName = keyof typeof ICON_MAP;
 
 export type SidebarPanel =
   | 'dashboard'
@@ -37,7 +61,7 @@ export type SidebarPanel =
   | 'activity'
 
 export type MenuItem = {
-  icon: any
+  icon: IconName | any
   label: string
   panel?: SidebarPanel
   href: string
@@ -171,7 +195,12 @@ const V2SidebarLayout = ({
   };
 
   const renderMenuItem = (item: MenuItem, index: number) => {
-    const Icon = item.icon;
+    let Icon;
+    if (typeof item.icon === 'string') {
+        Icon = ICON_MAP[item.icon as IconName] || Home; // Fallback to Home if not found
+    } else {
+        Icon = item.icon;
+    }
     // Check if active based on pathname
     // Exact match for dashboard, startsWith for others to handle sub-routes if any
     const isActive = item.href === '/dashboard' 
