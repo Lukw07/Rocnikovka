@@ -100,11 +100,6 @@ vi.mock('@/app/lib/prisma', () => ({
 // Mock @prisma/client
 vi.mock('@prisma/client', () => ({
   PrismaClient: vi.fn(() => mockPrisma),
-}))
-
-// Mock generated client
-vi.mock('@/app/lib/generated', () => ({
-  PrismaClient: vi.fn(() => mockPrisma),
   UserRole: {
     OPERATOR: 'OPERATOR',
     TEACHER: 'TEACHER',
