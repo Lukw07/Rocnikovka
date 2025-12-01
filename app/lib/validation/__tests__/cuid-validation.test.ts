@@ -38,8 +38,8 @@ describe('CUID Validation', () => {
         const result = cuidSchema.safeParse(cuid)
         expect(result.success).toBe(false)
         if (!result.success) {
-          expect(result.error.errors[0].code).toBe('invalid_string')
-          expect(result.error.errors[0].validation).toBe('cuid')
+          expect(result.error!.errors[0]!.code).toBe('invalid_string')
+          expect((result.error!.errors[0]! as any).validation).toBe('cuid')
         }
       })
     })
@@ -52,7 +52,7 @@ describe('CUID Validation', () => {
       const result = cuidWithMessage.safeParse('invalid')
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Invalid CUID format')
+        expect(result.error!.errors[0]!.message).toBe('Invalid CUID format')
       }
     })
   })
@@ -101,8 +101,8 @@ describe('CUID Validation', () => {
       const result = objectSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['id'])
-        expect(result.error.errors[0].message).toBe('Invalid ID format')
+        expect(result.error!.errors[0]!.path).toEqual(['id'])
+        expect(result.error!.errors[0]!.message).toBe('Invalid ID format')
       }
     })
 
@@ -138,8 +138,10 @@ describe('CUID Validation', () => {
       const result = arraySchema.safeParse(invalidArray)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual([1])
+        expect(result.error!.errors[0]!.path).toEqual([1])
       }
     })
   })
 })
+
+

@@ -264,7 +264,7 @@ describe('EventsService', () => {
         { id: 'event-1', title: 'Active Event', isActive: true }
       ]
 
-      vi.mocked(prisma.event.findMany).mockResolvedValue(mockEvents)
+      vi.mocked(prisma.event.findMany).mockResolvedValue(mockEvents as any)
 
       const result = await EventsService.getEvents()
 
@@ -282,7 +282,7 @@ describe('EventsService', () => {
         { id: 'event-2', title: 'Inactive Event', isActive: false }
       ]
 
-      vi.mocked(prisma.event.findMany).mockResolvedValue(mockEvents)
+      vi.mocked(prisma.event.findMany).mockResolvedValue(mockEvents as any)
 
       const result = await EventsService.getEvents(true)
 
@@ -305,7 +305,7 @@ describe('EventsService', () => {
         ]
       }
 
-      vi.mocked(prisma.event.findUnique).mockResolvedValue(mockEvent)
+      vi.mocked(prisma.event.findUnique).mockResolvedValue(mockEvent as any)
 
       const result = await EventsService.getEvent('event-1')
 
@@ -323,7 +323,7 @@ describe('EventsService', () => {
         { id: 'part-1', eventId: 'event-1', userId: 'user-1' }
       ]
 
-      vi.mocked(prisma.eventParticipation.findMany).mockResolvedValue(mockParticipations)
+      vi.mocked(prisma.eventParticipation.findMany).mockResolvedValue(mockParticipations as any)
 
       const result = await EventsService.getUserParticipations('user-1')
 

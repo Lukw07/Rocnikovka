@@ -4,6 +4,15 @@ import { UserRole } from '../generated'
 import { mockPrisma, resetAllMocks } from '../../../tests/setup/mocks'
 import { logEvent } from '../utils'
 
+// Mock utils
+vi.mock('../utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../utils')>()
+  return {
+    ...actual,
+    logEvent: vi.fn(),
+  }
+})
+
 // All mocks are now handled centrally in tests/setup/mocks.ts
 
 describe('Authentication', () => {
@@ -13,7 +22,7 @@ describe('Authentication', () => {
 
   describe('Credentials Provider', () => {
     it('should validate required credentials', async () => {
-      const provider = authOptions.providers[0]
+      const provider = authOptions.providers[0] as any
       
       // Test missing username
       const result1 = await provider.authorize?.({ username: '', password: 'test' })
@@ -25,7 +34,7 @@ describe('Authentication', () => {
     })
 
     it('should have the correct provider structure', () => {
-      const provider = authOptions.providers[0]
+      const provider = authOptions.providers[0] as any
       expect(provider.name).toBe('Credentials')
       expect(provider.authorize).toBeDefined()
       expect(typeof provider.authorize).toBe('function')
@@ -34,6 +43,7 @@ describe('Authentication', () => {
     it('should handle test credentials authentication', async () => {
       // Set TEST_MODE environment variable
       process.env.TEST_MODE = "true"
+      // @ts-ignore
       process.env.NODE_ENV = "development"
       
       // Mock rate limiting to allow the request
@@ -52,7 +62,7 @@ describe('Authentication', () => {
       const { logEvent: logEventImport } = await import('../utils')
       vi.mocked(logEventImport).mockResolvedValue(undefined)
       
-      const provider = authOptions.providers[0]
+      const provider = authOptions.providers[0] as any
       
       const result = await provider.options.authorize({ 
         username: 'test', 
@@ -78,7 +88,7 @@ describe('Authentication', () => {
         accessToken: null
       })
 
-      const provider = authOptions.providers[0]
+      const provider = authOptions.providers[0] as any
       
       const result = await provider.authorize?.({ 
         username: 'testuser', 
@@ -98,7 +108,7 @@ describe('Authentication', () => {
         accessToken: 'test-token'
       })
 
-      const provider = authOptions.providers[0]
+      const provider = authOptions.providers[0] as any
       
       const result = await provider.authorize?.({ 
         username: 'testuser', 
@@ -113,6 +123,7 @@ describe('Authentication', () => {
     it('should map student role correctly', async () => {
       // Set TEST_MODE environment variable
       process.env.TEST_MODE = "true"
+      // @ts-ignore
       process.env.NODE_ENV = "development"
       
       // Mock rate limiting to allow the request
@@ -127,7 +138,7 @@ describe('Authentication', () => {
       // Mock logEvent to prevent errors
       vi.mocked(logEvent).mockResolvedValue(undefined)
       
-      const provider = authOptions.providers[0]
+      const provider = authOptions.providers[0] as any
       const result = await provider.options.authorize({ 
         username: 'test', 
         password: 'test' 
@@ -139,6 +150,7 @@ describe('Authentication', () => {
     it('should map teacher role correctly', async () => {
       // Set TEST_MODE environment variable
       process.env.TEST_MODE = "true"
+      // @ts-ignore
       process.env.NODE_ENV = "development"
       
       // Mock rate limiting to allow the request
@@ -153,7 +165,7 @@ describe('Authentication', () => {
       // Mock logEvent to prevent errors
       vi.mocked(logEvent).mockResolvedValue(undefined)
       
-      const provider = authOptions.providers[0]
+      const provider = authOptions.providers[0] as any
       const result = await provider.options.authorize({ 
         username: 'test', 
         password: 'test' 

@@ -42,8 +42,8 @@ describe('Jobs Validation', () => {
       const result = createJobSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['title'])
-        expect(result.error.errors[0].message).toContain('Title is required')
+        expect(result.error!.errors[0]!.path).toEqual(['title'])
+        expect(result.error!.errors[0]!.message).toContain('Title is required')
       }
     })
 
@@ -59,8 +59,8 @@ describe('Jobs Validation', () => {
       const result = createJobSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['title'])
-        expect(result.error.errors[0].message).toContain('Title cannot exceed 100 characters')
+        expect(result.error!.errors[0]!.path).toEqual(['title'])
+        expect(result.error!.errors[0]!.message).toContain('Title cannot exceed 100 characters')
       }
     })
 
@@ -76,8 +76,8 @@ describe('Jobs Validation', () => {
       const result = createJobSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['xpReward'])
-        expect(result.error.errors[0].message).toContain('XP reward must be at least 1')
+        expect(result.error!.errors[0]!.path).toEqual(['xpReward'])
+        expect(result.error!.errors[0]!.message).toContain('XP reward must be at least 1')
       }
     })
 
@@ -93,8 +93,8 @@ describe('Jobs Validation', () => {
       const result = createJobSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['xpReward'])
-        expect(result.error.errors[0].message).toContain('XP reward cannot exceed 10,000')
+        expect(result.error!.errors[0]!.path).toEqual(['xpReward'])
+        expect(result.error!.errors[0]!.message).toContain('XP reward cannot exceed 10,000')
       }
     })
 
@@ -110,8 +110,8 @@ describe('Jobs Validation', () => {
       const result = createJobSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['moneyReward'])
-        expect(result.error.errors[0].message).toContain('Money reward cannot be negative')
+        expect(result.error!.errors[0]!.path).toEqual(['moneyReward'])
+        expect(result.error!.errors[0]!.message).toContain('Money reward cannot be negative')
       }
     })
 
@@ -128,8 +128,8 @@ describe('Jobs Validation', () => {
       const result = createJobSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['maxStudents'])
-        expect(result.error.errors[0].message).toContain('Max students cannot exceed 10')
+        expect(result.error!.errors[0]!.path).toEqual(['maxStudents'])
+        expect(result.error!.errors[0]!.message).toContain('Max students cannot exceed 10')
       }
     })
   })
@@ -164,8 +164,8 @@ describe('Jobs Validation', () => {
       const result = getJobsQuerySchema.safeParse(invalidQuery)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['subjectId'])
-        expect(result.error.errors[0].message).toContain('Invalid cuid')
+        expect(result.error!.errors[0]!.path).toEqual(['subjectId'])
+        expect(result.error!.errors[0]!.message).toContain('Invalid cuid')
       }
     })
 
@@ -177,9 +177,11 @@ describe('Jobs Validation', () => {
       const result = getJobsQuerySchema.safeParse(invalidQuery)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['classId'])
-        expect(result.error.errors[0].message).toContain('Invalid cuid')
+        expect(result.error!.errors[0]!.path).toEqual(['classId'])
+        expect(result.error!.errors[0]!.message).toContain('Invalid cuid')
       }
     })
   })
 })
+
+

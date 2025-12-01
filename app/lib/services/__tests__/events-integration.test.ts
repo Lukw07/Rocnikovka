@@ -231,7 +231,7 @@ describe('Events Integration Tests', () => {
       })
 
       vi.mocked(prisma.$transaction).mockImplementation(mockTransaction)
-      vi.mocked(XPService.grantXP).mockResolvedValue({ id: 'xp-audit-1' })
+      vi.mocked(XPService.grantXP).mockResolvedValue({ id: 'xp-audit-1' } as any)
 
       const participation = await EventsService.participateInEvent('event-1', 'student-1')
 

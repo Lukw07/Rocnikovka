@@ -39,7 +39,7 @@ describe('Jobs API', () => {
       ]
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any)
-      vi.mocked(JobsService.getJobsForStudent).mockResolvedValue(mockJobs)
+      vi.mocked(JobsService.getJobsForStudent).mockResolvedValue(mockJobs as any)
 
       const request = new NextRequest('http://localhost:3000/api/jobs')
       const response = await GET(request)
@@ -69,7 +69,7 @@ describe('Jobs API', () => {
       ]
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any)
-      vi.mocked(JobsService.getJobsForTeacher).mockResolvedValue(mockJobs)
+      vi.mocked(JobsService.getJobsForTeacher).mockResolvedValue(mockJobs as any)
 
       const request = new NextRequest('http://localhost:3000/api/jobs')
       const response = await GET(request)
@@ -110,7 +110,7 @@ describe('Jobs API', () => {
       }
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession as any)
-      vi.mocked(JobsService.createJob).mockResolvedValue(mockJob)
+      vi.mocked(JobsService.createJob).mockResolvedValue(mockJob as any)
 
       const request = new NextRequest('http://localhost:3000/api/jobs', {
         method: 'POST',

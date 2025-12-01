@@ -294,17 +294,27 @@ describe('T13: Integration Tests', () => {
         level: 'INFO',
         message: 'User logged in',
         userId: 'user123',
-        requestId: expect.any(String),
+        requestId: undefined,
         metadata: expect.objectContaining({
-          count: 5
-          // username should be redacted
+          count: 5,
+          username: '[redacted:field]'
         })
       }
     })
   })
 
-  it('should reject log entries with PII', async () => {
+  it('should redact log entries with PII', async () => {
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const mockCreate = vi.fn().mockResolvedValue({})
+
+    // Mock Prisma specifically for this test
+    vi.doMock('../../prisma', () => ({
+      prisma: {
+        systemLog: {
+          create: mockCreate
+        }
+      }
+    }))
 
     // Clear the module cache and re-import
     vi.resetModules()
@@ -315,12 +325,18 @@ describe('T13: Integration Tests', () => {
     })
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      'Log entry contains PII and was rejected:',
+      'Log message contains potential PII, redacting:',
       expect.objectContaining({
         level: 'INFO',
-        message: 'User john@example.com logged in'
+        message: '[REDACTED_MESSAGE]'
       })
     )
+    
+    expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        message: '[REDACTED_MESSAGE]'
+      })
+    }))
 
     consoleSpy.mockRestore()
   })

@@ -201,12 +201,17 @@ describe("API Integration Tests", () => {
     it("should authenticate with valid credentials", async () => {
       const { loginToBakalariAndFetchUserData } = await import("@/app/lib/bakalari")
       vi.mocked(loginToBakalariAndFetchUserData).mockResolvedValue({
-        userID: "student1",
-        userName: "Jan Novák",
-        userType: "student",
-        classAbbrev: "1A",
-        email: "jan.novak@school.cz"
-      })
+        status: { success: true, loginFailed: false, userDataFailed: false },
+        data: {
+          userID: "student1",
+          fullUserName: "Jan Novák",
+          userType: "student",
+          classAbbrev: "1A",
+          classId: "class1",
+          subjects: []
+        },
+        accessToken: "mock_token"
+      } as any)
 
       // Mock NextAuth route handler
       const mockPOST = vi.fn().mockResolvedValue(new Response(JSON.stringify({ success: true }), { status: 200 }))

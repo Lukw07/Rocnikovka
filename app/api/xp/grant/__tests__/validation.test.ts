@@ -26,8 +26,8 @@ describe('XP Grant Validation', () => {
       const result = grantXPSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['studentId'])
-        expect(result.error.errors[0].message).toContain('Invalid student ID format')
+        expect(result.error!.errors[0]!.path).toEqual(['studentId'])
+        expect(result.error!.errors[0]!.message).toContain('Invalid student ID format')
       }
     })
 
@@ -42,8 +42,8 @@ describe('XP Grant Validation', () => {
       const result = grantXPSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['subjectId'])
-        expect(result.error.errors[0].message).toContain('Invalid subject ID format')
+        expect(result.error!.errors[0]!.path).toEqual(['subjectId'])
+        expect(result.error!.errors[0]!.message).toContain('Invalid subject ID format')
       }
     })
 
@@ -58,8 +58,8 @@ describe('XP Grant Validation', () => {
       const result = grantXPSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['amount'])
-        expect(result.error.errors[0].message).toContain('Amount must be at least 1 XP')
+        expect(result.error!.errors[0]!.path).toEqual(['amount'])
+        expect(result.error!.errors[0]!.message).toContain('Amount must be at least 1 XP')
       }
     })
 
@@ -74,8 +74,8 @@ describe('XP Grant Validation', () => {
       const result = grantXPSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['amount'])
-        expect(result.error.errors[0].message).toContain('Amount cannot exceed 10,000 XP')
+        expect(result.error!.errors[0]!.path).toEqual(['amount'])
+        expect(result.error!.errors[0]!.message).toContain('Amount cannot exceed 10,000 XP')
       }
     })
 
@@ -90,8 +90,8 @@ describe('XP Grant Validation', () => {
       const result = grantXPSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['amount'])
-        expect(result.error.errors[0].message).toContain('Amount must be an integer')
+        expect(result.error!.errors[0]!.path).toEqual(['amount'])
+        expect(result.error!.errors[0]!.message).toContain('Amount must be an integer')
       }
     })
 
@@ -106,8 +106,8 @@ describe('XP Grant Validation', () => {
       const result = grantXPSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['reason'])
-        expect(result.error.errors[0].message).toContain('Reason is required')
+        expect(result.error!.errors[0]!.path).toEqual(['reason'])
+        expect(result.error!.errors[0]!.message).toContain('Reason is required')
       }
     })
 
@@ -122,8 +122,8 @@ describe('XP Grant Validation', () => {
       const result = grantXPSchema.safeParse(invalidData)
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.errors[0].path).toEqual(['reason'])
-        expect(result.error.errors[0].message).toContain('Reason cannot exceed 500 characters')
+        expect(result.error!.errors[0]!.path).toEqual(['reason'])
+        expect(result.error!.errors[0]!.message).toContain('Reason cannot exceed 500 characters')
       }
     })
 
@@ -143,3 +143,5 @@ describe('XP Grant Validation', () => {
     })
   })
 })
+
+

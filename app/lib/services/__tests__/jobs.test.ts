@@ -93,10 +93,10 @@ describe('JobsService', () => {
 
       // Verify payout calculations
       expect(result.payouts).toHaveLength(2)
-      expect(result.payouts[0].xpAmount).toBe(50) // floor(100 / 2)
-      expect(result.payouts[0].moneyAmount).toBe(25) // floor(50 / 2)
-      expect(result.payouts[1].xpAmount).toBe(50) // floor(100 / 2)
-      expect(result.payouts[1].moneyAmount).toBe(25) // floor(50 / 2)
+      expect(result.payouts[0]!.xpAmount).toBe(50) // floor(100 / 2)
+      expect(result.payouts[0]!.moneyAmount).toBe(25) // floor(50 / 2)
+      expect(result.payouts[1]!.xpAmount).toBe(50) // floor(100 / 2)
+      expect(result.payouts[1]!.moneyAmount).toBe(25) // floor(50 / 2)
       
       // Verify remainders
       expect(result.remainder.xp).toBe(0) // 100 - (50 + 50)
@@ -155,10 +155,10 @@ describe('JobsService', () => {
 
       // Verify payout calculations with floor division
       expect(result.payouts).toHaveLength(2)
-      expect(result.payouts[0].xpAmount).toBe(50) // floor(101 / 2)
-      expect(result.payouts[0].moneyAmount).toBe(25) // floor(51 / 2)
-      expect(result.payouts[1].xpAmount).toBe(50) // floor(101 / 2)
-      expect(result.payouts[1].moneyAmount).toBe(25) // floor(51 / 2)
+      expect(result.payouts[0]!.xpAmount).toBe(50) // floor(101 / 2)
+      expect(result.payouts[0]!.moneyAmount).toBe(25) // floor(51 / 2)
+      expect(result.payouts[1]!.xpAmount).toBe(50) // floor(101 / 2)
+      expect(result.payouts[1]!.moneyAmount).toBe(25) // floor(51 / 2)
       
       // Verify remainders
       expect(result.remainder.xp).toBe(1) // 101 - (50 + 50)
@@ -211,8 +211,8 @@ describe('JobsService', () => {
 
       // Verify single student gets full payout
       expect(result.payouts).toHaveLength(1)
-      expect(result.payouts[0].xpAmount).toBe(100)
-      expect(result.payouts[0].moneyAmount).toBe(50)
+      expect(result.payouts[0]!.xpAmount).toBe(100)
+      expect(result.payouts[0]!.moneyAmount).toBe(50)
       
       // Verify no remainder
       expect(result.remainder.xp).toBe(0)
@@ -322,9 +322,9 @@ describe('JobsService', () => {
 
       // Verify only approved assignment gets payout
       expect(result.payouts).toHaveLength(1)
-      expect(result.payouts[0].studentId).toBe('student-1')
-      expect(result.payouts[0].xpAmount).toBe(100) // Full amount for single approved student
-      expect(result.payouts[0].moneyAmount).toBe(50)
+      expect(result.payouts[0]!.studentId).toBe('student-1')
+      expect(result.payouts[0]!.xpAmount).toBe(100) // Full amount for single approved student
+      expect(result.payouts[0]!.moneyAmount).toBe(50)
       
       // Verify no remainder
       expect(result.remainder.xp).toBe(0)

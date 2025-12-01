@@ -68,7 +68,7 @@ export function createMockRequest(
     requestInit.body = JSON.stringify(body)
   }
 
-  return new NextRequest(url, requestInit)
+  return new NextRequest(url, requestInit as any)
 }
 
 export function mockGetServerSession(role: keyof typeof mockSessions) {
@@ -80,15 +80,15 @@ export function mockGetServerSessionUnauthorized() {
 }
 
 export function mockRequireStudent() {
-  return vi.fn().mockResolvedValue(mockSessions.student.user)
+  return vi.fn().mockResolvedValue(mockSessions.student!.user)
 }
 
 export function mockRequireTeacher() {
-  return vi.fn().mockResolvedValue(mockSessions.teacher.user)
+  return vi.fn().mockResolvedValue(mockSessions.teacher!.user)
 }
 
 export function mockRequireOperator() {
-  return vi.fn().mockResolvedValue(mockSessions.operator.user)
+  return vi.fn().mockResolvedValue(mockSessions.operator!.user)
 }
 
 export function mockRequireRoleForbidden() {
