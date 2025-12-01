@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, createContext, useContext, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { 
   Home, 
   BookOpen, 
@@ -13,7 +15,7 @@ import {
   X,
   Settings
 } from 'lucide-react';
-import { ThemeToggle } from "@/app/components/ThemeToggle"
+import { ThemeToggle } from "@/app/components/theme/ThemeToggle"
 
 export type SidebarPanel =
   | 'dashboard'
@@ -37,7 +39,8 @@ export type SidebarPanel =
 export type MenuItem = {
   icon: any
   label: string
-  panel: SidebarPanel
+  panel?: SidebarPanel
+  href: string
 }
 
 type V2SidebarLayoutProps = {
@@ -70,9 +73,11 @@ const V2SidebarLayout = ({
   onMobileToggle,
   menuItems: customMenuItems
 }: V2SidebarLayoutProps) => {
+  const pathname = usePathname();
+  const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
-  const [activeItem, setActiveItem] = useState<number | null>(0);
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  // selectedPanel is kept for backward compatibility but should be phased out
   const [selectedPanel, setSelectedPanel] = useState<SidebarPanel>('dashboard');
   const [isMobile, setIsMobile] = useState(false);
 
@@ -94,24 +99,53 @@ const V2SidebarLayout = ({
   }, [isMobile, isMobileOpen, onMobileToggle]);
 
   const defaultMenuItems: MenuItem[] = [
-    { icon: Home, label: 'Přehled', panel: 'dashboard' },
-    { icon: BookOpen, label: 'Předměty', panel: 'subjects' },
-    { icon: Trophy, label: 'Úspěchy', panel: 'achievements' },
-    { icon: Award, label: 'Leaderboard', panel: 'leaderboard' },
-    { icon: Award, label: 'Odznaky', panel: 'badges' },
-    { icon: ListChecks, label: 'Seznam Úloh', panel: 'job-list' },
-    { icon: FileText, label: 'Záznam', panel: 'log' },
-    { icon: ShoppingCart, label: 'Obchod', panel: 'shop' },
-    { icon: Settings, label: 'Nastavení', panel: 'settings' },
+    { icon: Home, label: 'Přehled', panel: 'dashboard', href: '/dashboard' },
+    { icon: BookOpen, label: 'Předměty', panel: 'subjects', href: '/dashboard/subjects' },
+    { icon: Trophy, label: 'Úspěchy', panel: 'achievements', href: '/dashboard/achievements' },
+    { icon: Award, label: 'Leaderboard', panel: 'leaderboard', href: '/dashboard/leaderboard' },
+    { icon: Award, label: 'Odznaky', panel: 'badges', href: '/dashboard/badges' },
+    { icon: ListChecks, label: 'Seznam Úloh', panel: 'job-list', href: '/dashboard/job-list' },
+    { icon: FileText, label: 'Záznam', panel: 'log', href: '/dashboard/log' },
+    { icon: ShoppingCart, label: 'Obchod', panel: 'shop', href: '/dashboard/shop' },
+    { icon: Settings, label: 'Nastavení', panel: 'settings', href: '/dashboard/settings' },
   ];
 
   const menuItems = customMenuItems || defaultMenuItems;
 
-  const handleItemClick = (index: number, section: 'main' | 'bottom' = 'main') => {
-    setActiveItem(index);
-    const panel = menuItems[index]?.panel as SidebarPanel | undefined;
-    if (panel) setSelectedPanel(panel);
+  const handleSetSelectedPanel = (panel: SidebarPanel) => {
+    setSelectedPanel(panel);
     
+    // Find the menu item corresponding to this panel
+    const item = menuItems.find(i => i.panel === panel);
+    if (item) {
+      router.push(item.href);
+    } else {
+      // Fallback mapping if panel is not in menuItems (e.g. from internal navigation)
+      const fallbackMap: Record<string, string> = {
+        'dashboard': '/dashboard',
+        'subjects': '/dashboard/subjects',
+        'achievements': '/dashboard/achievements',
+        'leaderboard': '/dashboard/leaderboard',
+        'badges': '/dashboard/badges',
+        'job-list': '/dashboard/job-list',
+        'log': '/dashboard/log',
+        'shop': '/dashboard/shop',
+        'settings': '/dashboard/settings',
+        'students': '/dashboard/students',
+        'budget': '/dashboard/budget',
+        'users': '/dashboard/users',
+        'system': '/dashboard/system',
+        'backups': '/dashboard/backups',
+        'activity': '/dashboard/activity',
+      };
+      
+      if (fallbackMap[panel]) {
+        router.push(fallbackMap[panel]);
+      }
+    }
+  };
+
+  const handleItemClick = (index: number) => {
     if (isMobile) {
       onMobileToggle();
     }
@@ -136,9 +170,14 @@ const V2SidebarLayout = ({
     }
   };
 
-  const renderMenuItem = (item: any, index: number, section: 'main' | 'bottom' = 'main') => {
+  const renderMenuItem = (item: MenuItem, index: number) => {
     const Icon = item.icon;
-    const isActive = activeItem === index && section === 'main';
+    // Check if active based on pathname
+    // Exact match for dashboard, startsWith for others to handle sub-routes if any
+    const isActive = item.href === '/dashboard' 
+      ? pathname === '/dashboard'
+      : pathname?.startsWith(item.href);
+      
     const isHoveredItemState = hoveredItem === index;
     const showExpanded = isMobile || isHovered;
 
@@ -149,8 +188,9 @@ const V2SidebarLayout = ({
         onMouseEnter={() => !isMobile && setHoveredItem(index)}
         onMouseLeave={() => !isMobile && setHoveredItem(null)}
       >
-        <button 
-          onClick={() => handleItemClick(index, section)}
+        <Link 
+          href={item.href}
+          onClick={() => handleItemClick(index)}
           className={`flex items-center transition-all duration-300 ease-out ${
             showExpanded ? 'w-[92%] px-4' : 'w-12 px-0 justify-center'
           } py-3 rounded-2xl ${
@@ -187,9 +227,7 @@ const V2SidebarLayout = ({
               }`} />
             )}
           </div>
-        </button>
-
-        
+        </Link>
       </div>
     );
   };
@@ -197,7 +235,7 @@ const V2SidebarLayout = ({
   return (
     <SidebarContext.Provider value={{ 
       selectedPanel, 
-      setSelectedPanel, 
+      setSelectedPanel: handleSetSelectedPanel, 
       isMobileOpen, 
       setIsMobileOpen: onMobileToggle 
     }}>
@@ -234,7 +272,7 @@ const V2SidebarLayout = ({
                     Hlavní menu
                   </span>
                 </div>
-                {menuItems.map((item, index) => renderMenuItem(item, index, 'main'))}
+                {menuItems.map((item, index) => renderMenuItem(item, index))}
               </div>
             </div>
 

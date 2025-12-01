@@ -84,7 +84,7 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
           onClick={handleBackToMain}
         >
           <Image 
-            src="/Logo.svg" 
+            src="/images/Logo.svg" 
             alt="Edu RPG Logo" 
             width={32} 
             height={32}

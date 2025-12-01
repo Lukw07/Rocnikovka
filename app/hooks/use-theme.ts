@@ -51,19 +51,19 @@ export function useTheme() {
   return { theme, toggleTheme, mounted }
 }
 
+const SEASONAL_COLORS = {
+  spring: "#10b981", // emerald-500
+  summer: "#3b82f6", // blue-500
+  autumn: "#f59e0b", // amber-500
+  winter: "#6366f1", // indigo-500
+}
+
 export function useCustomColors() {
   const [primaryColor, setPrimaryColor] = useState("#3b82f6")
   const [secondaryColor, setSecondaryColor] = useState("#8b5cf6")
   const [accentColor, setAccentColor] = useState("#10b981")
   const [useSeasonal, setUseSeasonal] = useState(true)
   const [mounted, setMounted] = useState(false)
-
-  const SEASONAL_COLORS = {
-    spring: "#10b981", // emerald-500
-    summer: "#3b82f6", // blue-500
-    autumn: "#f59e0b", // amber-500
-    winter: "#6366f1", // indigo-500
-  }
 
   const getSeason = useCallback(() => {
     const month = new Date().getMonth() + 1 // 1-12

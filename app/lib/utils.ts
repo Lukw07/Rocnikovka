@@ -4,7 +4,7 @@ import { randomUUID } from "crypto"
 import { prisma } from "./prisma"
 import { LogLevel } from "./generated"
 import { NextRequest } from "next/server"
-import { safePayload, redactPII } from "../../src/lib/security/redact"
+import { safePayload, redactPII } from "./security/redact"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
