@@ -17,7 +17,7 @@ const credentialsSchema = z.object({
 const mapBakalariUserTypeToRole = (userType: string, username?: string): UserRole => {
   // Special override for specific usernames that should always be Operator
   if (username === "kucaba") {
-    return UserRole.OPERATOR
+    return UserRole.TEACHER
   }
   
   switch (userType.toLowerCase()) {

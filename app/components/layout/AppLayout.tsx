@@ -42,6 +42,7 @@ import { UserRole } from "@/app/lib/generated"
 import { signOut } from "next-auth/react"
 import { formatXP, calculateLevel } from "@/app/lib/utils"
 import { ErrorBoundary } from "@/app/components/ErrorBoundary"
+import { ThemeToggle } from "@/app/components/ThemeToggle"
 
 interface AppLayoutProps {
   children: React.ReactNode
@@ -161,12 +162,6 @@ export function AppLayout({ children }: AppLayoutProps) {
             title: "Aktivita",
             icon: Activity,
             href: "/activity",
-            active: false
-          },
-          {
-            title: "Nastavení",
-            icon: Settings,
-            href: "/settings",
             active: false
           }
         ]
@@ -299,6 +294,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <User className="w-4 h-4" />
                   </AvatarFallback>
                 </Avatar>
+                <ThemeToggle />
                 <Button
                   variant="ghost"
                   size="sm"

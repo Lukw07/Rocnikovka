@@ -1,125 +1,167 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-}
-
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  
+  /* Custom colors - can be changed by user */
+  --color-primary-custom: #3b82f6;
+  --color-secondary-custom: #8b5cf6;
+  --color-accent-custom: #10b981;
+  --primary-rgb: 59 130 246;
+  --secondary-rgb: 139 92 246;
+  --accent-rgb: 16 185 129;
+  
+  /* ========== LIGHT MODE COLORS ========== */
+  /* Base - Clean white background with dark text */
+  --background: 0 0% 100%;                    /* #FFFFFF - Pure white */
+  --foreground: 220 13% 20%;                  /* #2B2D31 - Very dark gray-blue */
+  --card: 0 0% 100%;                          /* #FFFFFF - White cards */
+  --card-foreground: 220 13% 20%;             /* #2B2D31 - Dark text */
+  
+  /* Popover & Dialogs */
+  --popover: 0 0% 100%;                       /* #FFFFFF - White */
+  --popover-foreground: 220 13% 20%;          /* #2B2D31 - Dark text */
+  
+  /* Primary Button - Professional Blue */
+  --primary: 217 91% 60%;                     /* #3B82F6 - Bright blue */
+  --primary-foreground: 0 0% 100%;            /* #FFFFFF - White text */
+  
+  /* Secondary Button - Light Gray */
+  --secondary: 220 14% 96%;                   /* #F0F1F3 - Light gray */
+  --secondary-foreground: 220 13% 20%;        /* #2B2D31 - Dark text */
+  
+  /* Muted/Subtle */
+  --muted: 220 9% 92%;                        /* #E4E7EB - Muted gray */
+  --muted-foreground: 220 8% 48%;             /* #7A7E84 - Medium gray */
+  
+  /* Accent Color */
+  --accent: 262 83% 58%;                      /* #8B5CF6 - Purple */
+  --accent-foreground: 0 0% 100%;             /* #FFFFFF - White text */
+  
+  /* Error/Destructive */
+  --destructive: 0 84% 60%;                   /* #EF4444 - Red */
+  --destructive-foreground: 0 0% 100%;        /* #FFFFFF - White text */
+  
+  /* Borders & Inputs */
+  --border: 220 13% 91%;                      /* #DFE1E6 - Light border */
+  --input: 220 13% 91%;                       /* #DFE1E6 - Input borders */
+  --ring: 217 91% 60%;                        /* #3B82F6 - Blue focus ring */
+  
+  /* Charts */
+  --chart-1: 217 91% 60%;                     /* Blue */
+  --chart-2: 262 83% 58%;                     /* Purple */
+  --chart-3: 142 72% 29%;                     /* Green */
+  --chart-4: 38 92% 50%;                      /* Amber */
+  --chart-5: 0 84% 60%;                       /* Red */
+  
+  /* Sidebar - Light variant */
+  --sidebar: 220 14% 96%;                     /* #F0F1F3 - Very light */
+  --sidebar-foreground: 220 13% 20%;          /* #2B2D31 - Dark text */
+  --sidebar-primary: 217 91% 60%;             /* #3B82F6 - Blue */
+  --sidebar-primary-foreground: 0 0% 100%;    /* #FFFFFF - White */
+  --sidebar-accent: 220 9% 92%;               /* #E4E7EB - Light gray */
+  --sidebar-accent-foreground: 220 13% 20%;   /* #2B2D31 - Dark text */
+  --sidebar-border: 220 13% 91%;              /* #DFE1E6 - Light border */
+  --sidebar-ring: 217 91% 60%;                /* #3B82F6 - Blue */
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  color-scheme: dark;
+  
+  /* ========== DARK MODE COLORS ========== */
+  /* Base - Dark background with light text */
+  --background: 220 13% 10%;                  /* #1A1C22 - Very dark blue-gray */
+  --foreground: 0 0% 98%;                     /* #FAFBFC - Almost white */
+  --card: 220 13% 14%;                        /* #252A35 - Dark blue-gray card */
+  --card-foreground: 0 0% 98%;                /* #FAFBFC - Almost white text */
+  
+  /* Popover & Dialogs */
+  --popover: 220 13% 14%;                     /* #252A35 - Dark card */
+  --popover-foreground: 0 0% 98%;             /* #FAFBFC - Light text */
+  
+  /* Primary Button - Light Blue */
+  --primary: 217 91% 65%;                     /* #6B9EFF - Bright blue */
+  --primary-foreground: 220 13% 10%;          /* #1A1C22 - Dark text */
+  
+  /* Secondary Button - Dark Gray */
+  --secondary: 220 13% 20%;                   /* #2B2D31 - Medium dark */
+  --secondary-foreground: 0 0% 98%;           /* #FAFBFC - Light text */
+  
+  /* Muted/Subtle */
+  --muted: 220 13% 20%;                       /* #2B2D31 - Medium dark */
+  --muted-foreground: 0 0% 66%;               /* #A8A9AB - Light gray */
+  
+  /* Accent Color */
+  --accent: 262 83% 68%;                      /* #A78BFA - Light purple */
+  --accent-foreground: 220 13% 10%;           /* #1A1C22 - Dark text */
+  
+  /* Error/Destructive */
+  --destructive: 0 84% 65%;                   /* #FD7062 - Bright red */
+  --destructive-foreground: 220 13% 10%;      /* #1A1C22 - Dark text */
+  
+  /* Borders & Inputs */
+  --border: 220 13% 20%;                      /* #2B2D31 - Medium dark border */
+  --input: 220 13% 17%;                       /* #232731 - Slightly lighter than background */
+  --ring: 217 91% 65%;                        /* #6B9EFF - Blue focus ring */
+  
+  /* Charts */
+  --chart-1: 217 91% 65%;                     /* Blue */
+  --chart-2: 262 83% 68%;                     /* Purple */
+  --chart-3: 142 72% 45%;                     /* Green */
+  --chart-4: 38 92% 55%;                      /* Amber */
+  --chart-5: 0 84% 65%;                       /* Red */
+  
+  /* Sidebar - Dark variant */
+  --sidebar: 220 13% 12%;                     /* #1F2228 - Very dark */
+  --sidebar-foreground: 0 0% 98%;             /* #FAFBFC - Light text */
+  --sidebar-primary: 217 91% 65%;             /* #6B9EFF - Blue */
+  --sidebar-primary-foreground: 220 13% 10%;  /* #1A1C22 - Dark text */
+  --sidebar-accent: 220 13% 20%;              /* #2B2D31 - Medium dark */
+  --sidebar-accent-foreground: 0 0% 98%;      /* #FAFBFC - Light text */
+  --sidebar-border: 220 13% 20%;              /* #2B2D31 - Medium dark border */
+  --sidebar-ring: 217 91% 65%;                /* #6B9EFF - Blue */
 }
 
+* {
+  border-color: hsl(var(--border));
+}
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Force dark mode styles */
+.dark body {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark * {
+  border-color: hsl(var(--border));
+}
+
+/* Basic dark mode overrides - keep it simple */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: hsl(var(--input));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+}
+
+.dark button:not([class*="bg-"]) {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border-color: hsl(var(--border));
+}
+
+.dark button:hover:not([class*="bg-"]) {
+  background-color: hsl(var(--muted));
 }
 
 /* Custom cursor styles */

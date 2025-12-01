@@ -11,9 +11,9 @@ import {
   ChevronRight,
   ShoppingCart,
   X,
-  User,
   Settings
 } from 'lucide-react';
+import { ThemeToggle } from "@/app/components/ThemeToggle"
 
 type V2SidebarLayoutProps = {
   children?: React.ReactNode
@@ -32,6 +32,7 @@ type SidebarPanel =
   | 'badges'
   | 'job-list'
   | 'log'
+  | 'settings'
   | 'management'
 
 type SidebarContextValue = {
@@ -87,17 +88,12 @@ const V2SidebarLayout = ({
     { icon: ListChecks, label: 'Seznam Úloh', panel: 'job-list' },
     { icon: FileText, label: 'Záznam', panel: 'log' },
     { icon: ShoppingCart, label: 'Obchod', panel: 'shop' },
-  ];
-
-  const bottomMenuItems = [
-    { icon: User, label: 'Profil', panel: 'profile' },
     { icon: Settings, label: 'Nastavení', panel: 'settings' },
   ];
 
   const handleItemClick = (index: number, section: 'main' | 'bottom' = 'main') => {
     setActiveItem(index);
-    const items = section === 'main' ? menuItems : bottomMenuItems;
-    const panel = (items as any)[index]?.panel as SidebarPanel | undefined;
+    const panel = menuItems[index]?.panel as SidebarPanel | undefined;
     if (panel) setSelectedPanel(panel);
     
     if (isMobile) {
@@ -143,17 +139,17 @@ const V2SidebarLayout = ({
             showExpanded ? 'w-[92%] px-4' : 'w-12 px-0 justify-center'
           } py-3 rounded-2xl ${
             isActive 
-              ? 'bg-gradient-to-r from-red-500 to-orange-500 shadow-lg shadow-red-200' 
+              ? 'bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/20' 
               : isHoveredItemState
-              ? 'bg-red-50 border border-red-100 shadow-md'
-              : 'hover:bg-red-50/50'
+              ? 'bg-muted border border-border shadow-md'
+              : 'hover:bg-muted/50'
           }`}
         >
           {/* Icon */}
           <div className={`flex items-center justify-center transition-all duration-300 ${
             isActive 
-              ? 'text-white' 
-              : 'text-gray-600'
+              ? 'text-primary-foreground' 
+              : 'text-muted-foreground'
           }`}>
             <Icon className="w-5 h-5" />
           </div>
@@ -163,14 +159,14 @@ const V2SidebarLayout = ({
             showExpanded ? 'opacity-100 translate-x-0 max-w-full ml-3' : 'opacity-0 -translate-x-2 max-w-0 ml-0'
           }`}>
             <span className={`font-medium whitespace-nowrap transition-colors duration-200 text-sm ${
-              isActive ? 'text-white' : 'text-gray-700'
+              isActive ? 'text-primary-foreground' : 'text-foreground'
             }`}>
               {item.label}
             </span>
             
             {/* Active indicator */}
             {isActive && (
-              <ChevronRight className={`w-4 h-4 text-white/80 ml-2 transition-all duration-300 ease-out ${
+              <ChevronRight className={`w-4 h-4 text-primary-foreground/80 ml-2 transition-all duration-300 ease-out ${
                 showExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'
               }`} />
             )}
@@ -206,7 +202,7 @@ const V2SidebarLayout = ({
                   isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
                 }`
               : isHovered ? 'w-72' : 'w-20'
-          } bg-white/95 backdrop-blur-xl transition-all duration-300 ease-out border-r border-gray-100/80 md:min-h-[calc(100vh-4rem)] group/sidebar shadow-xl`}
+          } bg-card/95 backdrop-blur-xl transition-all duration-300 ease-out border-r border-border md:min-h-[calc(100vh-4rem)] group/sidebar shadow-xl`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -218,18 +214,32 @@ const V2SidebarLayout = ({
                 <div className={`px-4 mb-3 transition-all duration-300 ${
                   (isMobile || isHovered) ? 'opacity-100' : 'opacity-0'
                 }`}>
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Hlavní menu
                   </span>
                 </div>
                 {menuItems.map((item, index) => renderMenuItem(item, index, 'main'))}
               </div>
             </div>
+
+            {/* Bottom Section with Theme Toggle */}
+            <div className="p-3 border-t border-border">
+              <div className={`flex items-center justify-center transition-all duration-300 ${
+                (isMobile || isHovered) ? 'justify-between px-4' : 'justify-center'
+              }`}>
+                <div className={`transition-all duration-300 ${
+                  (isMobile || isHovered) ? 'opacity-100' : 'opacity-0'
+                }`}>
+                  <span className="text-xs text-muted-foreground">Vzhled</span>
+                </div>
+                <ThemeToggle />
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Main content area */}
-        <div className={`flex-1 bg-gray-50/30 min-h-screen w-full transition-all duration-300 ${
+        <div className={`flex-1 bg-background min-h-screen w-full transition-all duration-300 ${
           isMobile && isMobileOpen ? 'blur-sm' : ''
         }`}>
           {children}

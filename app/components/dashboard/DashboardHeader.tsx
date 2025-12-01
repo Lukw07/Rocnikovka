@@ -9,7 +9,7 @@ import Image from "next/image"
 import { signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { UserRole } from "@/app/lib/generated"
-import { LogOut, Coins, User, Menu } from "lucide-react"
+import { LogOut, Coins, Menu } from "lucide-react"
 
 interface DashboardHeaderProps {
   userName: string
@@ -127,14 +127,6 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
             <div className="flex flex-col gap-1">
               <Button
                 variant="ghost"
-                onClick={() => router.push("/profile")}
-                className="justify-start gap-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 text-sm"
-              >
-                <User className="w-4 h-4" />
-                <span>Uživatelský profil</span>
-              </Button>
-              <Button
-                variant="ghost"
                 onClick={handleLogout}
                 className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950 text-sm"
               >
@@ -171,14 +163,6 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
                 <p>{userName}</p>
                 <p>Role: {getRoleDisplayName(userRole)}</p>
               </div>
-              <Button
-                variant="ghost"
-                onClick={() => router.push("/profile")}
-                className="justify-start gap-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 text-xs"
-              >
-                <User className="w-4 h-4" />
-                <span>Uživatelský profil</span>
-              </Button>
               <Button
                 variant="ghost"
                 onClick={handleLogout}

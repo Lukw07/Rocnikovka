@@ -134,7 +134,7 @@ export function formatXP(amount: number): string {
 export function getRarityColor(rarity: string): string {
   switch (rarity) {
     case 'COMMON':
-      return 'text-gray-500'
+      return 'text-muted-foreground'
     case 'UNCOMMON':
       return 'text-green-500'
     case 'RARE':
@@ -144,24 +144,24 @@ export function getRarityColor(rarity: string): string {
     case 'LEGENDARY':
       return 'text-orange-500'
     default:
-      return 'text-gray-500'
+      return 'text-muted-foreground'
   }
 }
 
 export function getRarityBgColor(rarity: string): string {
   switch (rarity) {
     case 'COMMON':
-      return 'bg-gray-100'
+      return 'bg-muted'
     case 'UNCOMMON':
-      return 'bg-green-100'
+      return 'bg-green-100 dark:bg-green-950/30'
     case 'RARE':
-      return 'bg-blue-100'
+      return 'bg-blue-100 dark:bg-blue-950/30'
     case 'EPIC':
-      return 'bg-purple-100'
+      return 'bg-purple-100 dark:bg-purple-950/30'
     case 'LEGENDARY':
-      return 'bg-orange-100'
+      return 'bg-orange-100 dark:bg-orange-950/30'
     default:
-      return 'bg-gray-100'
+      return 'bg-muted'
   }
 }
 
