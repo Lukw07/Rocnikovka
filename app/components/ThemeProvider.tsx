@@ -62,26 +62,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
-    if (secondaryColor) {
-      document.documentElement.style.setProperty("--color-secondary-custom", secondaryColor)
-      const hsl = hexToHsl(secondaryColor)
-      if (hsl) {
-        document.documentElement.style.setProperty("--secondary", hsl)
-      }
-    }
-
-    if (accentColor) {
-      document.documentElement.style.setProperty("--color-accent-custom", accentColor)
-      const hsl = hexToHsl(accentColor)
-      if (hsl) {
-        document.documentElement.style.setProperty("--accent", hsl)
-      }
-    }
-  }, [])
-
-  return <>{children}</>
-}
-
 function hexToHsl(hex: string) {
   let r = 0, g = 0, b = 0;
   if (hex.length === 4) {
