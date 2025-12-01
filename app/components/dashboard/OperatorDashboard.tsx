@@ -46,7 +46,7 @@ interface RecentActivity {
 }
 
 export function OperatorDashboard({ userId }: OperatorDashboardProps) {
-  const { activePanel } = useSidebar()
+  const { selectedPanel } = useSidebar()
   const [stats, setStats] = useState<SystemStats | null>(null)
   const [activity, setActivity] = useState<RecentActivity[]>([])
   const [loading, setLoading] = useState(true)
@@ -126,7 +126,7 @@ export function OperatorDashboard({ userId }: OperatorDashboardProps) {
 
   // Render content based on active panel
   const renderContent = () => {
-    switch (activePanel) {
+    switch (selectedPanel) {
       case 'users':
         return (
           <div className="space-y-6">
