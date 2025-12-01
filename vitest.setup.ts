@@ -1,8 +1,8 @@
 import { vi } from 'vitest'
-import { setupGlobalMocks, resetAllMocks } from './tests/setup/mocks'
+// import { setupGlobalMocks, resetAllMocks } from './tests/setup/mocks'
 
 // Setup all global mocks
-setupGlobalMocks()
+// setupGlobalMocks()
 
 // Global test setup
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -12,4 +12,4 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 }))
 
 // Export reset function for use in tests
-export { resetAllMocks }
+// export { resetAllMocks }

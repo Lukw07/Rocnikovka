@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { seedTestData, cleanupTestData } from './tests/setup/seed';
+// import { seedTestData, cleanupTestData } from './tests/setup/seed';
 
 /**
  * @see https://playwright.dev/docs/test-configuration
