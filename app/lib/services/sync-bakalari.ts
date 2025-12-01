@@ -2,6 +2,7 @@
 import { getBakalariUserData, getBakalariSubjectData, loginToBakalari } from "../bakalari/bakalari"
 import { UserRole } from "../generated"
 import { logEvent } from "../utils"
+import { prisma } from "../prisma"
 
 export interface SyncResult {
   success: boolean
