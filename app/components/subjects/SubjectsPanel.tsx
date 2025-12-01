@@ -168,15 +168,15 @@ const getAbsenceBorderColor = (absenceCount: number): string => {
 
 // Get background color based on absence count
 const getAbsenceBackgroundColor = (absenceCount: number): string => {
-  if (absenceCount === 0) return 'bg-white/80'
+  if (absenceCount === 0) return 'bg-card'
   
-  if (absenceCount === 1) return 'bg-red-50/50'
-  if (absenceCount === 2) return 'bg-red-50/70'
-  if (absenceCount === 3) return 'bg-red-100/60'
-  if (absenceCount === 4) return 'bg-red-100/80'
-  if (absenceCount >= 5) return 'bg-red-200/70'
+  if (absenceCount === 1) return 'bg-red-50 dark:bg-red-950/30'
+  if (absenceCount === 2) return 'bg-red-100 dark:bg-red-900/40'
+  if (absenceCount === 3) return 'bg-red-100 dark:bg-red-900/50'
+  if (absenceCount === 4) return 'bg-red-200 dark:bg-red-800/60'
+  if (absenceCount >= 5) return 'bg-red-200 dark:bg-red-800/70'
   
-  return 'bg-white/80'
+  return 'bg-card'
 }
 
 // ISO week number calculation
@@ -422,7 +422,7 @@ export default function SubjectsPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-background">
       <div className="w-full h-full p-4 sm:p-6">
         {/* Header Section */}
         <div className="mb-8">
@@ -442,7 +442,8 @@ export default function SubjectsPanel() {
             </div>
             <Button 
               onClick={() => setSelectedPanel('dashboard')}
-              className="gap-2 bg-white/80 backdrop-blur-sm border hover:bg-white text-foreground shadow-sm"
+              variant="outline"
+              className="gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
               Zpět na dashboard
@@ -452,36 +453,36 @@ export default function SubjectsPanel() {
           {/* Stats Summary */}
           {!loading && subjects.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border shadow-sm">
+              <div className="bg-card rounded-xl p-4 border shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <BookOpen className="h-5 w-5 text-blue-600" />
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                    <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Celkem předmětů</p>
-                    <p className="text-2xl font-bold">{subjects.length}</p>
+                    <p className="text-2xl font-bold text-foreground">{subjects.length}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border shadow-sm">
+              <div className="bg-card rounded-xl p-4 border shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-100 rounded-lg">
-                    <Trophy className="h-5 w-5 text-amber-600" />
+                  <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                    <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Celkové XP</p>
-                    <p className="text-2xl font-bold">{subjects.reduce((sum, s) => sum + (s.subjectXP || 0), 0).toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-foreground">{subjects.reduce((sum, s) => sum + (s.subjectXP || 0), 0).toLocaleString()}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border shadow-sm">
+              <div className="bg-card rounded-xl p-4 border shadow-sm">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
+                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Průměrný level</p>
-                    <p className="text-2xl font-bold">
+                    <p className="text-2xl font-bold text-foreground">
                       {Math.round(subjects.reduce((sum, s) => sum + (s.subjectLevel || 1), 0) / subjects.length * 10) / 10}
                     </p>
                   </div>
@@ -493,8 +494,8 @@ export default function SubjectsPanel() {
           {/* Tabs for filtering */}
           {!loading && subjects.length > 0 && (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-              <TabsList className="bg-white/80 backdrop-blur-sm border p-1 rounded-lg">
-                <TabsTrigger value="all" className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-white">
+              <TabsList className="bg-card border p-1 rounded-lg">
+                <TabsTrigger value="all" className="rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   Všechny předměty
                 </TabsTrigger>
                 <TabsTrigger value="soon" className="rounded-md data-[state=active]:bg-amber-500 data-[state=active]:text-white">
@@ -632,50 +633,59 @@ export default function SubjectsPanel() {
                             </div>
 
                             {/* Next Lesson Info */}
-                            {s.nextLesson && (
-                              <div className={`rounded-lg p-3 border ${
-                                lessonNow 
+                            <div className={`rounded-lg p-3 border ${
+                              !s.nextLesson
+                                ? 'bg-muted/20 border-border'
+                                : lessonNow 
                                   ? 'bg-green-100/50 border-green-200 dark:bg-green-900/20' 
                                   : lessonSoon 
                                     ? 'bg-amber-100/50 border-amber-200 dark:bg-amber-900/20' 
                                     : 'bg-muted/30 border-border'
-                              }`}>
-                                <div className="flex items-center justify-between mb-1">
-                                  <div className="flex items-center gap-2">
-                                    <Calendar className={`h-4 w-4 ${
-                                      lessonNow ? 'text-green-600' : lessonSoon ? 'text-amber-600' : 'text-muted-foreground'
-                                    }`} />
-                                    <span className={`font-medium ${
+                            }`}>
+                              {s.nextLesson ? (
+                                <>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <div className="flex items-center gap-2">
+                                      <Calendar className={`h-4 w-4 ${
+                                        lessonNow ? 'text-green-600' : lessonSoon ? 'text-amber-600' : 'text-muted-foreground'
+                                      }`} />
+                                      <span className={`font-medium ${
+                                        lessonNow ? 'text-green-700' : lessonSoon ? 'text-amber-700' : 'text-foreground'
+                                      }`}>
+                                        {lessonNow ? 'Právě probíhá' : lessonSoon ? 'Brzy začíná' : 'Další hodina'}
+                                      </span>
+                                    </div>
+                                    <span className={`font-semibold ${
                                       lessonNow ? 'text-green-700' : lessonSoon ? 'text-amber-700' : 'text-foreground'
                                     }`}>
-                                      {lessonNow ? 'Právě probíhá' : lessonSoon ? 'Brzy začíná' : 'Další hodina'}
+                                      {formatTimeUntilLesson(s.nextLesson.date, s.nextLesson.time)}
                                     </span>
                                   </div>
-                                  <span className={`font-semibold ${
-                                    lessonNow ? 'text-green-700' : lessonSoon ? 'text-amber-700' : 'text-foreground'
-                                  }`}>
-                                    {formatTimeUntilLesson(s.nextLesson.date, s.nextLesson.time)}
-                                  </span>
-                                </div>
-                                <div className="flex items-center justify-between text-sm">
-                                  <span className="text-muted-foreground">
-                                    {formatNextLessonLabel(s.nextLesson.date, s.nextLesson.time)}
-                                  </span>
-                                  {s.nextLesson.room && (
-                                    <div className="flex items-center gap-1">
-                                      <MapPin className="h-3.5 w-3.5" />
-                                      <span>{s.nextLesson.room}</span>
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-muted-foreground">
+                                      {formatNextLessonLabel(s.nextLesson.date, s.nextLesson.time)}
+                                    </span>
+                                    {s.nextLesson.room && (
+                                      <div className="flex items-center gap-1">
+                                        <MapPin className="h-3.5 w-3.5" />
+                                        <span>{s.nextLesson.room}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {s.nextLesson.theme && (
+                                    <div className="mt-2 text-sm">
+                                      <span className="text-muted-foreground">Téma: </span>
+                                      <span className="font-medium">{s.nextLesson.theme}</span>
                                     </div>
                                   )}
+                                </>
+                              ) : (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>Tento týden bez hodiny</span>
                                 </div>
-                                {s.nextLesson.theme && (
-                                  <div className="mt-2 text-sm">
-                                    <span className="text-muted-foreground">Téma: </span>
-                                    <span className="font-medium">{s.nextLesson.theme}</span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                              )}
+                            </div>
                             
                             {/* Homework Info */}
                             {homeworkCount > 0 && (
@@ -779,14 +789,14 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
   const xpToNextLevel = nextLevelXP - (subject.subjectXP || 0)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-background">
       <div className="w-full h-full p-4 sm:p-6">
         {/* Header */}
         <div className="mb-8">
           <Button 
             variant="ghost" 
             onClick={onBack}
-            className="mb-6 -ml-2 gap-2 hover:bg-white/80 backdrop-blur-sm"
+            className="mb-6 -ml-2 gap-2 hover:bg-card backdrop-blur-sm"
           >
             <ArrowLeft className="h-4 w-4" />
             Zpět na předměty
@@ -800,7 +810,7 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
                   ? 'bg-gradient-to-br from-amber-500 to-orange-500' 
                   : 'bg-gradient-to-br from-primary to-purple-600'
             }`}>
-              <div className="text-center text-white">
+              <div className="text-center text-foreground">
                 <div className="text-sm font-bold opacity-90">LVL</div>
                 <div className="text-2xl font-bold leading-6">{subject.subjectLevel || 1}</div>
               </div>
@@ -826,7 +836,7 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 border shadow-sm">
+                  <div className="bg-card backdrop-blur-sm rounded-xl p-3 border shadow-sm">
                     <div className="flex items-center gap-2">
                       <Award className="h-5 w-5 text-amber-500" />
                       <span className="font-bold text-lg">{subject.subjectXP?.toLocaleString() || 0}</span>
@@ -841,59 +851,75 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Next Lesson Card */}
-          {subject.nextLesson && (
-            <div className={`lg:col-span-2 rounded-2xl p-6 border-2 shadow-sm ${
-              lessonNow 
+          <div className={`lg:col-span-2 rounded-2xl p-6 border-2 shadow-sm ${
+            !subject.nextLesson
+              ? 'bg-card backdrop-blur-sm border-border'
+              : lessonNow 
                 ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/20' 
                 : lessonSoon 
                   ? 'border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20' 
-                  : 'bg-white/80 backdrop-blur-sm border-border'
-            }`}>
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-xl ${
-                  lessonNow 
+                  : 'bg-card backdrop-blur-sm border-border'
+          }`}>
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${
+                !subject.nextLesson
+                  ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                  : lessonNow 
                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30' 
                     : lessonSoon 
                       ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30' 
                       : 'bg-primary/10 text-primary'
-                }`}>
-                  <Calendar className="h-6 w-6" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-lg">
-                      {lessonNow ? 'Právě probíhá' : lessonSoon ? 'Brzy začíná' : 'Další hodina'}
-                    </h3>
-                    <Badge className={
-                      lessonNow ? 'bg-green-500' : lessonSoon ? 'bg-amber-500' : 'bg-primary'
-                    }>
-                      {formatTimeUntilLesson(subject.nextLesson.date, subject.nextLesson.time)}
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>Čas</span>
-                      </div>
-                      <div className="font-medium">
-                        {formatNextLessonLabel(subject.nextLesson.date, subject.nextLesson.time)}
-                      </div>
+              }`}>
+                <Calendar className="h-6 w-6" />
+              </div>
+              <div className="flex-1">
+                {subject.nextLesson ? (
+                  <>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="font-semibold text-lg">
+                        {lessonNow ? 'Právě probíhá' : lessonSoon ? 'Brzy začíná' : 'Další hodina'}
+                      </h3>
+                      <Badge className={
+                        lessonNow ? 'bg-green-500' : lessonSoon ? 'bg-amber-500' : 'bg-primary'
+                      }>
+                        {formatTimeUntilLesson(subject.nextLesson.date, subject.nextLesson.time)}
+                      </Badge>
                     </div>
-                    {subject.nextLesson.room && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4" />
-                          <span>Místnost</span>
+                          <Clock className="h-4 w-4" />
+                          <span>Čas</span>
                         </div>
-                        <div className="font-medium">{subject.nextLesson.room}</div>
+                        <div className="font-medium">
+                          {formatNextLessonLabel(subject.nextLesson.date, subject.nextLesson.time)}
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
+                      {subject.nextLesson.room && (
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <MapPin className="h-4 w-4" />
+                            <span>Místnost</span>
+                          </div>
+                          <div className="font-medium">{subject.nextLesson.room}</div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-semibold text-lg mb-2 text-muted-foreground">
+                      Příští hodina
+                    </h3>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>Tento týden nemáš hodinu tohoto předmětu</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-          )}
+          </div>
 
           {/* Progress Card */}
           <Card className="bg-white/80 backdrop-blur-sm border shadow-sm">
@@ -928,7 +954,7 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
 
         {/* Content Tabs - Simplified */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="w-full bg-white/80 backdrop-blur-sm border p-1 rounded-xl">
+          <TabsList className="w-full bg-card backdrop-blur-sm border p-1 rounded-xl">
             <TabsTrigger value="overview" className="flex-1 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white">
               Přehled
             </TabsTrigger>
@@ -942,7 +968,7 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border shadow-sm">
+              <Card className="bg-card backdrop-blur-sm border shadow-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BookOpen className="h-5 w-5 text-primary" />
@@ -972,7 +998,7 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
           </TabsContent>
 
           <TabsContent value="tasks">
-            <Card className="bg-white/80 backdrop-blur-sm border shadow-sm">
+            <Card className="bg-card backdrop-blur-sm border shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5 text-primary" />
@@ -1012,7 +1038,7 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
                                 ? 'bg-red-50/50 border-red-300 dark:bg-red-900/10' 
                                 : isDueSoon 
                                   ? 'bg-amber-50/50 border-amber-300 dark:bg-amber-900/10' 
-                                  : 'bg-white border-border'
+                                  : 'bg-card border-border'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-4 mb-3">
@@ -1071,7 +1097,7 @@ function SubjectDetailPanel({ subject, homeworksData, onBack }: { subject: Subje
           </TabsContent>
 
           <TabsContent value="schedule">
-            <Card className="bg-white/80 backdrop-blur-sm border shadow-sm">
+            <Card className="bg-card backdrop-blur-sm border shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />

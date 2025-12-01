@@ -17,6 +17,7 @@ import LeaderboardPanel from "@/app/components/leaderboard/LeaderboardPanel"
 import BadgesPanel from "@/app/components/badges/BadgesPanel"
 import JobListPanel from "@/app/components/job-list/JobListPanel"
 import LogPanel from "@/app/components/log/LogPanel"
+import { SettingsPanel } from "@/app/components/settings/SettingsPanel"
 import { useApi, useApiMutation } from "@/app/hooks/use-api"
 import { UserRole } from "@/app/lib/generated"
 
@@ -288,6 +289,7 @@ export function StudentDashboardModern({ userId, classId }: StudentDashboardProp
   if (selectedPanel === 'badges') return <BadgesPanel />
   if (selectedPanel === 'job-list') return <JobListPanel />
   if (selectedPanel === 'log') return <LogPanel />
+  if (selectedPanel === 'settings') return <SettingsPanel />
 
   return (
     <div className="space-y-6 max-w-full overflow-hidden">
