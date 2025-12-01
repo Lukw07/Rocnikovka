@@ -13,7 +13,8 @@ import {
   Sun, 
   Moon, 
   ArrowLeft,
-  RotateCcw
+  RotateCcw,
+  Calendar
 } from "lucide-react"
 
 const PRESET_COLORS = [
@@ -32,6 +33,8 @@ export function SettingsPanel() {
     primaryColor,
     updatePrimaryColor,
     resetColors,
+    useSeasonal,
+    toggleSeasonal,
     mounted: colorsLoaded
   } = useCustomColors()
 
@@ -106,6 +109,31 @@ export function SettingsPanel() {
                   )}
                   <span className="text-sm text-muted-foreground">
                     Aktuální režim: {theme === "dark" ? "Tmavý" : "Světlý"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="seasonal-toggle" className="text-base font-medium">
+                      Sezónní barvy
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Používat barvy podle ročního období na hlavní stránce
+                    </p>
+                  </div>
+                  <Switch
+                    id="seasonal-toggle"
+                    checked={useSeasonal}
+                    onCheckedChange={toggleSeasonal}
+                  />
+                </div>
+                
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    {useSeasonal ? "Sezónní barvy jsou zapnuty" : "Používají se vlastní barvy"}
                   </span>
                 </div>
               </div>
