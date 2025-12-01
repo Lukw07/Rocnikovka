@@ -150,6 +150,11 @@ const upsertUserFromBakalari = async (bakalariData: BakalariUserData, bakalariTo
   }
 }
 
+// Determine if we should use secure cookies
+// In production, we only use secure cookies if the NEXTAUTH_URL starts with https
+// This allows deploying to non-HTTPS environments (like Coolify with HTTP-only) without breaking auth
+const useSecureCookies = process.env.NODE_ENV === 'production' && process.env.NEXTAUTH_URL?.startsWith('https://')
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -423,7 +428,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: useSecureCookies
       }
     },
     callbackUrl: {
@@ -432,7 +437,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: useSecureCookies
       }
     },
     csrfToken: {
@@ -441,7 +446,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: useSecureCookies
       }
     }
   }
