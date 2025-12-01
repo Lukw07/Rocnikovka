@@ -396,7 +396,7 @@ export class JobsServiceOptimized extends BaseService {
             userId: assignment.student.id,
             amount: job.moneyReward,
             type: "EARNED",
-            description: `Job completion: ${job.title}`,
+            reason: `Job completion: ${job.title}`,
             requestId: reqId
           }
         })
