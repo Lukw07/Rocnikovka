@@ -2,11 +2,21 @@
 
 import { useState } from "react"
 import { StudentDashboardModern } from "@/app/components/dashboard/StudentDashboardModern"
-import V2SidebarLayout from "@/app/components/ui/V2sidebar"
+import V2SidebarLayout, { MenuItem } from "@/app/components/ui/V2sidebar"
 import { TeacherDashboard } from "@/app/components/dashboard/TeacherDashboard"
 import { OperatorDashboard } from "@/app/components/dashboard/OperatorDashboard"
 import { UserRole } from "@/app/lib/generated"
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader"
+import { 
+  Home, 
+  ListChecks, 
+  Users, 
+  Coins, 
+  Settings, 
+  Server, 
+  Database, 
+  Activity 
+} from "lucide-react"
 
 interface DashboardClientProps {
   user: {
@@ -23,6 +33,23 @@ export function DashboardClient({ user }: DashboardClientProps) {
   const handleMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
+
+  const teacherMenuItems: MenuItem[] = [
+    { icon: Home, label: 'Přehled', panel: 'dashboard' },
+    { icon: ListChecks, label: 'Správa úloh', panel: 'job-list' },
+    { icon: Users, label: 'Studenti', panel: 'students' },
+    { icon: Coins, label: 'Rozpočet', panel: 'budget' },
+    { icon: Settings, label: 'Nastavení', panel: 'settings' },
+  ]
+
+  const operatorMenuItems: MenuItem[] = [
+    { icon: Home, label: 'Přehled', panel: 'dashboard' },
+    { icon: Users, label: 'Uživatelé', panel: 'users' },
+    { icon: Server, label: 'Systém', panel: 'system' },
+    { icon: Database, label: 'Zálohy', panel: 'backups' },
+    { icon: Activity, label: 'Logy', panel: 'activity' },
+    { icon: Settings, label: 'Nastavení', panel: 'settings' },
+  ]
 
   return (
     <div className="min-h-screen bg-background">
@@ -59,24 +86,40 @@ export function DashboardClient({ user }: DashboardClientProps) {
         )}
         
         {user.role === UserRole.TEACHER && user.id && (
-          <div className="w-full h-full p-4 md:p-6">
-            <div className="text-xl sm:text-2xl font-semibold mb-4 md:mb-6">
-              Přeji krásný den, {user.name || "Uživateli"}!
-            </div>
-            <div className="w-full min-h-[calc(100vh-10rem)]">
-              <TeacherDashboard userId={user.id} />
-            </div>
+          <div className="w-full">
+            <V2SidebarLayout 
+              isMobileOpen={isMobileMenuOpen}
+              onMobileToggle={handleMenuToggle}
+              menuItems={teacherMenuItems}
+            >
+              <div className="w-full p-4 md:p-6">
+                <div className="text-xl sm:text-2xl font-semibold mb-4 md:mb-6">
+                  Přeji krásný den, {user.name || "Uživateli"}!
+                </div>
+                <div className="w-full min-h-[calc(100vh-10rem)]">
+                  <TeacherDashboard userId={user.id} />
+                </div>
+              </div>
+            </V2SidebarLayout>
           </div>
         )}
         
         {user.role === UserRole.OPERATOR && user.id && (
-          <div className="w-full h-full p-4 md:p-6">
-            <div className="text-xl sm:text-2xl font-semibold mb-4 md:mb-6">
-              Přeji krásný den, {user.name || "Uživateli"}!
-            </div>
-            <div className="w-full min-h-[calc(100vh-10rem)]">
-              <OperatorDashboard userId={user.id} />
-            </div>
+          <div className="w-full">
+            <V2SidebarLayout 
+              isMobileOpen={isMobileMenuOpen}
+              onMobileToggle={handleMenuToggle}
+              menuItems={operatorMenuItems}
+            >
+              <div className="w-full p-4 md:p-6">
+                <div className="text-xl sm:text-2xl font-semibold mb-4 md:mb-6">
+                  Přeji krásný den, {user.name || "Uživateli"}!
+                </div>
+                <div className="w-full min-h-[calc(100vh-10rem)]">
+                  <OperatorDashboard userId={user.id} />
+                </div>
+              </div>
+            </V2SidebarLayout>
           </div>
         )}
         

@@ -15,14 +15,7 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from "@/app/components/ThemeToggle"
 
-type V2SidebarLayoutProps = {
-  children?: React.ReactNode
-  className?: string
-  isMobileOpen: boolean
-  onMobileToggle: () => void
-}
-
-type SidebarPanel =
+export type SidebarPanel =
   | 'dashboard'
   | 'home'
   | 'subjects'
@@ -34,6 +27,26 @@ type SidebarPanel =
   | 'log'
   | 'settings'
   | 'management'
+  | 'students'
+  | 'budget'
+  | 'users'
+  | 'system'
+  | 'backups'
+  | 'activity'
+
+export type MenuItem = {
+  icon: any
+  label: string
+  panel: SidebarPanel
+}
+
+type V2SidebarLayoutProps = {
+  children?: React.ReactNode
+  className?: string
+  isMobileOpen: boolean
+  onMobileToggle: () => void
+  menuItems?: MenuItem[]
+}
 
 type SidebarContextValue = {
   selectedPanel: SidebarPanel
@@ -54,7 +67,8 @@ const V2SidebarLayout = ({
   children, 
   className, 
   isMobileOpen, 
-  onMobileToggle 
+  onMobileToggle,
+  menuItems: customMenuItems
 }: V2SidebarLayoutProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [activeItem, setActiveItem] = useState<number | null>(0);
@@ -79,7 +93,7 @@ const V2SidebarLayout = ({
     }
   }, [isMobile, isMobileOpen, onMobileToggle]);
 
-  const menuItems = [
+  const defaultMenuItems: MenuItem[] = [
     { icon: Home, label: 'Přehled', panel: 'dashboard' },
     { icon: BookOpen, label: 'Předměty', panel: 'subjects' },
     { icon: Trophy, label: 'Úspěchy', panel: 'achievements' },
@@ -90,6 +104,8 @@ const V2SidebarLayout = ({
     { icon: ShoppingCart, label: 'Obchod', panel: 'shop' },
     { icon: Settings, label: 'Nastavení', panel: 'settings' },
   ];
+
+  const menuItems = customMenuItems || defaultMenuItems;
 
   const handleItemClick = (index: number, section: 'main' | 'bottom' = 'main') => {
     setActiveItem(index);
