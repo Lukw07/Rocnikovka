@@ -18,11 +18,11 @@ const THEMES = {
     primary: "bg-emerald-500",
     gradient: "from-emerald-500 to-green-500",
     backgroundImage: "url('/Spring-bg.png')",
-    glass: "bg-card backdrop-blur-md border-border",
-    card: "bg-card backdrop-blur-md border-border",
-    text: "text-foreground",
-    textMuted: "text-muted-foreground",
-    border: "border-border",
+    glass: "bg-white/10 backdrop-blur-md border border-white/20",
+    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    text: "text-white",
+    textMuted: "text-white/80",
+    border: "border-white/20",
     icon: Flower
   },
   summer: {
@@ -30,11 +30,11 @@ const THEMES = {
     primary: "bg-blue-500",
     gradient: "from-blue-500 to-cyan-500",
     backgroundImage: "url('/Summer-bg.png')",
-    glass: "bg-card backdrop-blur-md border-border",
-    card: "bg-card backdrop-blur-md border-border",
-    text: "text-foreground",
-    textMuted: "text-muted-foreground",
-    border: "border-border",
+    glass: "bg-white/10 backdrop-blur-md border border-white/20",
+    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    text: "text-white",
+    textMuted: "text-white/80",
+    border: "border-white/20",
     icon: Sun
   },
   autumn: {
@@ -42,11 +42,11 @@ const THEMES = {
     primary: "bg-amber-500",
     gradient: "from-amber-500 to-orange-500",
     backgroundImage: "url('/Autumn-bg.jpg')",
-    glass: "bg-card backdrop-blur-md border-border",
-    card: "bg-card backdrop-blur-md border-border",
-    text: "text-foreground",
-    textMuted: "text-muted-foreground",
-    border: "border-border",
+    glass: "bg-white/10 backdrop-blur-md border border-white/20",
+    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    text: "text-white",
+    textMuted: "text-white/80",
+    border: "border-white/20",
     icon: Leaf
   },
   winter: {
@@ -54,11 +54,11 @@ const THEMES = {
     primary: "bg-indigo-500",
     gradient: "from-indigo-500 to-purple-500",
     backgroundImage: "url('/Winter-bg.png')",
-    glass: "bg-card backdrop-blur-md border-border",
-    card: "bg-card backdrop-blur-md border-border",
-    text: "text-foreground",
-    textMuted: "text-muted-foreground",
-    border: "border-border",
+    glass: "bg-white/10 backdrop-blur-md border border-white/20",
+    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    text: "text-white",
+    textMuted: "text-white/80",
+    border: "border-white/20",
     icon: Snowflake
   }
 }
@@ -151,8 +151,6 @@ export default function HomePage() {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Silnější overlay pro lepší čitelnost */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
       
       {/* Hlavní obsah */}
       <div className="relative z-10">
