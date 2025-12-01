@@ -1,5 +1,6 @@
 // Get Bakalari URL from environment variable or use default
-const bakalariURL = process.env.BAKALARI_URL || "https://spsul.bakalari.cz";
+// Remove any surrounding quotes that might have been added in the environment variable
+const bakalariURL = (process.env.BAKALARI_URL || "https://spsul.bakalari.cz").replace(/^"|"$/g, '');
 
 /**
  * Interface for the login payload as returned by Bakalari.
