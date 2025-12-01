@@ -13,7 +13,7 @@ COPY prisma ./prisma
 
 RUN \
   if [ -f package-lock.json ]; then npm ci; \
-  else echo "Lockfile not found." && exit 1; \
+  else echo "Warning: Lockfile not found. Using npm install." && npm install; \
   fi
 
 # Rebuild the source code only when needed
