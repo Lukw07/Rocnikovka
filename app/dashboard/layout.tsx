@@ -31,6 +31,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list' },
       { icon: 'Users', label: 'Studenti', href: '/dashboard/students' },
       { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget' },
+      // Management items
+      { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements' },
+      { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges' },
       // Operator specific items
       { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users' },
       { icon: 'Server', label: 'Systém', href: '/dashboard/system' },
