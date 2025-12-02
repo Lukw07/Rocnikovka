@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Badge } from "@/app/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
 import { useApi, useApiMutation } from "@/app/hooks/use-api"
+import { toast } from "sonner"
 
 interface Job {
   id: string
@@ -48,7 +49,17 @@ export default function JobListPanel() {
     const body = await resp.json()
     return body.data?.assignment
   }, {
-    onSuccess: () => execute(loadJobs)
+    onSuccess: () => {
+      execute(loadJobs)
+      toast.success("Přihlášeno", {
+        description: "Úspěšně jste se přihlásili k úkolu."
+      })
+    },
+    onError: (err) => {
+      toast.error("Chyba", {
+        description: err.message || "Nepodařilo se přihlásit k úkolu"
+      })
+    }
   })
 
   if (loading && !data) {

@@ -8,6 +8,7 @@ import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { useApiMutation, useApi } from "@/app/hooks/use-api"
+import { toast } from "sonner"
 
 interface SubjectItem {
   id: string
@@ -59,6 +60,14 @@ export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }
       setXpReward(10)
       setMoneyReward(0)
       setMaxStudents(1)
+      toast.success("Úkol vytvořen", {
+        description: "Nový úkol byl úspěšně vytvořen."
+      })
+    },
+    onError: (err) => {
+      toast.error("Chyba", {
+        description: err.message || "Nepodařilo se vytvořit úkol"
+      })
     }
   })
 

@@ -8,6 +8,7 @@ import { Badge } from "@/app/components/ui/badge"
 import { Button } from "@/app/components/ui/button"
 import { useApi } from "@/app/hooks/use-api"
 import { useSidebar } from "@/app/components/ui/V2sidebar"
+import { CreateAchievementDialog } from "./CreateAchievementDialog"
 
 type Achievement = {
   id: string
@@ -18,7 +19,7 @@ type Achievement = {
   awardsCount?: number
 }
 
-export default function AchievementsPanel({ canManage = false }: { canManage?: boolean }) {
+export default function AchievementsPanel({ canManage = false, isOperator = false }: { canManage?: boolean, isOperator?: boolean }) {
   const { setSelectedPanel } = useSidebar()
   const { data, loading, error, execute } = useApi<Achievement[] | { achievements: Achievement[] } | null>(null)
 
@@ -40,6 +41,15 @@ export default function AchievementsPanel({ canManage = false }: { canManage?: b
           <p className="text-muted-foreground text-sm">Seznam všech dostupných úspěchů a jejich statistik.</p>
         </div>
         <div className="flex items-center gap-2">
+          {isOperator && (
+            <CreateAchievementDialog onSuccess={() => {
+              execute(async () => {
+                const res = await fetch('/api/achievements')
+                if (!res.ok) throw new Error(`API error ${res.status}`)
+                return res.json()
+              })
+            }} />
+          )}
           <Button variant="ghost" onClick={() => setSelectedPanel('dashboard')}>Zpět</Button>
         </div>
       </div>

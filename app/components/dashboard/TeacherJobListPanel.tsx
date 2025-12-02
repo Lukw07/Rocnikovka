@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import JobCreatePanel from "@/app/components/job-list/JobCreatePanel"
 import { formatXP } from "@/app/lib/utils"
 import { Plus } from "lucide-react"
+import { toast } from "sonner"
 
 interface Job {
   id: string
@@ -61,9 +62,17 @@ export function TeacherJobListPanel() {
       
       if (response.ok) {
         fetchJobs()
+        toast.success("Přihláška schválena", {
+          description: "Student byl přiřazen k úkolu."
+        })
+      } else {
+        throw new Error("Failed to approve assignment")
       }
     } catch (error) {
       console.error("Error approving assignment:", error)
+      toast.error("Chyba", {
+        description: "Nepodařilo se schválit přihlášku."
+      })
     }
   }
 
@@ -75,9 +84,17 @@ export function TeacherJobListPanel() {
       
       if (response.ok) {
         fetchJobs()
+        toast.success("Úkol dokončen", {
+          description: "Úkol byl označen jako dokončený."
+        })
+      } else {
+        throw new Error("Failed to complete job")
       }
     } catch (error) {
       console.error("Error completing job:", error)
+      toast.error("Chyba", {
+        description: "Nepodařilo se dokončit úkol."
+      })
     }
   }
 

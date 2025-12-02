@@ -7,6 +7,7 @@ export default async function AchievementsPage() {
   const session = await getServerSession(authOptions)
   const role = session?.user?.role
   const canManage = role === UserRole.TEACHER || role === UserRole.OPERATOR
+  const isOperator = role === UserRole.OPERATOR
 
-  return <AchievementsPanel canManage={canManage} />
+  return <AchievementsPanel canManage={canManage} isOperator={isOperator} />
 }

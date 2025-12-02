@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Button } from "@/app/components/ui/button"
 import { Badge } from "@/app/components/ui/badge"
 import { Server, Settings, RefreshCw, Save, Shield } from "lucide-react"
+import { toast } from "sonner"
 
 interface SystemStats {
   systemHealth: {
@@ -42,9 +43,17 @@ export function SystemPanel() {
       
       if (response.ok) {
         console.log("Sync triggered successfully")
+        toast.success("Synchronizace spuštěna", {
+          description: "Proces synchronizace byl zahájen na pozadí."
+        })
+      } else {
+        throw new Error("Sync failed")
       }
     } catch (error) {
       console.error("Error triggering sync:", error)
+      toast.error("Chyba", {
+        description: "Nepodařilo se spustit synchronizaci."
+      })
     }
   }
 
@@ -56,9 +65,17 @@ export function SystemPanel() {
       
       if (response.ok) {
         console.log("Backup triggered successfully")
+        toast.success("Záloha spuštěna", {
+          description: "Vytváření zálohy bylo zahájeno."
+        })
+      } else {
+        throw new Error("Backup failed")
       }
     } catch (error) {
       console.error("Error triggering backup:", error)
+      toast.error("Chyba", {
+        description: "Nepodařilo se spustit zálohování."
+      })
     }
   }
 

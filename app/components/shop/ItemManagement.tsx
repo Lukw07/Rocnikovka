@@ -6,6 +6,7 @@ import { Button } from "@/app/components/ui/button"
 import { Badge } from "@/app/components/ui/badge"
 import { ItemRarity, ItemType } from "@/app/lib/generated"
 import { Eye, EyeOff } from "lucide-react"
+import { toast } from "sonner"
 
 interface ItemManagementProps {
   onItemUpdated: () => void
@@ -67,9 +68,16 @@ export function ItemManagement({ onItemUpdated }: ItemManagementProps) {
       
       await fetchItems()
       onItemUpdated()
+      toast.success("Stav předmětu změněn", {
+        description: "Viditelnost předmětu byla aktualizována."
+      })
     } catch (error) {
       console.error("Error toggling item:", error)
-      setError(error instanceof Error ? error.message : "Failed to toggle item")
+      const message = error instanceof Error ? error.message : "Failed to toggle item"
+      setError(message)
+      toast.error("Chyba", {
+        description: message
+      })
     } finally {
       setTogglingItem(null)
     }

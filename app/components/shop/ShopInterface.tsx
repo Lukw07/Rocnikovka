@@ -9,6 +9,7 @@ import { UserRole, ItemRarity, ItemType } from "@/app/lib/generated"
 import { Coins, Package, ShoppingCart } from "lucide-react"
 import { BuyItemDialog } from "./BuyItemDialog"
 import { ItemManagement } from "./ItemManagement"
+import { toast } from "sonner"
 
 interface ShopInterfaceProps {
   userId: string
@@ -83,9 +84,16 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
       // Refresh shop data to update balance and purchases
       await fetchShopData()
       setSelectedItem(null)
+      toast.success("Předmět zakoupen", {
+        description: "Předmět byl úspěšně přidán do vašeho inventáře."
+      })
     } catch (error) {
       console.error("Error buying item:", error)
-      setError(error instanceof Error ? error.message : "Failed to purchase item")
+      const message = error instanceof Error ? error.message : "Failed to purchase item"
+      setError(message)
+      toast.error("Chyba při nákupu", {
+        description: message
+      })
     } finally {
       setBuyingItem(null)
     }
