@@ -59,6 +59,8 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
   const handleOperatorModeToggle = (checked: boolean) => {
     setIsOperatorMode(checked)
     localStorage.setItem("operatorMode", String(checked))
+    // Dispatch custom event for other components to react
+    window.dispatchEvent(new Event('operator-mode-change'))
   }
 
   const handleMenuToggle = () => {

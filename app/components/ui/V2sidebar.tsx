@@ -65,6 +65,7 @@ export type MenuItem = {
   label: string
   panel?: SidebarPanel
   href: string
+  variant?: 'default' | 'operator'
 }
 
 type V2SidebarLayoutProps = {
@@ -224,17 +225,19 @@ const V2SidebarLayout = ({
             showExpanded ? 'w-[92%] px-4' : 'w-12 px-0 justify-center'
           } py-3 rounded-2xl ${
             isActive 
-              ? 'bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/20' 
+              ? item.variant === 'operator' 
+                ? 'bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/20'
+                : 'bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/20' 
               : isHoveredItemState
               ? 'bg-muted border border-border shadow-md'
               : 'hover:bg-muted/50'
-          }`}
+          } ${item.variant === 'operator' && !isActive ? 'border-l-2 border-l-red-500 bg-red-50/50 dark:bg-red-900/10' : ''}`}
         >
           {/* Icon */}
           <div className={`flex items-center justify-center transition-all duration-300 ${
             isActive 
               ? 'text-primary-foreground' 
-              : 'text-muted-foreground'
+              : item.variant === 'operator' ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'
           }`}>
             <Icon className="w-5 h-5" />
           </div>

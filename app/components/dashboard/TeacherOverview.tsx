@@ -92,26 +92,38 @@ export function TeacherOverview({ userId, isOperator = false }: TeacherOverviewP
     )
   }
 
-  if (isOperatorMode) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
-          <div className="flex items-center space-x-2">
-            <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <span className="font-medium text-purple-900 dark:text-purple-100">Režim operátora</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="operator-mode"
-              checked={isOperatorMode}
-              onCheckedChange={setIsOperatorMode}
-            />
-            <Label htmlFor="operator-mode">Aktivní</Label>
-          </div>
-        </div>
-        <OperatorOverview userId={userId} />
-      </div>
-    )
+  // Check if operator mode is enabled in localStorage
+  // This is a client-side check, so we need to be careful about hydration mismatch
+  // But since we are already in a client component and using useEffect, we can sync it.
+  // However, the parent DashboardLayoutClient handles the global mode.
+  // If we want this component to react to the global mode, we should probably pass it as a prop or use a context.
+  // For now, let's assume the user wants to remove the local toggle and rely on the global one.
+  // But wait, the user said "nechci aby se všechno dalo na první stránku jak je to ted".
+  // This implies that currently, the OperatorOverview IS showing up when it shouldn't, or vice versa.
+  
+  // Let's check localStorage here too to decide what to render
+  const [globalOperatorMode, setGlobalOperatorMode] = useState(false)
+
+  useEffect(() => {
+    const checkMode = () => {
+      const mode = localStorage.getItem("operatorMode") === "true"
+      setGlobalOperatorMode(mode)
+    }
+    
+    checkMode()
+    // Listen for storage events to update if changed elsewhere
+    window.addEventListener('storage', checkMode)
+    // Custom event for same-window updates
+    window.addEventListener('operator-mode-change', checkMode)
+    
+    return () => {
+      window.removeEventListener('storage', checkMode)
+      window.removeEventListener('operator-mode-change', checkMode)
+    }
+  }, [])
+
+  if (isOperator && globalOperatorMode) {
+    return <OperatorOverview userId={userId} />
   }
 
   const totalJobs = jobs.length
@@ -123,19 +135,6 @@ export function TeacherOverview({ userId, isOperator = false }: TeacherOverviewP
   // Default Dashboard View
   return (
     <div className="space-y-6">
-      {isOperator && (
-        <div className="flex items-center justify-end mb-4">
-          <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-900 p-2 rounded-lg border">
-            <Label htmlFor="operator-mode-toggle" className="text-sm text-muted-foreground">Režim operátora</Label>
-            <Switch
-              id="operator-mode-toggle"
-              checked={isOperatorMode}
-              onCheckedChange={setIsOperatorMode}
-            />
-          </div>
-        </div>
-      )}
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">

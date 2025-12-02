@@ -32,13 +32,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
       { icon: 'Users', label: 'Studenti', href: '/dashboard/students' },
       { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget' },
       // Management items
-      { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements' },
-      { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges' },
+      { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements', variant: 'operator' },
+      { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges', variant: 'operator' },
       // Operator specific items
-      { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users' },
-      { icon: 'Server', label: 'Systém', href: '/dashboard/system' },
-      { icon: 'Database', label: 'Zálohy', href: '/dashboard/backups' },
-      { icon: 'Activity', label: 'Logy', href: '/dashboard/activity' },
+      { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users', variant: 'operator' },
+      { icon: 'Server', label: 'Systém', href: '/dashboard/system', variant: 'operator' },
+      { icon: 'Database', label: 'Zálohy', href: '/dashboard/backups', variant: 'operator' },
+      { icon: 'Activity', label: 'Logy', href: '/dashboard/activity', variant: 'operator' },
       { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings' },
     ]
   } else {
