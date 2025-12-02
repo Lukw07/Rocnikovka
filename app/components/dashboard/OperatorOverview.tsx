@@ -13,7 +13,7 @@ import {
   ShieldAlert
 } from "lucide-react"
 import { getTeachersAndOperators, toggleOperatorRole } from "@/app/actions/admin"
-import { useToast } from "@/app/components/ui/use-toast"
+import { toast } from "sonner"
 
 interface OperatorOverviewProps {
   userId: string
@@ -50,7 +50,6 @@ export function OperatorOverview({ userId }: OperatorOverviewProps) {
   const [activity, setActivity] = useState<RecentActivity[]>([])
   const [users, setUsers] = useState<UserData[]>([])
   const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
 
   useEffect(() => {
     fetchDashboardData()
@@ -89,16 +88,13 @@ export function OperatorOverview({ userId }: OperatorOverviewProps) {
         setUsers(users.map(u => 
           u.id === targetUserId ? { ...u, role: result.newRole } : u
         ))
-        toast({
-          title: "Role aktualizována",
+        toast.success("Role aktualizována", {
           description: `Role uživatele byla změněna na ${result.newRole}`,
         })
       }
     } catch (error) {
-      toast({
-        title: "Chyba",
+      toast.error("Chyba", {
         description: "Nepodařilo se změnit roli",
-        variant: "destructive"
       })
     }
   }
