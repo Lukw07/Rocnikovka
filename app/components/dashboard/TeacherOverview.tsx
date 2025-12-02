@@ -48,10 +48,28 @@ export function TeacherOverview({ userId, isOperator = false }: TeacherOverviewP
   const [jobs, setJobs] = useState<Job[]>([])
   const [budgets, setBudgets] = useState<DailyBudget[]>([])
   const [loading, setLoading] = useState(true)
-  const [isOperatorMode, setIsOperatorMode] = useState(false)
+  const [globalOperatorMode, setGlobalOperatorMode] = useState(false)
 
   useEffect(() => {
     fetchDashboardData()
+  }, [])
+
+  useEffect(() => {
+    const checkMode = () => {
+      const mode = localStorage.getItem("operatorMode") === "true"
+      setGlobalOperatorMode(mode)
+    }
+    
+    checkMode()
+    // Listen for storage events to update if changed elsewhere
+    window.addEventListener('storage', checkMode)
+    // Custom event for same-window updates
+    window.addEventListener('operator-mode-change', checkMode)
+    
+    return () => {
+      window.removeEventListener('storage', checkMode)
+      window.removeEventListener('operator-mode-change', checkMode)
+    }
   }, [])
 
   const fetchDashboardData = async () => {
@@ -91,36 +109,6 @@ export function TeacherOverview({ userId, isOperator = false }: TeacherOverviewP
       </div>
     )
   }
-
-  // Check if operator mode is enabled in localStorage
-  // This is a client-side check, so we need to be careful about hydration mismatch
-  // But since we are already in a client component and using useEffect, we can sync it.
-  // However, the parent DashboardLayoutClient handles the global mode.
-  // If we want this component to react to the global mode, we should probably pass it as a prop or use a context.
-  // For now, let's assume the user wants to remove the local toggle and rely on the global one.
-  // But wait, the user said "nechci aby se všechno dalo na první stránku jak je to ted".
-  // This implies that currently, the OperatorOverview IS showing up when it shouldn't, or vice versa.
-  
-  // Let's check localStorage here too to decide what to render
-  const [globalOperatorMode, setGlobalOperatorMode] = useState(false)
-
-  useEffect(() => {
-    const checkMode = () => {
-      const mode = localStorage.getItem("operatorMode") === "true"
-      setGlobalOperatorMode(mode)
-    }
-    
-    checkMode()
-    // Listen for storage events to update if changed elsewhere
-    window.addEventListener('storage', checkMode)
-    // Custom event for same-window updates
-    window.addEventListener('operator-mode-change', checkMode)
-    
-    return () => {
-      window.removeEventListener('storage', checkMode)
-      window.removeEventListener('operator-mode-change', checkMode)
-    }
-  }, [])
 
   if (isOperator && globalOperatorMode) {
     return <OperatorOverview userId={userId} />
