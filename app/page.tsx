@@ -18,11 +18,11 @@ const THEMES = {
     primary: "bg-emerald-500",
     gradient: "from-emerald-500 to-green-500",
     backgroundImage: "url('/images/Spring-bg.png')",
-    glass: "bg-white/10 backdrop-blur-md border border-white/20",
-    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    glass: "bg-white/10 backdrop-blur-md border !border-white/20",
+    card: "bg-black/20 backdrop-blur-md border !border-white/10",
     text: "text-white",
     textMuted: "text-white/80",
-    border: "border-white/20",
+    border: "!border-white/20",
     icon: Flower
   },
   summer: {
@@ -30,11 +30,11 @@ const THEMES = {
     primary: "bg-blue-500",
     gradient: "from-blue-500 to-cyan-500",
     backgroundImage: "url('/images/Summer-bg.png')",
-    glass: "bg-white/10 backdrop-blur-md border border-white/20",
-    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    glass: "bg-white/10 backdrop-blur-md border !border-white/20",
+    card: "bg-black/20 backdrop-blur-md border !border-white/10",
     text: "text-white",
     textMuted: "text-white/80",
-    border: "border-white/20",
+    border: "!border-white/20",
     icon: Sun
   },
   autumn: {
@@ -42,11 +42,11 @@ const THEMES = {
     primary: "bg-amber-500",
     gradient: "from-amber-500 to-orange-500",
     backgroundImage: "url('/images/Autumn-bg.jpg')",
-    glass: "bg-white/10 backdrop-blur-md border border-white/20",
-    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    glass: "bg-white/10 backdrop-blur-md border !border-white/20",
+    card: "bg-black/20 backdrop-blur-md border !border-white/10",
     text: "text-white",
     textMuted: "text-white/80",
-    border: "border-white/20",
+    border: "!border-white/20",
     icon: Leaf
   },
   winter: {
@@ -54,11 +54,11 @@ const THEMES = {
     primary: "bg-indigo-500",
     gradient: "from-indigo-500 to-purple-500",
     backgroundImage: "url('/images/Winter-bg.png')",
-    glass: "bg-white/10 backdrop-blur-md border border-white/20",
-    card: "bg-black/20 backdrop-blur-md border border-white/10",
+    glass: "bg-white/10 backdrop-blur-md border !border-white/20",
+    card: "bg-black/20 backdrop-blur-md border !border-white/10",
     text: "text-white",
     textMuted: "text-white/80",
-    border: "border-white/20",
+    border: "!border-white/20",
     icon: Snowflake
   }
 }
