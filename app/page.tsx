@@ -414,7 +414,7 @@ export default function HomePage() {
                               placeholder="Zadejte své Bakaláři uživatelské jméno"
                               required
                               disabled={isLoading}
-                              className={`rounded-lg bg-white/20 backdrop-blur-md border-white/30 text-white placeholder:text-white/60 focus:bg-white/30 focus:border-white/50 transition-all duration-200 font-medium`}
+                              className={`rounded-lg bg-white/20 backdrop-blur-md border-white/30 text-white placeholder:text-white/60 focus:bg-white/30 focus:border-white/50 focus-visible:ring-white/20 focus-visible:border-white/50 transition-all duration-200 font-medium`}
                             />
                           </motion.div>
                         </div>
@@ -438,14 +438,14 @@ export default function HomePage() {
                               placeholder="Zadejte své Bakaláři heslo"
                               required
                               disabled={isLoading}
-                              className={`rounded-lg bg-white/20 backdrop-blur-md border-white/30 text-white placeholder:text-white/60 focus:bg-white/30 focus:border-white/50 transition-all duration-200 font-medium`}
+                              className={`rounded-lg bg-white/20 backdrop-blur-md border-white/30 text-white placeholder:text-white/60 focus:bg-white/30 focus:border-white/50 focus-visible:ring-white/20 focus-visible:border-white/50 transition-all duration-200 font-medium`}
                             />
                           </motion.div>
                         </div>
 
                         <Button 
                           type="submit" 
-                          className={`w-full bg-gradient-to-r ${THEME.gradient} hover:opacity-90 text-white py-6 rounded-xl transition-all duration-200 flex items-center justify-center border border-white/20 shadow-lg font-semibold`}
+                          className={`w-full bg-gradient-to-r ${THEME.gradient} hover:opacity-90 text-white py-6 rounded-xl transition-all duration-200 flex items-center justify-center border border-white/20 shadow-lg font-semibold focus-visible:ring-white/50`}
                           disabled={isLoading}
                         >
                           {isLoading ? (
