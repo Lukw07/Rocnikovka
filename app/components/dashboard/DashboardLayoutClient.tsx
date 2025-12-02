@@ -7,6 +7,8 @@ import { UserRole } from "@/app/lib/generated"
 import { Switch } from "@/app/components/ui/switch"
 import { Label } from "@/app/components/ui/label"
 import { Shield } from "lucide-react"
+import { PolicyModal } from "@/app/components/shared/PolicyModal"
+import { usePolicyAcknowledgment } from "@/app/hooks/use-policy-acknowledgment"
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode
@@ -22,8 +24,14 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isOperatorMode, setIsOperatorMode] = useState(false)
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems)
+  const { shouldShowModal } = usePolicyAcknowledgment()
+  const [showPolicyModal, setShowPolicyModal] = useState(false)
 
   const isOperator = user.role === UserRole.OPERATOR
+
+  useEffect(() => {
+    setShowPolicyModal(shouldShowModal)
+  }, [shouldShowModal])
 
   useEffect(() => {
     if (isOperator) {
@@ -103,6 +111,11 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
           {children}
         </V2SidebarLayout>
       </div>
+
+      <PolicyModal 
+        isOpen={showPolicyModal} 
+        onClose={() => setShowPolicyModal(false)} 
+      />
     </div>
   )
 }
