@@ -27,7 +27,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   } else if (role === UserRole.OPERATOR) {
     menuItems = [
       { icon: 'Home', label: 'Přehled', href: '/dashboard' },
-      { icon: 'Users', label: 'Uživatelé', href: '/dashboard/users' },
+      // Teacher items for Operator
+      { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list' },
+      { icon: 'Users', label: 'Studenti', href: '/dashboard/students' },
+      { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget' },
+      // Operator specific items
+      { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users' },
       { icon: 'Server', label: 'Systém', href: '/dashboard/system' },
       { icon: 'Database', label: 'Zálohy', href: '/dashboard/backups' },
       { icon: 'Activity', label: 'Logy', href: '/dashboard/activity' },

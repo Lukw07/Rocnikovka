@@ -3,7 +3,6 @@ import { authOptions } from "@/app/lib/auth"
 import { redirect } from "next/navigation"
 import { StudentOverview } from "@/app/components/dashboard/StudentOverview"
 import { TeacherOverview } from "@/app/components/dashboard/TeacherOverview"
-import { OperatorOverview } from "@/app/components/dashboard/OperatorOverview"
 import { UserRole } from "@/app/lib/generated"
 
 export default async function DashboardPage() {
@@ -18,8 +17,12 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {role === UserRole.STUDENT && <StudentOverview userId={session.user.id} />}
-      {role === UserRole.TEACHER && <TeacherOverview userId={session.user.id} />}
-      {role === UserRole.OPERATOR && <OperatorOverview userId={session.user.id} />}
+      {(role === UserRole.TEACHER || role === UserRole.OPERATOR) && (
+        <TeacherOverview 
+          userId={session.user.id} 
+          isOperator={role === UserRole.OPERATOR} 
+        />
+      )}
     </div>
   )
 }

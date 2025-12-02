@@ -4,10 +4,14 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
 import { Progress } from "@/app/components/ui/progress"
-import { BookOpen, Users, Award, TrendingUp } from "lucide-react"
+import { Switch } from "@/app/components/ui/switch"
+import { Label } from "@/app/components/ui/label"
+import { BookOpen, Users, Award, TrendingUp, Shield } from "lucide-react"
+import { OperatorOverview } from "./OperatorOverview"
 
 interface TeacherOverviewProps {
   userId: string
+  isOperator?: boolean
 }
 
 interface Job {
@@ -40,10 +44,11 @@ interface DailyBudget {
   remaining: number
 }
 
-export function TeacherOverview({ userId }: TeacherOverviewProps) {
+export function TeacherOverview({ userId, isOperator = false }: TeacherOverviewProps) {
   const [jobs, setJobs] = useState<Job[]>([])
   const [budgets, setBudgets] = useState<DailyBudget[]>([])
   const [loading, setLoading] = useState(true)
+  const [isOperatorMode, setIsOperatorMode] = useState(false)
 
   useEffect(() => {
     fetchDashboardData()
@@ -87,6 +92,28 @@ export function TeacherOverview({ userId }: TeacherOverviewProps) {
     )
   }
 
+  if (isOperatorMode) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between bg-purple-50 dark:bg-purple-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800">
+          <div className="flex items-center space-x-2">
+            <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <span className="font-medium text-purple-900 dark:text-purple-100">Režim operátora</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="operator-mode"
+              checked={isOperatorMode}
+              onCheckedChange={setIsOperatorMode}
+            />
+            <Label htmlFor="operator-mode">Aktivní</Label>
+          </div>
+        </div>
+        <OperatorOverview userId={userId} />
+      </div>
+    )
+  }
+
   const totalJobs = jobs.length
   const activeJobs = jobs.filter(job => job.status === "OPEN").length
   const pendingAssignments = jobs.reduce((total, job) => 
@@ -96,6 +123,19 @@ export function TeacherOverview({ userId }: TeacherOverviewProps) {
   // Default Dashboard View
   return (
     <div className="space-y-6">
+      {isOperator && (
+        <div className="flex items-center justify-end mb-4">
+          <div className="flex items-center space-x-2 bg-gray-50 dark:bg-gray-900 p-2 rounded-lg border">
+            <Label htmlFor="operator-mode-toggle" className="text-sm text-muted-foreground">Režim operátora</Label>
+            <Switch
+              id="operator-mode-toggle"
+              checked={isOperatorMode}
+              onCheckedChange={setIsOperatorMode}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
