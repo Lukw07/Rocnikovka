@@ -5,7 +5,7 @@
  * This creates test data that can be used to demonstrate idempotent sync
  */
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('../app/lib/generated');
 
 const prisma = new PrismaClient();
 
