@@ -102,6 +102,11 @@ export async function getAllUsers() {
       role: true,
       createdAt: true
     },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+
   return users
 }
 
