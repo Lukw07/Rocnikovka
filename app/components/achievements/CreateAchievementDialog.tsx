@@ -28,6 +28,7 @@ export function CreateAchievementDialog({ onSuccess }: CreateAchievementDialogPr
   const [description, setDescription] = useState("")
   const [badgeUrl, setBadgeUrl] = useState("")
   const [criteria, setCriteria] = useState("")
+  const [target, setTarget] = useState<number | "">("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,6 +45,7 @@ export function CreateAchievementDialog({ onSuccess }: CreateAchievementDialogPr
           description,
           badgeUrl: badgeUrl || undefined,
           criteria: criteria || undefined,
+          target: target ? Number(target) : undefined,
         }),
       })
 
@@ -74,6 +76,7 @@ export function CreateAchievementDialog({ onSuccess }: CreateAchievementDialogPr
     setDescription("")
     setBadgeUrl("")
     setCriteria("")
+    setTarget("")
   }
 
   return (
@@ -112,6 +115,31 @@ export function CreateAchievementDialog({ onSuccess }: CreateAchievementDialogPr
               required
             />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="target">Cílová hodnota (volitelné)</Label>
+              <Input
+                id="target"
+                type="number"
+                value={target}
+                onChange={(e) => setTarget(e.target.value ? Number(e.target.value) : "")}
+                placeholder="Např. 10"
+                min={1}
+              />
+              <p className="text-xs text-muted-foreground">
+                Počet akcí pro splnění (pro progress bar).
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="criteria">Kritéria (text)</Label>
+              <Input
+                id="criteria"
+                value={criteria}
+                onChange={(e) => setCriteria(e.target.value)}
+                placeholder="Podmínky..."
+              />
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="badgeUrl">URL Odznaku (volitelné)</Label>
             <Input
@@ -119,15 +147,6 @@ export function CreateAchievementDialog({ onSuccess }: CreateAchievementDialogPr
               value={badgeUrl}
               onChange={(e) => setBadgeUrl(e.target.value)}
               placeholder="https://..."
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="criteria">Kritéria (volitelné)</Label>
-            <Input
-              id="criteria"
-              value={criteria}
-              onChange={(e) => setCriteria(e.target.value)}
-              placeholder="Podmínky pro získání..."
             />
           </div>
           <DialogFooter>

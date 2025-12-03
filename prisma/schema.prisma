@@ -175,17 +175,18 @@ model MoneyTx {
 }
 
 model Item {
-  id          String     @id @default(cuid())
-  name        String
-  description String
-  price       Int
-  rarity      ItemRarity @default(COMMON)
-  type        ItemType
-  imageUrl    String?
-  isActive    Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  purchases   Purchase[]
+  id            String     @id @default(cuid())
+  name          String
+  description   String
+  price         Int
+  rarity        ItemRarity @default(COMMON)
+  type          ItemType
+  imageUrl      String?
+  isActive      Boolean    @default(true)
+  isPurchasable Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  purchases     Purchase[]
 
   @@index([rarity])
   @@index([type])
@@ -211,6 +212,7 @@ model Achievement {
   description String
   badgeUrl    String?
   criteria    String?
+  target      Int?
   isActive    Boolean            @default(true)
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt

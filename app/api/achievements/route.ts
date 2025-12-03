@@ -8,7 +8,8 @@ const createAchievementSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().min(1).max(1000),
   badgeUrl: z.string().url().optional(),
-  criteria: z.string().max(500).optional()
+  criteria: z.string().max(500).optional(),
+  target: z.number().int().min(1).optional()
 })
 
 export async function GET(request: NextRequest) {
@@ -59,7 +60,8 @@ export async function POST(request: NextRequest) {
       name: parsedData.name,
       description: parsedData.description,
       ...(parsedData.badgeUrl && { badgeUrl: parsedData.badgeUrl }),
-      ...(parsedData.criteria && { criteria: parsedData.criteria })
+      ...(parsedData.criteria && { criteria: parsedData.criteria }),
+      ...(parsedData.target && { target: parsedData.target })
     }
 
     const achievement = await AchievementsService.createAchievement(achievementData)

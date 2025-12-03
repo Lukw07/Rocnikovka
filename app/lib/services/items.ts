@@ -8,6 +8,7 @@ export interface CreateItemData {
   rarity: ItemRarity
   type: ItemType
   imageUrl?: string
+  isPurchasable?: boolean
 }
 
 export interface Item {
@@ -18,6 +19,7 @@ export interface Item {
   rarity: ItemRarity
   type: ItemType
   imageUrl?: string
+  isPurchasable: boolean
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -36,6 +38,7 @@ export class ItemsService {
         rarity: data.rarity,
         type: data.type,
         imageUrl: data.imageUrl,
+        isPurchasable: data.isPurchasable ?? true,
         isActive: true
       }
     })
@@ -50,7 +53,8 @@ export class ItemsService {
           itemName: item.name,
           price: item.price,
           rarity: item.rarity,
-          type: item.type
+          type: item.type,
+          isPurchasable: item.isPurchasable
         }
       }
     })
@@ -63,6 +67,7 @@ export class ItemsService {
       rarity: item.rarity,
       type: item.type,
       imageUrl: item.imageUrl || undefined,
+      isPurchasable: item.isPurchasable,
       isActive: item.isActive,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt
@@ -90,6 +95,7 @@ export class ItemsService {
       rarity: item.rarity,
       type: item.type,
       imageUrl: item.imageUrl || undefined,
+      isPurchasable: item.isPurchasable,
       isActive: item.isActive,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt
@@ -135,6 +141,7 @@ export class ItemsService {
       rarity: updatedItem.rarity,
       type: updatedItem.type,
       imageUrl: updatedItem.imageUrl || undefined,
+      isPurchasable: updatedItem.isPurchasable,
       isActive: updatedItem.isActive,
       createdAt: updatedItem.createdAt,
       updatedAt: updatedItem.updatedAt
@@ -161,7 +168,8 @@ export class ItemsService {
         price: data.price,
         rarity: data.rarity,
         type: data.type,
-        imageUrl: data.imageUrl
+        imageUrl: data.imageUrl,
+        isPurchasable: data.isPurchasable
       }
     })
 
@@ -186,6 +194,7 @@ export class ItemsService {
       rarity: updatedItem.rarity,
       type: updatedItem.type,
       imageUrl: updatedItem.imageUrl || undefined,
+      isPurchasable: updatedItem.isPurchasable,
       isActive: updatedItem.isActive,
       createdAt: updatedItem.createdAt,
       updatedAt: updatedItem.updatedAt

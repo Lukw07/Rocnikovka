@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select"
+import { Checkbox } from "@/app/components/ui/checkbox"
 import { ItemRarity, ItemType } from "@/app/lib/generated"
 
 interface CreateBadgeDialogProps {
@@ -37,6 +38,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [price, setPrice] = useState(100)
+  const [isPurchasable, setIsPurchasable] = useState(true)
   const [rarity, setRarity] = useState<ItemRarity>(ItemRarity.COMMON)
   const [imageUrl, setImageUrl] = useState("")
 
@@ -53,10 +55,11 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
         body: JSON.stringify({
           name,
           description,
-          price,
+          price: isPurchasable ? price : 0,
           rarity,
           type: ItemType.COLLECTIBLE, // Force type to COLLECTIBLE for badges
           imageUrl: imageUrl || undefined,
+          isPurchasable,
         }),
       })
 
@@ -82,6 +85,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
     setName("")
     setDescription("")
     setPrice(100)
+    setIsPurchasable(true)
     setRarity(ItemRarity.COMMON)
     setImageUrl("")
   }
@@ -98,7 +102,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
         <DialogHeader>
           <DialogTitle>Vytvořit nový odznak</DialogTitle>
           <DialogDescription>
-            Vytvořte nový sběratelský odznak, který si studenti mohou zakoupit.
+            Vytvořte nový sběratelský odznak.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
@@ -123,10 +127,19 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
               required 
             />
           </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="isPurchasable" 
+              checked={isPurchasable} 
+              onCheckedChange={(checked) => setIsPurchasable(checked as boolean)} 
+            />
+            <Label htmlFor="isPurchasable">Lze zakoupit v obchodě</Label>
+          </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Cena (mince)</Label>
+              <Label htmlFor="price" className={!isPurchasable ? "text-muted-foreground" : ""}>Cena (mince)</Label>
               <Input 
                 id="price" 
                 type="number" 
@@ -134,7 +147,8 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
                 onChange={(e) => setPrice(Number(e.target.value))} 
                 min={1} 
                 max={10000} 
-                required 
+                required={isPurchasable}
+                disabled={!isPurchasable}
               />
             </div>
             

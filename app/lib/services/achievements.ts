@@ -5,6 +5,7 @@ export interface CreateAchievementData {
   description: string
   badgeUrl?: string
   criteria?: string
+  target?: number
 }
 
 export interface Achievement {
@@ -13,6 +14,7 @@ export interface Achievement {
   description: string
   badgeUrl?: string
   criteria?: string
+  target?: number
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -48,6 +50,7 @@ export class AchievementsService {
         description: data.description,
         badgeUrl: data.badgeUrl,
         criteria: data.criteria,
+        target: data.target,
         isActive: true
       }
     })
@@ -59,7 +62,8 @@ export class AchievementsService {
         message: 'achievement_created',
         metadata: {
           achievementId: achievement.id,
-          achievementName: achievement.name
+          achievementName: achievement.name,
+          target: achievement.target
         }
       }
     })
@@ -70,6 +74,7 @@ export class AchievementsService {
       description: achievement.description,
       badgeUrl: achievement.badgeUrl || undefined,
       criteria: achievement.criteria || undefined,
+      target: achievement.target || undefined,
       isActive: achievement.isActive,
       createdAt: achievement.createdAt,
       updatedAt: achievement.updatedAt
@@ -98,6 +103,7 @@ export class AchievementsService {
       description: achievement.description,
       badgeUrl: achievement.badgeUrl || undefined,
       criteria: achievement.criteria || undefined,
+      target: achievement.target || undefined,
       isActive: achievement.isActive,
       createdAt: achievement.createdAt,
       updatedAt: achievement.updatedAt,
@@ -123,6 +129,7 @@ export class AchievementsService {
       description: award.achievement.description,
       badgeUrl: award.achievement.badgeUrl || undefined,
       criteria: award.achievement.criteria || undefined,
+      target: award.achievement.target || undefined,
       isActive: award.achievement.isActive,
       createdAt: award.achievement.createdAt,
       updatedAt: award.achievement.updatedAt
@@ -297,6 +304,7 @@ export class AchievementsService {
       description: updatedAchievement.description,
       badgeUrl: updatedAchievement.badgeUrl || undefined,
       criteria: updatedAchievement.criteria || undefined,
+      target: updatedAchievement.target || undefined,
       isActive: updatedAchievement.isActive,
       createdAt: updatedAchievement.createdAt,
       updatedAt: updatedAchievement.updatedAt

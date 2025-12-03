@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
       price: validatedData.price,
       rarity: validatedData.rarity,
       type: validatedData.type,
-      ...(validatedData.imageUrl && { imageUrl: validatedData.imageUrl })
+      ...(validatedData.imageUrl && { imageUrl: validatedData.imageUrl }),
+      isPurchasable: validatedData.isPurchasable
     }
     
     const item = await ItemsService.createItem(itemData)

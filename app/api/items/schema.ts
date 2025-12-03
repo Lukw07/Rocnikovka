@@ -22,7 +22,8 @@ export const createItemSchema = z.object({
   }),
   imageUrl: z.string()
     .url("Invalid image URL format")
-    .optional()
+    .optional(),
+  isPurchasable: z.boolean().optional().default(true)
 })
 
 export type CreateItemRequest = z.infer<typeof createItemSchema>

@@ -15,20 +15,6 @@ export async function acknowledgePolicy(userId: string) {
       throw new Error("User not found")
     }
 
-    // Create system log entry for policy acknowledgment
-    await prisma.systemLog.create({
-      data: {
-        level: "INFO",
-        message: "Policy acknowledged by user",
-        userId: userId,
-        metadata: {
-          type: "policy_ack",
-          timestamp: new Date().toISOString(),
-          userRole: user.role
-        }
-      }
-    })
-
     // Log the event using the utility function
     await logEvent("INFO", "Policy acknowledged", {
       userId: userId,
