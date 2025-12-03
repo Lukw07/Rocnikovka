@@ -22,10 +22,11 @@ import {
   DropdownMenuTrigger 
 } from "@/app/components/ui/dropdown-menu"
 import { Badge } from "@/app/components/ui/badge"
-import { Search, MoreHorizontal, Shield, ShieldAlert, UserCog } from "lucide-react"
+import { Search, MoreHorizontal, Shield, ShieldAlert, Coins, Trophy, Star } from "lucide-react"
 import { getUserRoleStats, getAllUsers, toggleOperatorRole } from "@/app/actions/admin"
 import { toast } from "sonner"
 import { UserRole } from "@/app/lib/generated"
+import { formatXP } from "@/app/lib/utils"
 
 interface UserStats {
   total: number
@@ -40,6 +41,12 @@ interface UserData {
   email: string
   role: string
   createdAt: Date
+  stats: {
+    level: number
+    totalXp: number
+    balance: number
+    remainingBudget: number
+  }
 }
 
 export function UsersPanel() {
@@ -200,6 +207,7 @@ export function UsersPanel() {
                   <TableHead>Jméno</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Statistiky</TableHead>
                   <TableHead>Registrace</TableHead>
                   <TableHead className="text-right">Akce</TableHead>
                 </TableRow>
@@ -207,13 +215,13 @@ export function UsersPanel() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       Načítání uživatelů...
                     </TableCell>
                   </TableRow>
                 ) : filteredUsers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       Žádní uživatelé nenalezeni
                     </TableCell>
                   </TableRow>
@@ -226,6 +234,26 @@ export function UsersPanel() {
                         <Badge variant={getRoleBadgeVariant(user.role)}>
                           {user.role}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {user.role === UserRole.STUDENT && (
+                          <div className="flex flex-col gap-1 text-xs">
+                            <div className="flex items-center gap-1 text-yellow-600 dark:text-yellow-400">
+                              <Star className="w-3 h-3" /> Level {user.stats.level}
+                            </div>
+                            <div className="flex items-center gap-1 text-purple-600 dark:text-purple-400">
+                              <Trophy className="w-3 h-3" /> {formatXP(user.stats.totalXp)} XP
+                            </div>
+                            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                              <Coins className="w-3 h-3" /> {user.stats.balance} Kreditů
+                            </div>
+                          </div>
+                        )}
+                        {(user.role === UserRole.TEACHER || user.role === UserRole.OPERATOR) && (
+                          <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                            <Trophy className="w-3 h-3" /> Rozpočet: {user.stats.remainingBudget} XP
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell>
                         {new Date(user.createdAt).toLocaleDateString('cs-CZ')}

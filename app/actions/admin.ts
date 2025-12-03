@@ -5,6 +5,7 @@ import { authOptions } from "@/app/lib/auth"
 import { prisma } from "@/app/lib/prisma"
 import { UserRole } from "@/app/lib/generated"
 import { revalidatePath } from "next/cache"
+import { LevelingSystem } from "@/app/lib/leveling"
 
 export async function toggleOperatorRole(targetUserId: string) {
   const session = await getServerSession(authOptions)
@@ -100,14 +101,70 @@ export async function getAllUsers() {
       name: true,
       email: true,
       role: true,
-      createdAt: true
+      createdAt: true,
+      teacherDailyBudgets: {
+        where: {
+          date: {
+            gte: new Date(new Date().setHours(0,0,0,0))
+          }
+        },
+        select: {
+          budget: true,
+          used: true
+        }
+      }
     },
     orderBy: {
       createdAt: 'desc'
     }
   })
 
-  return users
+  // Fetch XP from LeaderboardView
+  const xpData = await prisma.leaderboardView.findMany({
+    select: {
+      id: true,
+      total_xp: true
+    }
+  })
+  const xpMap = new Map(xpData.map(x => [x.id, x.total_xp]))
+
+  // Fetch Money Balance
+  const allTx = await prisma.moneyTx.groupBy({
+    by: ['userId', 'type'],
+    _sum: { amount: true }
+  })
+  
+  const balanceMap = new Map<string, number>()
+  
+  allTx.forEach(tx => {
+    const current = balanceMap.get(tx.userId) || 0
+    if (tx.type === 'EARNED' || tx.type === 'REFUND') {
+      balanceMap.set(tx.userId, current + (tx._sum.amount || 0))
+    } else {
+      balanceMap.set(tx.userId, current - (tx._sum.amount || 0))
+    }
+  })
+
+  const enrichedUsers = users.map(user => {
+    const totalXp = xpMap.get(user.id) || 0
+    const level = LevelingSystem.getLevelFromXP(totalXp)
+    const balance = balanceMap.get(user.id) || 0
+    
+    // Calculate remaining budget for today (sum of all subjects)
+    const remainingBudget = user.teacherDailyBudgets.reduce((acc, curr) => acc + (curr.budget - curr.used), 0)
+
+    return {
+      ...user,
+      stats: {
+        level,
+        totalXp,
+        balance,
+        remainingBudget
+      }
+    }
+  })
+
+  return enrichedUsers
 }
 
 export async function getSystemLogs(limit = 100) {
