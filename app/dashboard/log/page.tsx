@@ -11,13 +11,13 @@ export default async function LogPage() {
     redirect("/auth/signin")
   }
 
-  if (session.user.role !== UserRole.STUDENT) {
+  if (session.user.role !== UserRole.STUDENT && session.user.role !== UserRole.OPERATOR) {
     redirect("/dashboard")
   }
 
   return (
     <div className="w-full p-4 md:p-6">
-      <LogPanel />
+      <LogPanel userRole={session.user.role} />
     </div>
   )
 }

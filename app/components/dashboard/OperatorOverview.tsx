@@ -2,18 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
-import { Button } from "@/app/components/ui/button"
 import { formatXP } from "@/app/lib/utils"
 import { 
   Users, 
   Database, 
   Activity, 
-  TrendingUp,
-  Shield,
-  ShieldAlert
+  TrendingUp
 } from "lucide-react"
-import { getTeachersAndOperators, toggleOperatorRole } from "@/app/actions/admin"
-import { toast } from "sonner"
 
 interface OperatorOverviewProps {
   userId: string
@@ -30,25 +25,8 @@ interface SystemStats {
   }
 }
 
-interface RecentActivity {
-  id: string
-  type: string
-  message: string
-  timestamp: string
-  level: string
-}
-
-interface UserData {
-  id: string
-  name: string
-  email: string
-  role: string
-}
-
 export function OperatorOverview({ userId }: OperatorOverviewProps) {
   const [stats, setStats] = useState<SystemStats | null>(null)
-  const [activity, setActivity] = useState<RecentActivity[]>([])
-  const [users, setUsers] = useState<UserData[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -57,45 +35,16 @@ export function OperatorOverview({ userId }: OperatorOverviewProps) {
 
   const fetchDashboardData = async () => {
     try {
-      const [statsResponse, activityResponse, usersData] = await Promise.all([
-        fetch("/api/admin/stats"),
-        fetch("/api/admin/activity"),
-        getTeachersAndOperators()
-      ])
+      const statsResponse = await fetch("/api/admin/stats")
       
       if (statsResponse.ok) {
         const statsData = await statsResponse.json()
         setStats(statsData)
       }
-      
-      if (activityResponse.ok) {
-        const activityData = await activityResponse.json()
-        setActivity(activityData.activity || [])
-      }
-
-      setUsers(usersData as UserData[])
     } catch (error) {
       console.error("Error fetching dashboard data:", error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleToggleRole = async (targetUserId: string) => {
-    try {
-      const result = await toggleOperatorRole(targetUserId)
-      if (result.success) {
-        setUsers(users.map(u => 
-          u.id === targetUserId ? { ...u, role: result.newRole } : u
-        ))
-        toast.success("Role aktualizována", {
-          description: `Role uživatele byla změněna na ${result.newRole}`,
-        })
-      }
-    } catch (error) {
-      toast.error("Chyba", {
-        description: "Nepodařilo se změnit roli",
-      })
     }
   }
 
@@ -192,76 +141,6 @@ export function OperatorOverview({ userId }: OperatorOverviewProps) {
           </CardContent>
         </Card>
       </div>
-
-      {/* Recent Activity Preview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Poslední události</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {activity.slice(0, 3).map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-2 border-b last:border-0">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-2 h-2 rounded-full ${
-                    item.level === "ERROR" ? "bg-red-500" :
-                    item.level === "WARN" ? "bg-yellow-500" :
-                    "bg-green-500"
-                  }`} />
-                  <span className="text-sm">{item.message}</span>
-                </div>
-                <span className="text-xs text-muted-foreground">{item.timestamp}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Operator Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Správa operátorů</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {users.map((user) => (
-              <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-muted-foreground">{user.email}</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className={`px-2 py-1 rounded text-xs font-medium ${
-                    user.role === 'OPERATOR' 
-                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' 
-                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                  }`}>
-                    {user.role === 'OPERATOR' ? 'Operátor' : 'Učitel'}
-                  </div>
-                  <Button
-                    variant={user.role === 'OPERATOR' ? "destructive" : "default"}
-                    size="sm"
-                    onClick={() => handleToggleRole(user.id)}
-                    disabled={user.id === userId} // Prevent removing own operator role
-                  >
-                    {user.role === 'OPERATOR' ? (
-                      <>
-                        <ShieldAlert className="w-4 h-4 mr-2" />
-                        Odebrat operátora
-                      </>
-                    ) : (
-                      <>
-                        <Shield className="w-4 h-4 mr-2" />
-                        Přidat operátora
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

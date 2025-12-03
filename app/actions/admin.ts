@@ -64,3 +64,66 @@ export async function getTeachersAndOperators() {
 
     return users
 }
+
+export async function getUserRoleStats() {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const [total, students, teachers, operators] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { role: UserRole.STUDENT } }),
+    prisma.user.count({ where: { role: UserRole.TEACHER } }),
+    prisma.user.count({ where: { role: UserRole.OPERATOR } })
+  ])
+
+  return {
+    total,
+    students,
+    teachers,
+    operators
+  }
+}
+
+export async function getAllUsers() {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true
+    },
+  return users
+}
+
+export async function getSystemLogs(limit = 100) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const logs = await prisma.systemLog.findMany({
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true
+        }
+      }
+    }
+  })
+
+  return logs
+}
