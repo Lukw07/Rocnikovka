@@ -37,16 +37,14 @@ model User {
   @@index([bakalariId])
   @@index([grade])
 }
-model LeaderboardView {
-  id        String   @id
-  name      String
-  classId   String?
-  grade     Int?
-  role      UserRole
+view LeaderboardView {
+  id         String   @unique
+  name       String
+  classId    String?
+  grade      Int?
+  role       UserRole
   class_name String?
-  total_xp  Int
-
-  @@map("LeaderboardView")
+  total_xp   Int
 }
 
 model Class {
