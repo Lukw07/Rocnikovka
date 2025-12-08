@@ -117,6 +117,12 @@ export async function middleware(request: NextRequest) {
   
   // Add requestId to response headers
   response.headers.set('x-request-id', requestId)
+
+  // Security Hardening for RSC (CVE-2025-55182, CVE-2025-66478)
+  // Prevent MIME sniffing and clickjacking
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   
   // Log request start (only in development)
   if (process.env.NODE_ENV === 'development') {
