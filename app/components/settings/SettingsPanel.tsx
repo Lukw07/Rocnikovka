@@ -14,8 +14,10 @@ import {
   Moon, 
   ArrowLeft,
   RotateCcw,
-  Calendar
+  Calendar,
+  User
 } from "lucide-react"
+import { AvatarSelector } from "./AvatarSelector"
 
 const PRESET_COLORS = [
   { name: "Modrá", value: "#3b82f6" },
@@ -232,6 +234,9 @@ export function SettingsPanel() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Avatar Settings */}
+          <AvatarSelector />
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useSidebar } from "@/app/components/ui/V2sidebar"
 import { Button } from "@/app/components/ui/button"
 import { Trophy, User, ArrowLeft, Filter, Sparkles, Crown, Star, Award, Users, GraduationCap } from "lucide-react"
+import { UserProfileHoverCard } from "@/app/components/shared/UserProfileHoverCard"
 
 type LeaderboardRow = {
   id: string
@@ -406,7 +407,9 @@ export default function LeaderboardPanel() {
                               <IconComponent className="w-5 h-5" />
                             </div>
                             <div>
-                              <div className={`font-bold text-lg ${style.textColor}`}>{row.name}</div>
+                              <UserProfileHoverCard userId={row.id} name={row.name}>
+                                <div className={`font-bold text-lg ${style.textColor} hover:underline`}>{row.name}</div>
+                              </UserProfileHoverCard>
                               <div className={`text-sm ${style.textColor} opacity-80`}>Level {row.level} • {row.class}</div>
                             </div>
                           </div>
@@ -470,7 +473,9 @@ export default function LeaderboardPanel() {
                               <Star className="w-4 h-4 text-blue-600" />
                             </div>
                             <div>
-                              <div className="font-semibold text-blue-900">{row.name}</div>
+                              <UserProfileHoverCard userId={row.id} name={row.name}>
+                                <div className="font-semibold text-blue-900 hover:underline">{row.name}</div>
+                              </UserProfileHoverCard>
                               <div className="text-sm text-blue-700">Level {row.level} • {row.class}</div>
                             </div>
                           </div>
@@ -534,7 +539,9 @@ export default function LeaderboardPanel() {
                               <Award className="w-3 h-3 text-green-600" />
                             </div>
                             <div>
-                              <div className="font-medium text-green-900 text-sm">{row.name}</div>
+                              <UserProfileHoverCard userId={row.id} name={row.name}>
+                                <div className="font-medium text-green-900 text-sm hover:underline">{row.name}</div>
+                              </UserProfileHoverCard>
                               <div className="text-xs text-green-700">Level {row.level} • {row.class}</div>
                             </div>
                           </div>
@@ -598,7 +605,9 @@ export default function LeaderboardPanel() {
                               <User className="w-3 h-3 text-gray-600" />
                             </div>
                             <div>
-                              <div className="font-medium text-gray-900 text-sm">{row.name}</div>
+                              <UserProfileHoverCard userId={row.id} name={row.name}>
+                                <div className="font-medium text-gray-900 text-sm hover:underline">{row.name}</div>
+                              </UserProfileHoverCard>
                               <div className="text-xs text-gray-600">Level {row.level} • {row.class}</div>
                             </div>
                           </div>

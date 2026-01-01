@@ -12,6 +12,7 @@ interface UserAvatarWithBadgeProps {
 
 export function UserAvatarWithBadge({ name, className }: UserAvatarWithBadgeProps) {
   const [badge, setBadge] = useState<{ imageUrl: string, rarity: ItemRarity } | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPinnedBadge = async () => {
@@ -23,6 +24,9 @@ export function UserAvatarWithBadge({ name, className }: UserAvatarWithBadgeProp
             setBadge(data.badge)
           } else {
             setBadge(null)
+          }
+          if (data.avatarUrl) {
+            setAvatarUrl(data.avatarUrl)
           }
         }
       } catch (e) {
@@ -48,7 +52,11 @@ export function UserAvatarWithBadge({ name, className }: UserAvatarWithBadgeProp
   return (
     <div className="relative inline-block">
       <Avatar className={cn("border-2 transition-all", badge ? rarityColors[badge.rarity] : "border-transparent", className)}>
-        <AvatarFallback>{name[0]}</AvatarFallback>
+        {avatarUrl ? (
+          <AvatarImage src={avatarUrl} alt={name} />
+        ) : (
+          <AvatarFallback>{name[0]}</AvatarFallback>
+        )}
       </Avatar>
       {badge && (
         <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border border-background bg-background overflow-hidden shadow-sm" title="Pinned Badge">

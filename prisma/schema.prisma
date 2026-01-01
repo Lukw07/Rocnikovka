@@ -18,6 +18,7 @@ model User {
   grade                  Int?
   bakalariId             String?              @unique
   bakalariToken          String?
+  avatarUrl              String?
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
   achievementAwardsGiven AchievementAward[]   @relation("AchievementAwardedBy")

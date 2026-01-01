@@ -76,6 +76,20 @@ export class BadgesService {
       throw new Error("User does not own this badge")
     }
 
+    // If we are trying to pin the badge (currently unpinned)
+    if (!userBadge.isPinned) {
+      const pinnedCount = await prisma.userBadge.count({
+        where: {
+          userId,
+          isPinned: true
+        }
+      })
+
+      if (pinnedCount >= 3) {
+        throw new Error("You can only pin up to 3 badges")
+      }
+    }
+
     return prisma.userBadge.update({
       where: {
         userId_badgeId: {
