@@ -82,7 +82,7 @@ export default function BadgesPanel({ isOperator = false }: { isOperator?: boole
           )}
 
           {filteredBadges.map(badge => (
-            <BadgeCard key={badge.id} badge={badge} onPinToggle={refresh} />
+            <BadgeCard key={badge.id} badge={badge} onPinToggle={refresh} isOperator={isOperator} />
           ))}
         </div>
       )}

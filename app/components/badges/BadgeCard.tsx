@@ -9,13 +9,15 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/
 import { cn } from "@/app/lib/utils"
 import { Pin, PinOff } from "lucide-react"
 import { toast } from "sonner"
+import { AssignBadgeToClassDialog } from "./AssignBadgeToClassDialog"
 
 interface BadgeCardProps {
   badge: BadgeModel & { owned: boolean; isPinned?: boolean }
   onPinToggle?: () => void
+  isOperator?: boolean
 }
 
-export function BadgeCard({ badge, onPinToggle }: BadgeCardProps) {
+export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
   const [stats, setStats] = useState<{ percentage: number } | null>(null)
   const [loadingStats, setLoadingStats] = useState(false)
 
@@ -96,6 +98,11 @@ export function BadgeCard({ badge, onPinToggle }: BadgeCardProps) {
               <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full mt-2", rarityBg[badge.rarity], rarityColors[badge.rarity])}>
                 {badge.rarity}
               </span>
+              {isOperator && (
+                <div onClick={(e) => e.stopPropagation()} className="w-full mt-2 z-20 relative">
+                  <AssignBadgeToClassDialog badge={badge} />
+                </div>
+              )}
             </CardHeader>
           </Card>
         </TooltipTrigger>

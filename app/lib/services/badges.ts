@@ -53,6 +53,30 @@ export class BadgesService {
     })
   }
 
+  static async awardBadgeToClass(classId: string, badgeId: string) {
+    const students = await prisma.user.findMany({
+      where: { classId }
+    })
+
+    const operations = students.map(student => 
+      prisma.userBadge.upsert({
+        where: {
+          userId_badgeId: {
+            userId: student.id,
+            badgeId
+          }
+        },
+        create: {
+          userId: student.id,
+          badgeId
+        },
+        update: {}
+      })
+    )
+
+    return prisma.$transaction(operations)
+  }
+
   static async getUserBadges(userId: string) {
     return prisma.userBadge.findMany({
       where: { userId },

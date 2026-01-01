@@ -27,27 +27,29 @@ import {
 import { Checkbox } from "@/app/components/ui/checkbox"
 import { ItemRarity, ItemType } from "@/app/lib/generated"
 
-interface CreateBadgeDialogProps {
+interface CreateItemDialogProps {
   onSuccess?: () => void
 }
 
-export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
+export function CreateItemDialog({ onSuccess }: CreateItemDialogProps) {
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
+  const [price, setPrice] = useState(100)
   const [imageUrl, setImageUrl] = useState("")
   const [rarity, setRarity] = useState<ItemRarity>(ItemRarity.COMMON)
-  const [category, setCategory] = useState("")
-  const [isUploading, setIsUploading] = useState(false)
+  const [type, setType] = useState<ItemType>(ItemType.COSMETIC)
+  const [isPurchasable, setIsPurchasable] = useState(true)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setIsSubmitting(true)
     
     try {
-      const response = await fetch("/api/admin/badges", {
+      const response = await fetch("/api/items", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,36 +57,30 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
         body: JSON.stringify({
           name,
           description,
+          price: Number(price),
           imageUrl,
           rarity,
-          category: category || undefined,
+          type,
+          isPurchasable
         }),
       })
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.message || "Nezdařilo se vytvořit odznak")
+        throw new Error(error.message || "Nezdařilo se vytvořit předmět")
       }
 
-      toast.success("Odznak byl úspěšně vytvořen")
+      toast.success("Předmět byl úspěšně vytvořen")
       resetForm()
       setOpen(false)
       onSuccess?.()
     } catch (error) {
-      toast.error("Chyba při vytváření odznaku", {
+      toast.error("Chyba při vytváření předmětu", {
         description: error instanceof Error ? error.message : "Neznámá chyba",
       })
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const resetForm = () => {
-    setName("")
-    setDescription("")
-    setImageUrl("")
-    setRarity(ItemRarity.COMMON)
-    setCategory("")
   }
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,19 +110,29 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
     }
   }
 
+  const resetForm = () => {
+    setName("")
+    setDescription("")
+    setPrice(100)
+    setImageUrl("")
+    setRarity(ItemRarity.COMMON)
+    setType(ItemType.COSMETIC)
+    setIsPurchasable(true)
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Vytvořit odznak
+          Vytvořit předmět
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Vytvořit nový odznak</DialogTitle>
+          <DialogTitle>Vytvořit nový předmět</DialogTitle>
           <DialogDescription>
-            Vytvořte nový sběratelský odznak.
+            Vytvořte nový předmět do obchodu.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
@@ -136,7 +142,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
               id="name" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
-              placeholder="Např. Sběratel brouků" 
+              placeholder="Např. Zlatý meč" 
               required 
             />
           </div>
@@ -147,19 +153,21 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
               id="description" 
               value={description} 
               onChange={(e) => setDescription(e.target.value)} 
-              placeholder="Popis odznaku..." 
+              placeholder="Popis předmětu..." 
               required 
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="category">Kategorie</Label>
+              <Label htmlFor="price">Cena</Label>
               <Input 
-                id="category" 
-                value={category} 
-                onChange={(e) => setCategory(e.target.value)} 
-                placeholder="Např. Combat" 
+                id="price" 
+                type="number"
+                min="0"
+                value={price} 
+                onChange={(e) => setPrice(Number(e.target.value))} 
+                required 
               />
             </div>
             
@@ -177,6 +185,33 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="type">Typ</Label>
+              <Select value={type} onValueChange={(value) => setType(value as ItemType)}>
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="Vyberte typ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(ItemType).map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center space-x-2 pt-8">
+              <Checkbox 
+                id="isPurchasable" 
+                checked={isPurchasable} 
+                onCheckedChange={(checked) => setIsPurchasable(checked as boolean)} 
+              />
+              <Label htmlFor="isPurchasable">Lze zakoupit</Label>
             </div>
           </div>
           
