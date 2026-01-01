@@ -10,6 +10,7 @@ import { signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { UserRole } from "@/app/lib/generated"
 import { LogOut, Coins, Menu } from "lucide-react"
+import { UserAvatarWithBadge } from "@/app/components/dashboard/UserAvatarWithBadge"
 
 interface DashboardHeaderProps {
   userName: string
@@ -113,11 +114,7 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2 h-10">
-              <Avatar className="h-6 w-6">
-                <AvatarFallback className="text-sm">
-                  {userName?.[0]?.toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatarWithBadge name={userName || "U"} className="h-6 w-6" />
               <span className="max-w-[140px] truncate text-sm">
                 {userName}
               </span>
@@ -150,11 +147,7 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" size="icon" className="h-9 w-9">
-              <Avatar className="h-5 w-5">
-                <AvatarFallback className="text-xs">
-                  {userName?.[0]?.toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatarWithBadge name={userName || "U"} className="h-5 w-5" />
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-48 p-2">

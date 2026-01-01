@@ -32,6 +32,7 @@ model User {
   teacherDailyBudgets    TeacherDailyBudget[]
   class                  Class?               @relation(fields: [classId], references: [id])
   xpAudits               XPAudit[]
+  badges                 UserBadge[]
 
   @@index([role])
   @@index([classId])
@@ -346,4 +347,31 @@ enum LogLevel {
   INFO
   WARN
   ERROR
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  imageUrl    String
+  rarity      ItemRarity  @default(COMMON)
+  category    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id         String   @id @default(cuid())
+  userId     String
+  badgeId    String
+  isPinned   Boolean  @default(false)
+  obtainedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
 }

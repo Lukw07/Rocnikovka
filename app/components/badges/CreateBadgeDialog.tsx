@@ -37,17 +37,16 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
   
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
-  const [price, setPrice] = useState(100)
-  const [isPurchasable, setIsPurchasable] = useState(true)
-  const [rarity, setRarity] = useState<ItemRarity>(ItemRarity.COMMON)
   const [imageUrl, setImageUrl] = useState("")
+  const [rarity, setRarity] = useState<ItemRarity>(ItemRarity.COMMON)
+  const [category, setCategory] = useState("")
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setIsSubmitting(true)
     
     try {
-      const response = await fetch("/api/items", {
+      const response = await fetch("/api/admin/badges", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,11 +54,9 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
         body: JSON.stringify({
           name,
           description,
-          price: isPurchasable ? price : 0,
+          imageUrl,
           rarity,
-          type: ItemType.COLLECTIBLE, // Force type to COLLECTIBLE for badges
-          imageUrl: imageUrl || undefined,
-          isPurchasable,
+          category: category || undefined,
         }),
       })
 
@@ -84,10 +81,9 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
   const resetForm = () => {
     setName("")
     setDescription("")
-    setPrice(100)
-    setIsPurchasable(true)
-    setRarity(ItemRarity.COMMON)
     setImageUrl("")
+    setRarity(ItemRarity.COMMON)
+    setCategory("")
   }
 
   return (
@@ -128,27 +124,14 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="isPurchasable" 
-              checked={isPurchasable} 
-              onCheckedChange={(checked) => setIsPurchasable(checked as boolean)} 
-            />
-            <Label htmlFor="isPurchasable">Lze zakoupit v obchodě</Label>
-          </div>
-          
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price" className={!isPurchasable ? "text-muted-foreground" : ""}>Cena (mince)</Label>
+              <Label htmlFor="category">Kategorie</Label>
               <Input 
-                id="price" 
-                type="number" 
-                value={price} 
-                onChange={(e) => setPrice(Number(e.target.value))} 
-                min={1} 
-                max={10000} 
-                required={isPurchasable}
-                disabled={!isPurchasable}
+                id="category" 
+                value={category} 
+                onChange={(e) => setCategory(e.target.value)} 
+                placeholder="Např. Combat" 
               />
             </div>
             
@@ -176,6 +159,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
               value={imageUrl} 
               onChange={(e) => setImageUrl(e.target.value)} 
               placeholder="https://..." 
+              required
             />
             <p className="text-xs text-muted-foreground">
               Odkaz na obrázek odznaku.
