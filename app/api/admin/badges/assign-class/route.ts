@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { BadgesService } from "@/app/lib/services/badges"
-import { requireOperator } from "@/app/lib/rbac"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/lib/auth"
+import { UserRole } from "@/app/lib/generated"
 import { z } from "zod"
 
 const assignClassSchema = z.object({
@@ -10,7 +12,10 @@ const assignClassSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     
     const body = await request.json()
     const { badgeId, classId } = assignClassSchema.parse(body)

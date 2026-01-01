@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { BadgesService } from "@/app/lib/services/badges"
-import { requireOperator } from "@/app/lib/rbac"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/lib/auth"
+import { UserRole } from "@/app/lib/generated"
 import { createBadgeSchema } from "../schema"
 
 export async function PUT(
@@ -8,7 +10,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     
     const body = await request.json()
@@ -31,7 +36,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     
     await BadgesService.deleteBadge(id)

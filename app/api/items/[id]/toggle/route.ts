@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ItemsService } from "@/app/lib/services/items"
-import { requireOperator } from "@/app/lib/rbac"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/lib/auth"
+import { UserRole } from "@/app/lib/generated"
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id: itemId } = await params
     
     const updatedItem = await ItemsService.toggleItemStatus(itemId)

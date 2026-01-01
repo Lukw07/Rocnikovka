@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server"
 import { BadgesService } from "@/app/lib/services/badges"
-import { requireOperator } from "@/app/lib/rbac"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/lib/auth"
+import { UserRole } from "@/app/lib/generated"
 import { createBadgeSchema } from "./schema"
 
 export async function GET(request: NextRequest) {
   try {
-    await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const badges = await BadgesService.getAllBadges()
     return NextResponse.json({ badges })
   } catch (error) {
@@ -16,7 +21,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     
     const body = await request.json()
     const validatedData = createBadgeSchema.parse(body)

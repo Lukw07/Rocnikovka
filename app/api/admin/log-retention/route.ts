@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requireOperator } from "@/app/lib/rbac"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/lib/auth"
+import { UserRole } from "@/app/lib/generated"
 import { LogRetentionService, DEFAULT_RETENTION_CONFIG } from "@/app/lib/services/log-retention"
 import { logEvent } from "@/app/lib/utils"
 import { z } from "zod"
@@ -31,7 +33,11 @@ function checkRetentionRateLimit(userId: string): boolean {
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    const user = session.user
     
     const retentionService = new LogRetentionService()
     const stats = await retentionService.getRetentionStats()
@@ -68,7 +74,11 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireOperator()
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    const user = session.user
     
     // Check rate limit
     if (!checkRetentionRateLimit(user.id)) {

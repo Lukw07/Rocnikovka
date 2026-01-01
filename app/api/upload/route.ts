@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
+import { UserRole } from "@/app/lib/generated";
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const formData = await request.formData();
   const file = formData.get("file") as File;
 
@@ -20,11 +28,13 @@ export async function POST(request: NextRequest) {
   
   // Ensure directory exists
   const uploadDir = path.join(process.cwd(), "public/uploads");
-  if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-  }
-
+  console.log("Upload dir:", uploadDir);
+  
   try {
+    if (!existsSync(uploadDir)) {
+        await mkdir(uploadDir, { recursive: true });
+    }
+    
     await writeFile(
       path.join(uploadDir, filename),
       buffer
@@ -32,6 +42,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: `/uploads/${filename}` });
   } catch (error) {
     console.error("Error uploading file:", error);
-    return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
+    return NextResponse.json({ 
+      error: "Failed to upload file", 
+      details: error instanceof Error ? error.message : String(error) 
+    }, { status: 500 });
   }
 }

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ItemsService } from "@/app/lib/services/items"
-import { requireOperator } from "@/app/lib/rbac"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/lib/auth"
+import { UserRole } from "@/app/lib/generated"
 import { withValidation } from "@/app/lib/validation/validator"
 import { createItemSchema, CreateItemRequest } from "./schema"
 
@@ -16,13 +18,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const requestId = request.headers.get('x-request-id') || undefined
     
     // Parse and validate request body
     const body = await request.json()
     const validatedData = createItemSchema.parse(body)
-    
-    const user = await requireOperator()
     
     // Filter out undefined values to satisfy exactOptionalPropertyTypes
     const itemData = {
