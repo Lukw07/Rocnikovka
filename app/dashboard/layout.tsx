@@ -34,6 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       // Management items
       { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements', variant: 'operator' },
       { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges', variant: 'operator' },
+      { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/admin/shop', variant: 'operator' },
       // Operator specific items
       { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users', variant: 'operator' },
       { icon: 'Server', label: 'Systém', href: '/dashboard/system', variant: 'operator' },
