@@ -74,21 +74,17 @@ export const GET = withApiErrorEnvelope(async (request: NextRequest) => {
   
   const items = await ShopService.getItems(activeOnly)
   
-  // For students, also get their balance and purchases
-  if (session.user.role === "STUDENT") {
-    const [balance, purchases] = await Promise.all([
-      ShopService.getUserBalance(session.user.id),
-      ShopService.getUserPurchases(session.user.id)
-    ])
-    
-    return createSuccessNextResponse({
-      items,
-      userBalance: balance,
-      userPurchases: purchases
-    }, requestId)
-  }
+  // Get balance and purchases for all users (including admins/teachers who might want to test/use the shop)
+  const [balance, purchases] = await Promise.all([
+    ShopService.getUserBalance(session.user.id),
+    ShopService.getUserPurchases(session.user.id)
+  ])
   
-  return createSuccessNextResponse({ items }, requestId)
+  return createSuccessNextResponse({
+    items,
+    userBalance: balance,
+    userPurchases: purchases
+  }, requestId)
 })
 
 export const POST = withApiErrorEnvelope(async (request: NextRequest) => {

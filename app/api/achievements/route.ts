@@ -7,7 +7,9 @@ import { z } from "zod"
 const createAchievementSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().min(1).max(1000),
-  badgeUrl: z.string().url().optional(),
+  badgeUrl: z.string().optional().refine((val) => !val || val.startsWith('/') || val.startsWith('http'), {
+    message: "Badge URL must start with / (relative) or http/https (absolute)"
+  }),
   criteria: z.string().max(500).optional(),
   target: z.number().int().min(1).optional()
 })

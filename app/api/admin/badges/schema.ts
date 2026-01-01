@@ -11,8 +11,10 @@ export const createBadgeSchema = z.object({
     .max(500, "Description cannot exceed 500 characters")
     .trim(),
   imageUrl: z.string()
-    .url("Invalid URL")
-    .min(1, "Image URL is required"),
+    .min(1, "Image URL is required")
+    .refine((val) => val.startsWith('/') || val.startsWith('http'), {
+      message: "Image URL must start with / (relative) or http/https (absolute)"
+    }),
   rarity: z.nativeEnum(ItemRarity, {
     errorMap: () => ({ message: "Invalid rarity value" })
   }),

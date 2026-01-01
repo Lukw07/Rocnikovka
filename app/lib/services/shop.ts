@@ -131,6 +131,20 @@ export class ShopService {
       if (currentBalance < item.price) {
         throw new Error(`Insufficient funds. Required: ${item.price}, Available: ${currentBalance}`)
       }
+
+      // Check if user already owns this cosmetic item
+      if (item.type === ItemType.COSMETIC) {
+        const alreadyOwned = await tx.purchase.findFirst({
+          where: {
+            userId,
+            itemId
+          }
+        })
+
+        if (alreadyOwned) {
+          throw new Error("You already own this cosmetic item")
+        }
+      }
       
       // Check for idempotency (prevent duplicate purchases)
       const existingPurchase = await tx.purchase.findFirst({

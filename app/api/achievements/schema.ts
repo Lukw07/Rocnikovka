@@ -10,8 +10,10 @@ export const createAchievementSchema = z.object({
     .max(500, "Description cannot exceed 500 characters")
     .trim(),
   iconUrl: z.string()
-    .url("Invalid icon URL format")
-    .optional(),
+    .optional()
+    .refine((val) => !val || val.startsWith('/') || val.startsWith('http'), {
+      message: "Icon URL must start with / (relative) or http/https (absolute)"
+    }),
   xpReward: z.number()
     .int("XP reward must be an integer")
     .min(1, "XP reward must be at least 1")
