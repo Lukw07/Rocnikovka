@@ -8,7 +8,7 @@ import { createBadgeSchema } from "./schema"
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+    if (!session?.user || (session.user.role !== UserRole.OPERATOR && session.user.role !== UserRole.TEACHER)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     const badges = await BadgesService.getAllBadges()
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+    if (!session?.user || (session.user.role !== UserRole.OPERATOR && session.user.role !== UserRole.TEACHER)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     

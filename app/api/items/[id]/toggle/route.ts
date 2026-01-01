@@ -10,7 +10,7 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user || (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.TEACHER)) {
+    if (!session?.user || (session.user.role !== UserRole.OPERATOR && session.user.role !== UserRole.TEACHER)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     const { id: itemId } = await params
