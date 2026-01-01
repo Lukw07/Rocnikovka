@@ -12,7 +12,7 @@ export const createItemSchema = z.object({
     .trim(),
   price: z.number()
     .int("Price must be an integer")
-    .min(1, "Price must be at least 1")
+    .min(0, "Price must be at least 0")
     .max(10000, "Price cannot exceed 10,000"),
   rarity: z.nativeEnum(ItemRarity, {
     errorMap: () => ({ message: "Invalid rarity value" })
@@ -21,8 +21,10 @@ export const createItemSchema = z.object({
     errorMap: () => ({ message: "Invalid item type" })
   }),
   imageUrl: z.string()
-    .url("Invalid image URL format")
-    .optional(),
+    .optional()
+    .refine((val) => !val || val.startsWith('/') || val.startsWith('http'), {
+      message: "Image URL must start with / (relative) or http/https (absolute)"
+    }),
   isPurchasable: z.boolean().optional().default(true)
 })
 
