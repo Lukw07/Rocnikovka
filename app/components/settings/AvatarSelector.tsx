@@ -32,7 +32,9 @@ export function AvatarSelector() {
       const shopData = await shopRes.json()
       
       // Filter for cosmetic items with images (avatars)
-      const purchasedAvatars = (shopData.userPurchases || [])
+      // The API returns { ok: true, data: { userPurchases: [...] } }
+      const purchases = shopData.data?.userPurchases || shopData.userPurchases || []
+      const purchasedAvatars = purchases
         .map((p: any) => p.item)
         .filter((item: any) => item.type === "COSMETIC" && item.imageUrl)
 

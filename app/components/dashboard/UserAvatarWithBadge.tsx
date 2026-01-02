@@ -8,13 +8,23 @@ import { ItemRarity } from "@/app/lib/generated"
 interface UserAvatarWithBadgeProps {
   name: string
   className?: string
+  avatarUrl?: string | null
+  badgeRarity?: ItemRarity | null
 }
 
-export function UserAvatarWithBadge({ name, className }: UserAvatarWithBadgeProps) {
+export function UserAvatarWithBadge({ name, className, avatarUrl: propAvatarUrl, badgeRarity }: UserAvatarWithBadgeProps) {
   const [badge, setBadge] = useState<{ imageUrl: string, rarity: ItemRarity } | null>(null)
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(propAvatarUrl || null)
 
   useEffect(() => {
+    if (propAvatarUrl !== undefined) {
+      setAvatarUrl(propAvatarUrl)
+      // If badgeRarity is provided (even if null), we don't need to fetch
+      if (badgeRarity !== undefined) {
+        return
+      }
+    }
+
     const fetchPinnedBadge = async () => {
       try {
         const res = await fetch('/api/badges/pinned')
@@ -49,9 +59,11 @@ export function UserAvatarWithBadge({ name, className }: UserAvatarWithBadgeProp
     [ItemRarity.LEGENDARY]: "border-amber-500",
   }
 
+  const currentRarity = badgeRarity !== undefined ? badgeRarity : badge?.rarity
+
   return (
     <div className="relative inline-block">
-      <Avatar className={cn("border-2 transition-all border-transparent", className)}>
+      <Avatar className={cn("border-2 transition-all", currentRarity ? rarityColors[currentRarity] : "border-transparent", className)}>
         {avatarUrl ? (
           <AvatarImage src={avatarUrl} alt={name} />
         ) : (

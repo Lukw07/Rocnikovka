@@ -48,6 +48,23 @@ export async function GET(request: NextRequest) {
       }
     })
 
+    // Fetch avatars and pinned badges for these users
+    const userIds = leaderboardData.map(u => u.id)
+    const usersWithData = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { 
+        id: true, 
+        avatarUrl: true,
+        badges: {
+          where: { isPinned: true },
+          include: { badge: true },
+          take: 1
+        }
+      }
+    })
+    
+    const userMap = new Map(usersWithData.map(u => [u.id, u]))
+
     // Připravíme userData
     const currentUserInLeaderboard = leaderboardData.find(user => user.id === currentUser.id)
     const userData = {
@@ -63,14 +80,21 @@ export async function GET(request: NextRequest) {
     const currentUserPosition = leaderboardData.findIndex(user => user.id === currentUser.id) + 1
 
     // Transformujeme data pro frontend
-    const leaderboard = leaderboardData.map(row => ({
-      id: row.id,
-      name: row.name,
-      totalXP: row.total_xp,
-      class: row.class_name || "Bez třídy",
-      grade: row.grade || 0,
-      classId: row.classId || ""
-    }))
+    const leaderboard = leaderboardData.map(row => {
+      const user = userMap.get(row.id)
+      const pinnedBadge = user?.badges[0]?.badge
+      
+      return {
+        id: row.id,
+        name: row.name,
+        totalXP: row.total_xp,
+        class: row.class_name || "Bez třídy",
+        grade: row.grade || 0,
+        classId: row.classId || "",
+        avatarUrl: user?.avatarUrl || null,
+        badgeRarity: pinnedBadge?.rarity || null
+      }
+    })
 
     return NextResponse.json({ 
       leaderboard,
