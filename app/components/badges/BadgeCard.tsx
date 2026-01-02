@@ -53,21 +53,40 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
     }
   }
 
-  const rarityColors = {
-    [ItemRarity.COMMON]: "border-slate-400 text-slate-500",
-    [ItemRarity.UNCOMMON]: "border-green-500 text-green-600",
-    [ItemRarity.RARE]: "border-blue-500 text-blue-600",
-    [ItemRarity.EPIC]: "border-purple-500 text-purple-600",
-    [ItemRarity.LEGENDARY]: "border-amber-500 text-amber-600",
+  const rarityStyles = {
+    [ItemRarity.COMMON]: {
+      chipBg: "bg-slate-100",
+      chipText: "text-slate-500",
+      frame: "from-slate-300 via-slate-400 to-slate-500",
+      frameBorder: "border-slate-400",
+    },
+    [ItemRarity.UNCOMMON]: {
+      chipBg: "bg-green-50",
+      chipText: "text-green-600",
+      frame: "from-emerald-400 via-emerald-500 to-teal-600",
+      frameBorder: "border-emerald-500",
+    },
+    [ItemRarity.RARE]: {
+      chipBg: "bg-blue-50",
+      chipText: "text-blue-600",
+      frame: "from-blue-400 via-blue-500 to-indigo-600",
+      frameBorder: "border-blue-500",
+    },
+    [ItemRarity.EPIC]: {
+      chipBg: "bg-purple-50",
+      chipText: "text-purple-600",
+      frame: "from-purple-400 via-purple-500 to-fuchsia-600",
+      frameBorder: "border-purple-500",
+    },
+    [ItemRarity.LEGENDARY]: {
+      chipBg: "bg-amber-50",
+      chipText: "text-amber-600",
+      frame: "from-yellow-300 via-amber-500 to-orange-600",
+      frameBorder: "border-amber-500",
+    },
   }
 
-  const rarityBg = {
-    [ItemRarity.COMMON]: "bg-slate-100",
-    [ItemRarity.UNCOMMON]: "bg-green-50",
-    [ItemRarity.RARE]: "bg-blue-50",
-    [ItemRarity.EPIC]: "bg-purple-50",
-    [ItemRarity.LEGENDARY]: "bg-amber-50",
-  }
+  const style = rarityStyles[badge.rarity]
 
   return (
     <TooltipProvider>
@@ -92,13 +111,20 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
             )}
             <CardHeader className="pb-2 pt-6 w-full flex flex-col items-center">
               <div className="relative mb-4">
-                <Avatar className={cn("h-24 w-24 border-4 shadow-sm", rarityColors[badge.rarity])}>
-                  <AvatarImage src={badge.imageUrl} alt={badge.name} />
-                  <AvatarFallback>{badge.name[0]}</AvatarFallback>
-                </Avatar>
+                <div className={cn(
+                  "relative rounded-full p-[4px] shadow-md",
+                  "bg-gradient-to-br",
+                  style.frame
+                )}>
+                  <Avatar className="h-24 w-24 border-2 border-white/20 shadow-inner">
+                    <AvatarImage src={badge.imageUrl} alt={badge.name} />
+                    <AvatarFallback>{badge.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45 border border-white/30 bg-white/20 shadow-sm"></div>
+                </div>
               </div>
               <h3 className="font-semibold text-lg leading-none">{badge.name}</h3>
-              <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full mt-2", rarityBg[badge.rarity], rarityColors[badge.rarity])}>
+              <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full mt-2", style.chipBg, style.chipText)}>
                 {badge.rarity}
               </span>
               {isOperator && (

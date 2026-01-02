@@ -54,20 +54,12 @@ export function UserProfileHoverCard({ userId, name, children, className }: User
     }
   }, [open, userId, profile, loading])
 
-  const rarityColors = {
-    [ItemRarity.COMMON]: "border-slate-400 bg-slate-100 text-slate-700",
-    [ItemRarity.UNCOMMON]: "border-green-500 bg-green-100 text-green-700",
-    [ItemRarity.RARE]: "border-blue-500 bg-blue-100 text-blue-700",
-    [ItemRarity.EPIC]: "border-purple-500 bg-purple-100 text-purple-700",
-    [ItemRarity.LEGENDARY]: "border-amber-500 bg-amber-100 text-amber-700",
-  }
-
-  const rarityBorder = {
-    [ItemRarity.COMMON]: "border-slate-400",
-    [ItemRarity.UNCOMMON]: "border-green-500",
-    [ItemRarity.RARE]: "border-blue-500",
-    [ItemRarity.EPIC]: "border-purple-500",
-    [ItemRarity.LEGENDARY]: "border-amber-500",
+  const rarityStyles = {
+    [ItemRarity.COMMON]: "from-slate-300 via-slate-400 to-slate-500",
+    [ItemRarity.UNCOMMON]: "from-emerald-400 via-emerald-500 to-teal-600",
+    [ItemRarity.RARE]: "from-blue-400 via-blue-500 to-indigo-600",
+    [ItemRarity.EPIC]: "from-purple-400 via-purple-500 to-fuchsia-600",
+    [ItemRarity.LEGENDARY]: "from-yellow-300 via-amber-500 to-orange-600",
   }
 
   return (
@@ -116,16 +108,16 @@ export function UserProfileHoverCard({ userId, name, children, className }: User
               {profile.badges.map(({ badge }) => (
                 <div key={badge.id} className="group relative">
                   <div className={cn(
-                    "h-12 w-12 rounded-full border-2 p-0.5 bg-background transition-transform hover:scale-110",
-                    rarityBorder[badge.rarity]
+                    "relative h-12 w-12 rounded-full p-[3px] transition-transform hover:scale-110 bg-gradient-to-br",
+                    rarityStyles[badge.rarity]
                   )}>
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white/25 border border-white/30 shadow-sm"></div>
                     <img 
                       src={badge.imageUrl} 
                       alt={badge.name} 
-                      className="h-full w-full rounded-full object-cover"
+                      className="h-full w-full rounded-full object-cover border border-white/20 shadow-inner"
                     />
                   </div>
-                  {/* Tooltip for badge name */}
                   <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-popover text-popover-foreground text-[10px] px-2 py-1 rounded shadow-sm whitespace-nowrap pointer-events-none z-50">
                     {badge.name}
                   </div>
