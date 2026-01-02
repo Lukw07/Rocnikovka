@@ -8,15 +8,15 @@ const rpgBadgeVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-b from-primary via-primary to-primary/90 text-primary-foreground shadow-md dark:shadow-lg hover:shadow-lg dark:hover:shadow-[0_4px_10px_rgba(230,184,0,0.3)] border border-primary/20 dark:border-primary/30 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/15 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
+          "bg-gradient-to-b from-primary via-primary to-primary/90 text-primary-foreground shadow-md dark:shadow-lg hover:shadow-lg dark:hover:shadow-[0_4px_12px_rgba(215,63,25,0.35)] border border-primary/25 dark:border-border/50 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/15 before:to-transparent dark:before:from-white/6 before:pointer-events-none",
         secondary:
           "bg-gradient-to-b from-secondary via-secondary to-secondary/90 text-secondary-foreground shadow-md hover:shadow-lg border border-border/50 dark:border-border/70 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/10 before:to-transparent dark:before:from-white/3 before:pointer-events-none",
         accent:
-          "bg-gradient-to-b from-accent via-accent to-accent/90 text-accent-foreground shadow-md dark:shadow-lg hover:shadow-lg dark:hover:shadow-[0_4px_10px_rgba(38,198,218,0.3)] border border-accent/20 dark:border-accent/30 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/15 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
+          "bg-gradient-to-b from-accent via-accent to-accent/90 text-accent-foreground shadow-md dark:shadow-lg hover:shadow-lg dark:hover:shadow-[0_4px_12px_rgba(215,63,25,0.32)] border border-accent/25 dark:border-accent/45 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/18 before:to-transparent dark:before:from-white/6 before:pointer-events-none",
         destructive:
           "bg-gradient-to-b from-destructive via-destructive to-destructive/90 text-destructive-foreground shadow-md hover:shadow-lg border border-destructive/20 dark:border-destructive/30 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/15 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
         outline:
-          "border-2 border-primary/50 dark:border-primary/70 bg-background/60 dark:bg-background/70 text-foreground hover:bg-primary/15 dark:hover:bg-primary/20 hover:border-primary/70 dark:hover:border-primary/80",
+          "border-2 border-primary/45 dark:border-border/60 bg-background/60 dark:bg-background/70 text-foreground hover:bg-primary/18 dark:hover:bg-primary/22 hover:border-primary/65 dark:hover:border-primary/70",
         gold:
           "bg-gradient-to-b from-amber-400 to-amber-600 dark:from-amber-500 dark:to-amber-700 text-white shadow-gold dark:shadow-[0_4px_12px_rgba(217,119,6,0.4)] border border-amber-500/30 dark:border-amber-400/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent dark:before:from-white/10 before:pointer-events-none",
         silver:
@@ -36,7 +36,7 @@ const rpgBadgeVariants = cva(
         lg: "text-sm px-3 py-1 rounded-lg",
       },
       glow: {
-        true: "shadow-glow-primary dark:shadow-[0_0_15px_rgba(230,184,0,0.5)]",
+        true: "shadow-[0_0_12px_rgba(215,63,25,0.38)] dark:shadow-[0_0_16px_rgba(215,63,25,0.42)]",
         false: "",
       },
     },
