@@ -8,7 +8,7 @@ const rpgCardVariants = cva(
     variants: {
       variant: {
         default:
-          "border-primary/40 dark:border-primary/60 shadow-lg dark:shadow-[0_8px_16px_rgba(177,142,255,0.15)] hover:shadow-xl dark:hover:shadow-[0_12px_24px_rgba(177,142,255,0.25)] hover:-translate-y-2 before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-purple-500/60 before:via-cyan-400/60 before:to-purple-500/60 before:pointer-events-none",
+          "border-[#d9b9a3]/60 dark:border-white/8 shadow-[0_10px_24px_rgba(0,0,0,0.12)] dark:shadow-[0_12px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_14px_36px_rgba(0,0,0,0.16)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,0.45)] hover:-translate-y-2 before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_22%_26%,rgba(217,156,140,0.22),transparent_46%),radial-gradient(circle_at_82%_18%,rgba(215,63,25,0.20),transparent_40%)] before:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:border after:border-white/10 after:opacity-50 after:pointer-events-none",
         quest:
           "border-amber-500/60 dark:border-amber-400/70 bg-gradient-to-br from-amber-50/80 to-amber-50/40 dark:from-amber-950/40 dark:to-amber-950/20 shadow-lg dark:shadow-[0_8px_16px_rgba(251,191,36,0.15)] hover:shadow-xl dark:hover:shadow-[0_12px_24px_rgba(251,191,36,0.25)] hover:-translate-y-2 before:absolute before:top-0 before:left-0 before:right-0 before:h-1.5 before:bg-gradient-to-r before:from-amber-600/80 before:via-amber-500/80 before:to-amber-600/80 before:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:pointer-events-none after:shadow-inset after:from-amber-500/5 after:to-transparent",
         achievement:

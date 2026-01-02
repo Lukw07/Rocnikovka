@@ -62,34 +62,34 @@
   --font-heading: var(--font-cinzel), serif;
   --font-body: var(--font-inter), sans-serif;
 
-  /* ========== LIGHT MODE (Parchment/Mist) ========== */
-  --background: 35 30% 96%;                   /* #F9F7F2 - Parchment */
-  --foreground: 220 15% 20%;                  /* #2B303B - Dark Ink */
+  /* ========== LIGHT MODE (Warm Cream) ========== */
+  --background: 0 0% 100%;                    /* #FFFFFF - Clean white */
+  --foreground: 352 90% 10%;                  /* #290404 - Deep burgundy */
   
-  --card: 35 30% 92%;                         /* #F2EFE9 - Darker Parchment */
-  --card-foreground: 220 15% 20%;             /* #2B303B */
+  --card: 30 55% 93%;                         /* #F6E6D8 - Cream */
+  --card-foreground: 352 90% 10%;             /* Burgundy text */
   
-  --popover: 35 30% 96%;                      /* #F9F7F2 */
-  --popover-foreground: 220 15% 20%;          /* #2B303B */
+  --popover: 30 55% 95%;                      /* Slightly lighter cream */
+  --popover-foreground: 352 90% 10%;          /* Burgundy */
   
-  --primary: 270 85% 55%;                     /* #9D4EDD - Vibrant Indigo */
-  --primary-foreground: 0 0% 100%;            /* #FFFFFF - Pure White */
+  --primary: 30 55% 92%;                      /* #F4E1D2 - Primary cream */
+  --primary-foreground: 352 90% 10%;          /* Burgundy */
   
-  --secondary: 240 15% 80%;                   /* #C5C8D1 - Cool Grey */
-  --secondary-foreground: 220 15% 15%;        /* #1F222D - Dark Blue */
+  --secondary: 20 60% 88%;                    /* #F4D7C8 - Soft peach */
+  --secondary-foreground: 352 90% 12%;        /* Deep burgundy */
   
-  --muted: 35 15% 88%;                        /* #E8E5DE */
-  --muted-foreground: 220 10% 50%;            /* #6B7280 */
+  --muted: 15 45% 84%;                        /* #E6C2B5 - Muted clay */
+  --muted-foreground: 352 40% 30%;            /* Warm ink */
   
-  --accent: 190 90% 45%;                      /* #00D9FF - Cyan/Aqua */
-  --accent-foreground: 220 15% 10%;           /* #0A0E27 - Dark Navy */
+  --accent: 12 45% 70%;                       /* #D99C8C - Warm accent */
+  --accent-foreground: 352 90% 12%;           /* Burgundy */
   
-  --destructive: 0 85% 55%;                   /* #FF3860 - Vibrant Red */
-  --destructive-foreground: 0 0% 100%;        /* #FFFFFF */
+  --destructive: 12 82% 50%;                  /* #D73F19 - Highlight red/orange */
+  --destructive-foreground: 0 0% 100%;        /* White */
   
-  --border: 240 15% 78%;                      /* #C1C7D8 */
-  --input: 240 15% 78%;                       /* #C1C7D8 */
-  --ring: 270 85% 55%;                        /* #9D4EDD */
+  --border: 20 25% 82%;                       /* Soft warm border */
+  --input: 20 25% 82%;                        /* Match border */
+  --ring: 12 82% 50%;                         /* Highlight ring */
   
   /* Charts */
   --chart-1: 45 90% 40%;
