@@ -87,6 +87,13 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
   }
 
   const style = rarityStyles[badge.rarity]
+  const rarityColors = {
+    [ItemRarity.COMMON]: "border-slate-400 text-slate-500",
+    [ItemRarity.UNCOMMON]: "border-emerald-500 text-emerald-600",
+    [ItemRarity.RARE]: "border-blue-500 text-blue-600",
+    [ItemRarity.EPIC]: "border-purple-500 text-purple-600",
+    [ItemRarity.LEGENDARY]: "border-amber-500 text-amber-600",
+  }
 
   return (
     <TooltipProvider>
