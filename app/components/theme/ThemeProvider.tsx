@@ -9,7 +9,7 @@ const SEASONAL_COLORS = {
   winter: "#6366f1", // indigo-500
 }
 
-const getSeason = () => {
+export const getSeason = () => {
   const month = new Date().getMonth() + 1 // 1-12
   if (month >= 3 && month <= 5) return "spring"
   if (month >= 6 && month <= 8) return "summer"

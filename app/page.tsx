@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app
 import { Alert, AlertDescription } from "@/app/components/ui/alert"
 import { Loader2, Sword, Trophy, Users, ArrowRight, ArrowLeft, Sparkles, Shield, Flower, Sun, Leaf, Snowflake, Castle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { getSeason } from "@/app/components/theme/ThemeProvider"
 
 // Kompletní barevná schémata s obrázky na pozadí a lepšími glass efekty
 const THEMES = {
@@ -71,6 +72,7 @@ const ANIMATION = {
 }
 
 export default function HomePage() {
+  // Note: getSeason is now imported from ThemeProvider and not redefined here
   const [showLogin, setShowLogin] = useState(false)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -89,6 +91,8 @@ export default function HomePage() {
 
   useEffect(() => {
     setMounted(true)
+    // Set theme based on current season on mount
+    setCurrentTheme(getSeason() as Theme)
   }, [])
 
   // animate the "Přihlašování." dots while loading
