@@ -64,7 +64,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${cinzel.variable} font-sans antialiased bg-background text-foreground min-h-screen selection:bg-primary/30 selection:text-primary-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider>
           <AuthProvider>
             <ErrorBoundary>
               {children}
