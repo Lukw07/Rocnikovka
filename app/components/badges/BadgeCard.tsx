@@ -123,7 +123,12 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
                   "bg-gradient-to-br",
                   style.frame
                 )}>
-                  <Avatar className="h-24 w-24 border-2 border-white/20 shadow-inner">
+                  {/* Full overlay tint across badge */}
+                  <div className={cn(
+                    "absolute inset-[2px] rounded-full bg-gradient-to-br opacity-70 pointer-events-none",
+                    style.frame
+                  )} />
+                  <Avatar className="h-24 w-24 border-2 border-white/10 shadow-inner relative">
                     <AvatarImage src={badge.imageUrl} alt={badge.name} />
                     <AvatarFallback>{badge.name[0]}</AvatarFallback>
                   </Avatar>
