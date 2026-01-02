@@ -32,7 +32,7 @@ export async function GET(
     if (ext === ".svg") contentType = "image/svg+xml";
     if (ext === ".gif") contentType = "image/gif";
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(fileBuffer as any, {
       headers: {
         "Content-Type": contentType,
         "Cache-Control": "public, max-age=31536000, immutable",

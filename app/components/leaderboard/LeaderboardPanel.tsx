@@ -637,7 +637,7 @@ export default function LeaderboardPanel() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20"
+            className="mt-8 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20 sticky bottom-6 z-50 shadow-xl backdrop-blur-md"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
