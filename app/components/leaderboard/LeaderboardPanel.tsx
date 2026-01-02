@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useSidebar } from "@/app/components/ui/V2sidebar"
+import { useSidebar } from "@/app/components/ui/Sidebar"
 import { Button } from "@/app/components/ui/button"
 import { Trophy, User, ArrowLeft, Filter, Sparkles, Crown, Star, Award, Users, GraduationCap } from "lucide-react"
 import { UserProfileHoverCard } from "@/app/components/shared/UserProfileHoverCard"

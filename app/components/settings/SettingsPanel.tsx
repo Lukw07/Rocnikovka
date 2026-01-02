@@ -5,7 +5,7 @@ import { Button } from "@/app/components/ui/button"
 import { Switch } from "@/app/components/ui/switch"
 import { Label } from "@/app/components/ui/label"
 import { useTheme, useCustomColors } from "@/app/hooks/use-theme"
-import { useSidebar } from "@/app/components/ui/V2sidebar"
+import { useSidebar } from "@/app/components/ui/Sidebar"
 import { 
   Settings, 
   Palette, 

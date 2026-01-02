@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import V2SidebarLayout, { MenuItem } from "@/app/components/ui/V2sidebar"
+import SidebarLayout, { MenuItem } from "@/app/components/ui/Sidebar"
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader"
 import { UserRole } from "@/app/lib/generated"
 import { Switch } from "@/app/components/ui/switch"
@@ -102,14 +102,14 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
 
       {/* Hlavní obsah - plná šířka */}
       <div className="w-full min-h-screen">
-        <V2SidebarLayout 
+        <SidebarLayout 
           isMobileOpen={isMobileMenuOpen}
           onMobileToggle={handleMenuToggle}
           menuItems={menuItems}
           className={isOperatorMode ? "border-l-4 border-l-red-500" : ""}
         >
           {children}
-        </V2SidebarLayout>
+        </SidebarLayout>
       </div>
 
       <PolicyModal 

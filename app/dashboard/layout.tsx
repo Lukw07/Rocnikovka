@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/app/lib/auth"
 import { UserRole } from "@/app/lib/generated"
-import { MenuItem } from "@/app/components/ui/V2sidebar"
+import { MenuItem } from "@/app/components/ui/Sidebar"
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader"
 import { DashboardLayoutClient } from "@/app/components/dashboard/DashboardLayoutClient"
 

@@ -68,7 +68,7 @@ export type MenuItem = {
   variant?: 'default' | 'operator'
 }
 
-type V2SidebarLayoutProps = {
+type SidebarLayoutProps = {
   children?: React.ReactNode
   className?: string
   isMobileOpen: boolean
@@ -91,13 +91,13 @@ export const useSidebar = () => {
   return ctx
 }
 
-const V2SidebarLayout = ({ 
+const SidebarLayout = ({ 
   children, 
   className, 
   isMobileOpen, 
   onMobileToggle,
   menuItems: customMenuItems
-}: V2SidebarLayoutProps) => {
+}: SidebarLayoutProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
@@ -335,5 +335,5 @@ const V2SidebarLayout = ({
   );
 };
 
-export default V2SidebarLayout;
-export { V2SidebarLayout };
+export default SidebarLayout;
+export { SidebarLayout };

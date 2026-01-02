@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import { useSidebar } from "@/app/components/ui/V2sidebar"
+import { useSidebar } from "@/app/components/ui/Sidebar"
 import JobCreatePanel from "./JobCreatePanel"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/app/components/ui/card"

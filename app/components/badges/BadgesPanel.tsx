@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSidebar } from "@/app/components/ui/V2sidebar"
+import { useSidebar } from "@/app/components/ui/Sidebar"
 import { Button } from "@/app/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { useApi } from "@/app/hooks/use-api"

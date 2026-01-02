@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSidebar } from "@/app/components/ui/V2sidebar"
+import { useSidebar } from "@/app/components/ui/Sidebar"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"

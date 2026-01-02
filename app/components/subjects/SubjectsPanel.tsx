@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useState } from "react"
-import { useSidebar } from "@/app/components/ui/V2sidebar"
+import { useSidebar } from "@/app/components/ui/Sidebar"
 import { Button } from "@/app/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
