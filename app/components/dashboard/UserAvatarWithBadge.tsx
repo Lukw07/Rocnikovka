@@ -51,18 +51,13 @@ export function UserAvatarWithBadge({ name, className }: UserAvatarWithBadgeProp
 
   return (
     <div className="relative inline-block">
-      <Avatar className={cn("border-2 transition-all", badge ? rarityColors[badge.rarity] : "border-transparent", className)}>
+      <Avatar className={cn("border-2 transition-all border-transparent", className)}>
         {avatarUrl ? (
           <AvatarImage src={avatarUrl} alt={name} />
         ) : (
           <AvatarFallback>{name[0]}</AvatarFallback>
         )}
       </Avatar>
-      {badge && (
-        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border border-background bg-background overflow-hidden shadow-sm" title="Pinned Badge">
-            <img src={badge.imageUrl} alt="Badge" className="w-full h-full object-cover" />
-        </div>
-      )}
     </div>
   )
 }

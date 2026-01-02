@@ -81,7 +81,10 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                className={cn(
+                  "absolute top-2 right-2 h-6 w-6 transition-opacity z-10",
+                  badge.isPinned ? "opacity-100 text-primary" : "opacity-0 group-hover:opacity-100"
+                )}
                 onClick={handlePin}
               >
                 {badge.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
