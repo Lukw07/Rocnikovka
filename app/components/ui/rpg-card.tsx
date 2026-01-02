@@ -3,22 +3,22 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/app/lib/utils"
 
 const rpgCardVariants = cva(
-  "rounded-xl bg-card text-card-foreground transition-all duration-300 relative overflow-hidden",
+  "rounded-lg bg-card text-card-foreground transition-all duration-300 relative overflow-hidden border-2",
   {
     variants: {
       variant: {
         default:
-          "border border-border shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-1 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/5 before:to-transparent before:pointer-events-none",
+          "border-primary/40 dark:border-primary/60 shadow-lg dark:shadow-[0_8px_16px_rgba(177,142,255,0.15)] hover:shadow-xl dark:hover:shadow-[0_12px_24px_rgba(177,142,255,0.25)] hover:-translate-y-2 before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-purple-500/60 before:via-cyan-400/60 before:to-purple-500/60 before:pointer-events-none",
         quest:
-          "border-2 border-amber-500/40 dark:border-amber-400/40 bg-gradient-to-br from-amber-50/60 to-amber-50/20 dark:from-amber-950/30 dark:to-transparent relative before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-t before:from-amber-500/5 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:shadow-inner after:from-amber-500/10 after:pointer-events-none",
+          "border-amber-500/60 dark:border-amber-400/70 bg-gradient-to-br from-amber-50/80 to-amber-50/40 dark:from-amber-950/40 dark:to-amber-950/20 shadow-lg dark:shadow-[0_8px_16px_rgba(251,191,36,0.15)] hover:shadow-xl dark:hover:shadow-[0_12px_24px_rgba(251,191,36,0.25)] hover:-translate-y-2 before:absolute before:top-0 before:left-0 before:right-0 before:h-1.5 before:bg-gradient-to-r before:from-amber-600/80 before:via-amber-500/80 before:to-amber-600/80 before:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:pointer-events-none after:shadow-inset after:from-amber-500/5 after:to-transparent",
         achievement:
-          "border-2 border-purple-500/40 dark:border-purple-400/40 bg-gradient-to-br from-purple-50/60 to-purple-50/20 dark:from-purple-950/30 dark:to-transparent relative before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-t before:from-purple-500/5 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:shadow-inner after:from-purple-500/10 after:pointer-events-none",
+          "border-purple-500/60 dark:border-purple-400/70 bg-gradient-to-br from-purple-50/80 to-purple-50/40 dark:from-purple-950/40 dark:to-purple-950/20 shadow-lg dark:shadow-[0_8px_16px_rgba(168,85,247,0.15)] hover:shadow-xl dark:hover:shadow-[0_12px_24px_rgba(168,85,247,0.25)] hover:-translate-y-2 before:absolute before:top-0 before:left-0 before:right-0 before:h-1.5 before:bg-gradient-to-r before:from-purple-600/80 before:via-purple-500/80 before:to-purple-600/80 before:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:pointer-events-none after:shadow-inset after:from-purple-500/5 after:to-transparent",
         inventory:
-          "border-2 border-primary/30 dark:border-primary/50 bg-gradient-to-br from-primary/8 to-muted/20 dark:from-primary/15 dark:to-primary/5 backdrop-blur-sm hover:border-primary/50 dark:hover:border-primary/70 hover:shadow-gold relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/8 before:via-transparent before:to-transparent dark:before:from-white/3 before:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:shadow-inner after:pointer-events-none",
+          "border-primary/60 dark:border-primary/80 bg-gradient-to-br from-primary/12 to-muted/30 dark:from-primary/20 dark:to-primary/10 shadow-lg dark:shadow-[0_8px_16px_rgba(177,142,255,0.15)] hover:shadow-xl dark:hover:shadow-[0_12px_24px_rgba(177,142,255,0.25)] hover:-translate-y-2 backdrop-blur-sm before:absolute before:top-0 before:left-0 before:right-0 before:h-1.5 before:bg-gradient-to-r before:from-primary/70 before:via-accent/60 before:to-primary/70 before:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:pointer-events-none",
         glass:
-          "backdrop-blur-xl bg-card/40 dark:bg-card/50 border border-border/50 dark:border-border/70 shadow-lg hover:bg-card/50 dark:hover:bg-card/60 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
+          "backdrop-blur-xl bg-card/50 dark:bg-card/60 border-accent/40 dark:border-accent/60 shadow-lg dark:shadow-[0_8px_16px_rgba(0,230,255,0.1)] hover:shadow-xl dark:hover:shadow-[0_12px_24px_rgba(0,230,255,0.2)] before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-accent/50 before:to-accent/50 before:pointer-events-none",
         elevated:
-          "border border-border shadow-rpg dark:shadow-rpg-lg hover:shadow-rpg-lg dark:hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:-translate-y-1 relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:via-transparent before:to-transparent dark:before:from-white/3 before:pointer-events-none after:absolute after:-inset-0.5 after:bg-gradient-to-br after:from-primary/20 after:to-accent/10 after:rounded-xl after:-z-10 dark:after:from-primary/10 dark:after:to-accent/5",
+          "border-primary/50 dark:border-primary/70 shadow-xl dark:shadow-[0_12px_24px_rgba(177,142,255,0.2)] hover:shadow-2xl dark:hover:shadow-[0_16px_32px_rgba(177,142,255,0.3)] hover:-translate-y-2 before:absolute before:top-0 before:left-0 before:right-0 before:h-2 before:bg-gradient-to-r before:from-primary/80 before:via-accent/60 before:to-primary/80 before:pointer-events-none",
       },
       padding: {
         default: "p-6",
