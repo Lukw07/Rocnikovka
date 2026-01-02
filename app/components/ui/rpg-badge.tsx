@@ -55,31 +55,35 @@ export interface RpgBadgeProps
   iconPosition?: "left" | "right"
 }
 
-function RpgBadge({ 
-  className, 
-  variant, 
-  size, 
-  glow, 
-  icon,
-  iconPosition = "left",
-  children,
-  ...props 
-}: RpgBadgeProps) {
-  return (
-    <div 
-      className={cn(rpgBadgeVariants({ variant, size, glow }), className)} 
-      {...props}
-    >
-      {icon && iconPosition === "left" && (
-        <span className="shrink-0">{icon}</span>
-      )}
-      {children}
-      {icon && iconPosition === "right" && (
-        <span className="shrink-0">{icon}</span>
-      )}
-    </div>
-  )
-}
+const RpgBadge = React.forwardRef<HTMLDivElement, RpgBadgeProps>(
+  ({ 
+    className, 
+    variant, 
+    size, 
+    glow, 
+    icon,
+    iconPosition = "left",
+    children,
+    ...props 
+  }, ref) => {
+    return (
+      <div 
+        ref={ref}
+        className={cn(rpgBadgeVariants({ variant, size, glow }), className)} 
+        {...props}
+      >
+        {icon && iconPosition === "left" && (
+          <span className="shrink-0">{icon}</span>
+        )}
+        {children}
+        {icon && iconPosition === "right" && (
+          <span className="shrink-0">{icon}</span>
+        )}
+      </div>
+    )
+  }
+)
+RpgBadge.displayName = "RpgBadge"
 
 // Special badge variants for specific contexts
 const LevelBadge = React.forwardRef<
@@ -87,7 +91,7 @@ const LevelBadge = React.forwardRef<
   Omit<RpgBadgeProps, "variant"> & { level: number }
 >(({ level, className, ...props }, ref) => (
   <RpgBadge 
-    ref={ref as any}
+    ref={ref}
     variant="gold" 
     className={cn("font-bold", className)}
     {...props}
@@ -103,7 +107,7 @@ const XpBadge = React.forwardRef<
   Omit<RpgBadgeProps, "variant"> & { xp: number }
 >(({ xp, className, ...props }, ref) => (
   <RpgBadge 
-    ref={ref as any}
+    ref={ref}
     variant="accent" 
     className={cn("font-semibold", className)}
     {...props}
@@ -129,7 +133,7 @@ const RarityBadge = React.forwardRef<
   
   return (
     <RpgBadge 
-      ref={ref as any}
+      ref={ref}
       variant={variantMap[rarity]} 
       className={cn("uppercase tracking-wide font-bold", className)}
       {...props}
@@ -157,7 +161,7 @@ const StatusBadge = React.forwardRef<
   
   return (
     <RpgBadge 
-      ref={ref as any}
+      ref={ref}
       variant={config.variant} 
       className={cn("font-medium", className)}
       {...props}
