@@ -3,32 +3,32 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/app/lib/utils"
 
 const rpgBadgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-0.5 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-0.5 text-xs font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 relative overflow-hidden",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm border border-primary/20",
+          "bg-gradient-to-b from-primary via-primary to-primary/90 text-primary-foreground shadow-md dark:shadow-lg hover:shadow-lg dark:hover:shadow-[0_4px_10px_rgba(230,184,0,0.3)] border border-primary/20 dark:border-primary/30 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/15 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
         secondary:
-          "bg-gradient-to-br from-secondary to-secondary/80 text-secondary-foreground border border-border",
+          "bg-gradient-to-b from-secondary via-secondary to-secondary/90 text-secondary-foreground shadow-md hover:shadow-lg border border-border/50 dark:border-border/70 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/10 before:to-transparent dark:before:from-white/3 before:pointer-events-none",
         accent:
-          "bg-gradient-to-br from-accent to-accent/80 text-accent-foreground shadow-sm border border-accent/20",
+          "bg-gradient-to-b from-accent via-accent to-accent/90 text-accent-foreground shadow-md dark:shadow-lg hover:shadow-lg dark:hover:shadow-[0_4px_10px_rgba(38,198,218,0.3)] border border-accent/20 dark:border-accent/30 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/15 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
         destructive:
-          "bg-gradient-to-br from-destructive to-destructive/80 text-destructive-foreground shadow-sm border border-destructive/20",
+          "bg-gradient-to-b from-destructive via-destructive to-destructive/90 text-destructive-foreground shadow-md hover:shadow-lg border border-destructive/20 dark:border-destructive/30 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/15 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
         outline:
-          "border-2 border-primary/40 bg-background/50 text-foreground hover:bg-primary/10",
+          "border-2 border-primary/50 dark:border-primary/70 bg-background/60 dark:bg-background/70 text-foreground hover:bg-primary/15 dark:hover:bg-primary/20 hover:border-primary/70 dark:hover:border-primary/80",
         gold:
-          "bg-gradient-to-br from-amber-400 to-amber-600 dark:from-amber-500 dark:to-amber-700 text-white shadow-gold border border-amber-500/30",
+          "bg-gradient-to-b from-amber-400 to-amber-600 dark:from-amber-500 dark:to-amber-700 text-white shadow-gold dark:shadow-[0_4px_12px_rgba(217,119,6,0.4)] border border-amber-500/30 dark:border-amber-400/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent dark:before:from-white/10 before:pointer-events-none",
         silver:
-          "bg-gradient-to-br from-slate-300 to-slate-500 dark:from-slate-400 dark:to-slate-600 text-white shadow-sm border border-slate-400/30",
+          "bg-gradient-to-b from-slate-300 to-slate-500 dark:from-slate-400 dark:to-slate-600 text-white shadow-md dark:shadow-lg border border-slate-400/30 dark:border-slate-500/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent dark:before:from-white/10 before:pointer-events-none",
         bronze:
-          "bg-gradient-to-br from-orange-400 to-orange-600 dark:from-orange-500 dark:to-orange-700 text-white shadow-sm border border-orange-500/30",
+          "bg-gradient-to-b from-orange-400 to-orange-600 dark:from-orange-500 dark:to-orange-700 text-white shadow-md dark:shadow-lg border border-orange-500/30 dark:border-orange-400/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent dark:before:from-white/10 before:pointer-events-none",
         rare:
-          "bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-400 dark:to-blue-600 text-white shadow-sm border border-blue-500/30",
+          "bg-gradient-to-b from-blue-500 to-blue-700 dark:from-blue-400 dark:to-blue-600 text-white shadow-md dark:shadow-lg border border-blue-500/30 dark:border-blue-400/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent dark:before:from-white/10 before:pointer-events-none",
         epic:
-          "bg-gradient-to-br from-purple-500 to-purple-700 dark:from-purple-400 dark:to-purple-600 text-white shadow-sm border border-purple-500/30",
+          "bg-gradient-to-b from-purple-500 to-purple-700 dark:from-purple-400 dark:to-purple-600 text-white shadow-md dark:shadow-lg border border-purple-500/30 dark:border-purple-400/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent dark:before:from-white/10 before:pointer-events-none",
         legendary:
-          "bg-gradient-to-br from-orange-500 via-yellow-500 to-orange-600 dark:from-orange-400 dark:via-yellow-400 dark:to-orange-500 text-white shadow-gold border border-orange-500/30 animate-glow",
+          "bg-gradient-to-b from-orange-500 via-yellow-500 to-orange-600 dark:from-orange-400 dark:via-yellow-400 dark:to-orange-500 text-white shadow-gold dark:shadow-[0_4px_16px_rgba(217,119,6,0.5)] border border-orange-500/30 dark:border-orange-400/40 animate-pulse before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/25 before:to-transparent dark:before:from-white/15 before:pointer-events-none",
       },
       size: {
         default: "text-xs px-2.5 py-0.5",
@@ -36,7 +36,7 @@ const rpgBadgeVariants = cva(
         lg: "text-sm px-3 py-1 rounded-lg",
       },
       glow: {
-        true: "shadow-glow-primary",
+        true: "shadow-glow-primary dark:shadow-[0_0_15px_rgba(230,184,0,0.5)]",
         false: "",
       },
     },

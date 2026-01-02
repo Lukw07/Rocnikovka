@@ -3,22 +3,22 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/app/lib/utils"
 
 const rpgCardVariants = cva(
-  "rounded-xl bg-card text-card-foreground transition-all duration-300",
+  "rounded-xl bg-card text-card-foreground transition-all duration-300 relative overflow-hidden",
   {
     variants: {
       variant: {
         default:
-          "border border-border shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-1",
+          "border border-border shadow-sm hover:shadow-md hover:border-primary/30 hover:-translate-y-1 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/5 before:to-transparent before:pointer-events-none",
         quest:
-          "border-2 border-amber-500/30 dark:border-amber-400/30 bg-gradient-to-br from-amber-50/50 to-transparent dark:from-amber-950/20 relative before:absolute before:inset-0 before:rounded-xl before:bg-texture-parchment before:opacity-30",
+          "border-2 border-amber-500/40 dark:border-amber-400/40 bg-gradient-to-br from-amber-50/60 to-amber-50/20 dark:from-amber-950/30 dark:to-transparent relative before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-t before:from-amber-500/5 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:shadow-inner after:from-amber-500/10 after:pointer-events-none",
         achievement:
-          "border-2 border-purple-500/30 dark:border-purple-400/30 bg-gradient-to-br from-purple-50/50 to-transparent dark:from-purple-950/20 relative before:absolute before:inset-0 before:rounded-xl before:bg-texture-parchment before:opacity-30",
+          "border-2 border-purple-500/40 dark:border-purple-400/40 bg-gradient-to-br from-purple-50/60 to-purple-50/20 dark:from-purple-950/30 dark:to-transparent relative before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-t before:from-purple-500/5 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:shadow-inner after:from-purple-500/10 after:pointer-events-none",
         inventory:
-          "border-2 border-primary/20 bg-gradient-to-br from-card to-muted/30 backdrop-blur-sm hover:border-primary/40 hover:shadow-gold",
+          "border-2 border-primary/30 dark:border-primary/50 bg-gradient-to-br from-primary/8 to-muted/20 dark:from-primary/15 dark:to-primary/5 backdrop-blur-sm hover:border-primary/50 dark:hover:border-primary/70 hover:shadow-gold relative before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/8 before:via-transparent before:to-transparent dark:before:from-white/3 before:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:shadow-inner after:pointer-events-none",
         glass:
-          "backdrop-blur-md bg-card/60 border border-border/50 shadow-lg hover:bg-card/70",
+          "backdrop-blur-xl bg-card/40 dark:bg-card/50 border border-border/50 dark:border-border/70 shadow-lg hover:bg-card/50 dark:hover:bg-card/60 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent dark:before:from-white/5 before:pointer-events-none",
         elevated:
-          "border border-border shadow-rpg hover:shadow-rpg-lg hover:-translate-y-1",
+          "border border-border shadow-rpg dark:shadow-rpg-lg hover:shadow-rpg-lg dark:hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:-translate-y-1 relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:via-transparent before:to-transparent dark:before:from-white/3 before:pointer-events-none after:absolute after:-inset-0.5 after:bg-gradient-to-br after:from-primary/20 after:to-accent/10 after:rounded-xl after:-z-10 dark:after:from-primary/10 dark:after:to-accent/5",
       },
       padding: {
         default: "p-6",
