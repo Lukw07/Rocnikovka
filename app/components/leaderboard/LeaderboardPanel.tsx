@@ -6,6 +6,7 @@ import { useSidebar } from "@/app/components/ui/V2sidebar"
 import { Button } from "@/app/components/ui/button"
 import { Trophy, User, ArrowLeft, Filter, Sparkles, Crown, Star, Award, Users, GraduationCap } from "lucide-react"
 import { UserProfileHoverCard } from "@/app/components/shared/UserProfileHoverCard"
+import { UserAvatarWithBadge } from "@/app/components/dashboard/UserAvatarWithBadge"
 
 type LeaderboardRow = {
   id: string
