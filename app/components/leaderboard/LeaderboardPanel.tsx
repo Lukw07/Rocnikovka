@@ -21,6 +21,7 @@ type LeaderboardRow = {
   classId: string
   avatarUrl?: string | null
   badgeRarity?: ItemRarity | null
+  badgeImageUrl?: string | null
 }
 
 type UserData = {
@@ -413,7 +414,14 @@ export default function LeaderboardPanel() {
                             </div>
                             <UserProfileHoverCard userId={row.id} name={row.name}>
                               <div className="flex items-center gap-3 cursor-pointer">
-                                <UserAvatarWithBadge name={row.name} className="h-12 w-12" avatarUrl={row.avatarUrl} badgeRarity={row.badgeRarity} level={row.level} />
+                                <UserAvatarWithBadge 
+                                  name={row.name} 
+                                  className="h-12 w-12" 
+                                  avatarUrl={row.avatarUrl} 
+                                  badgeRarity={row.badgeRarity} 
+                                  badgeImageUrl={row.badgeImageUrl}
+                                  level={row.level} 
+                                />
                                 <div>
                                   <div className={`font-bold text-lg ${style.textColor} hover:underline`}>{row.name}</div>
                                   <div className={`text-sm ${style.textColor} opacity-80`}>Level {row.level} • {row.class}</div>
@@ -482,7 +490,14 @@ export default function LeaderboardPanel() {
                             </div>
                             <UserProfileHoverCard userId={row.id} name={row.name}>
                               <div className="flex items-center gap-3 cursor-pointer">
-                                <UserAvatarWithBadge name={row.name} className="h-12 w-12" avatarUrl={row.avatarUrl} badgeRarity={row.badgeRarity} level={row.level} />
+                                <UserAvatarWithBadge 
+                                  name={row.name} 
+                                  className="h-12 w-12" 
+                                  avatarUrl={row.avatarUrl} 
+                                  badgeRarity={row.badgeRarity} 
+                                  badgeImageUrl={row.badgeImageUrl}
+                                  level={row.level} 
+                                />
                                 <div>
                                   <div className="font-semibold text-blue-900 hover:underline">{row.name}</div>
                                   <div className="text-sm text-blue-700">Level {row.level} • {row.class}</div>
@@ -551,7 +566,14 @@ export default function LeaderboardPanel() {
                             </div>
                             <UserProfileHoverCard userId={row.id} name={row.name}>
                               <div className="flex items-center gap-2 cursor-pointer">
-                                <UserAvatarWithBadge name={row.name} className="h-10 w-10" avatarUrl={row.avatarUrl} badgeRarity={row.badgeRarity} level={row.level} />
+                                <UserAvatarWithBadge 
+                                  name={row.name} 
+                                  className="h-10 w-10" 
+                                  avatarUrl={row.avatarUrl} 
+                                  badgeRarity={row.badgeRarity} 
+                                  badgeImageUrl={row.badgeImageUrl}
+                                  level={row.level} 
+                                />
                                 <div>
                                   <div className="font-medium text-green-900 text-sm hover:underline">{row.name}</div>
                                   <div className="text-xs text-green-700">Level {row.level} • {row.class}</div>
@@ -620,7 +642,14 @@ export default function LeaderboardPanel() {
                             </div>
                             <UserProfileHoverCard userId={row.id} name={row.name}>
                               <div className="flex items-center gap-2 cursor-pointer">
-                                <UserAvatarWithBadge name={row.name} className="h-10 w-10" avatarUrl={row.avatarUrl} badgeRarity={row.badgeRarity} level={row.level} />
+                                <UserAvatarWithBadge 
+                                  name={row.name} 
+                                  className="h-10 w-10" 
+                                  avatarUrl={row.avatarUrl} 
+                                  badgeRarity={row.badgeRarity} 
+                                  badgeImageUrl={row.badgeImageUrl}
+                                  level={row.level} 
+                                />
                                 <div>
                                   <div className="font-medium text-gray-900 text-sm hover:underline">{row.name}</div>
                                   <div className="text-xs text-gray-600">Level {row.level} • {row.class}</div>

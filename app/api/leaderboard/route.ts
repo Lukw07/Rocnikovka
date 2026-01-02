@@ -92,7 +92,8 @@ export async function GET(request: NextRequest) {
         grade: row.grade || 0,
         classId: row.classId || "",
         avatarUrl: user?.avatarUrl || null,
-        badgeRarity: pinnedBadge?.rarity || null
+        badgeRarity: pinnedBadge?.rarity || null,
+        badgeImageUrl: pinnedBadge?.imageUrl || null
       }
     })
 

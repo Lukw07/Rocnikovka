@@ -10,10 +10,11 @@ interface UserAvatarWithBadgeProps {
   className?: string
   avatarUrl?: string | null
   badgeRarity?: ItemRarity | null
+  badgeImageUrl?: string | null
   level?: number
 }
 
-export function UserAvatarWithBadge({ name, className, avatarUrl: propAvatarUrl, badgeRarity, level }: UserAvatarWithBadgeProps) {
+export function UserAvatarWithBadge({ name, className, avatarUrl: propAvatarUrl, badgeRarity, badgeImageUrl, level }: UserAvatarWithBadgeProps) {
   const [badge, setBadge] = useState<{ imageUrl: string, rarity: ItemRarity } | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(propAvatarUrl || null)
 
@@ -87,6 +88,9 @@ export function UserAvatarWithBadge({ name, className, avatarUrl: propAvatarUrl,
 
   const currentRarity = badgeRarity !== undefined ? badgeRarity : badge?.rarity
   const style = currentRarity ? rarityStyles[currentRarity] : null
+  
+  // If badgeImageUrl is provided, use it. Otherwise use avatarUrl.
+  const displayImage = badgeImageUrl || avatarUrl
 
   return (
     <div className={cn("relative inline-block", className)}>
@@ -96,8 +100,8 @@ export function UserAvatarWithBadge({ name, className, avatarUrl: propAvatarUrl,
         style ? `bg-gradient-to-br ${style.gradient}` : ""
       )}>
         <Avatar className="h-full w-full border-2 border-white/10">
-          {avatarUrl ? (
-            <AvatarImage src={avatarUrl} alt={name} />
+          {displayImage ? (
+            <AvatarImage src={displayImage} alt={name} />
           ) : (
             <AvatarFallback>{name[0]}</AvatarFallback>
           )}
