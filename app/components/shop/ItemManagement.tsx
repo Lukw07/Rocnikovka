@@ -120,6 +120,15 @@ export function ItemManagement({ onItemUpdated }: ItemManagementProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((item) => (
           <Card key={item.id} className={!item.isActive ? "opacity-60" : ""}>
+            {item.imageUrl && (
+              <div className="w-full h-32 bg-muted/50 flex items-center justify-center p-4 border-b">
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.name} 
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            )}
             <CardHeader>
               <div className="flex items-start justify-between">
                 <CardTitle className="text-lg">{item.name}</CardTitle>

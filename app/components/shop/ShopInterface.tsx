@@ -145,7 +145,16 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
         <TabsContent value="shop" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {shopData.items.map((item) => (
-              <Card key={item.id} className="hover:shadow-lg transition-shadow">
+              <Card key={item.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                {item.imageUrl && (
+                  <div className="w-full h-48 bg-muted/50 flex items-center justify-center p-4">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name} 
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                )}
                 <CardHeader>
                   <CardTitle className="text-lg">{item.name}</CardTitle>
                   <CardDescription>{item.description}</CardDescription>
