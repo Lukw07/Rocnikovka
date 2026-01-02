@@ -95,18 +95,18 @@ export function BuyItemDialog({ item, userBalance, onBuy, onClose, loading }: Bu
           </div>
 
           {!canAfford && (
-            <div className="flex items-center space-x-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <AlertTriangle className="w-4 h-4 text-red-600" />
-              <span className="text-red-600 text-sm">
+            <div className="flex items-center space-x-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-destructive" />
+              <span className="text-destructive text-sm">
                 Nedostatek mincí. Potřebujete ještě {item.price - userBalance} mincí.
               </span>
             </div>
           )}
 
           {error && (
-            <div className="flex items-center space-x-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <AlertTriangle className="w-4 h-4 text-red-600" />
-              <span className="text-red-600 text-sm">{error}</span>
+            <div className="flex items-center space-x-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-destructive" />
+              <span className="text-destructive text-sm">{error}</span>
             </div>
           )}
         </div>
@@ -118,7 +118,7 @@ export function BuyItemDialog({ item, userBalance, onBuy, onClose, loading }: Bu
           <Button 
             onClick={handleBuy} 
             disabled={!canAfford || loading}
-            className="bg-green-600 hover:bg-green-700"
+            variant="rpg"
           >
             {loading ? "Nakupuji..." : "Koupit"}
           </Button>

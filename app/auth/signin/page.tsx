@@ -55,27 +55,33 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none bg-[url('/images/grid-pattern.png')] bg-repeat"></div>
+      
+      <div className="w-full max-w-md z-10">
         {/* Back to home link */}
         <Link 
           href="/" 
-          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-6"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Zpět na hlavní stránku
         </Link>
 
-        <Card className="shadow-xl">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Přihlášení do EduRPG
+        <Card className="shadow-xl border-primary/20">
+          <CardHeader className="text-center border-b border-border/50 pb-6">
+            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+               <div className="w-8 h-8 text-primary">🛡️</div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-primary font-heading">
+              Vítejte v EduRPG
             </CardTitle>
             <CardDescription>
               Přihlaste se pomocí svých Bakaláři přihlašovacích údajů
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <Alert variant="destructive">
@@ -93,6 +99,7 @@ export default function SignInPage() {
                   placeholder="Zadejte své Bakaláři uživatelské jméno"
                   required
                   disabled={isLoading}
+                  className="rpg-input"
                 />
               </div>
 
@@ -111,16 +118,17 @@ export default function SignInPage() {
 
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                className="w-full"
                 disabled={isLoading}
+                variant="rpg"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Přihlašování...
+                    Vstupování do světa...
                   </>
                 ) : (
-                  "Přihlásit se"
+                  "Vstoupit do světa"
                 )}
               </Button>
             </form>

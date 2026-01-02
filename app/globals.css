@@ -56,48 +56,106 @@
 
 :root {
   color-scheme: light;
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   
-  /* Custom colors - can be changed by user */
-  --color-primary-custom: #3b82f6;
-  --color-secondary-custom: #8b5cf6;
-  --color-accent-custom: #10b981;
-  --primary-rgb: 59 130 246;
-  --secondary-rgb: 139 92 246;
-  --accent-rgb: 16 185 129;
+  /* RPG Theme Fonts */
+  --font-heading: var(--font-cinzel), serif;
+  --font-body: var(--font-inter), sans-serif;
+
+  /* ========== LIGHT MODE (Parchment/Mist) ========== */
+  --background: 35 30% 96%;                   /* #F9F7F2 - Parchment */
+  --foreground: 220 15% 20%;                  /* #2B303B - Dark Ink */
   
-  /* ========== LIGHT MODE COLORS ========== */
-  --background: 0 0% 100%;                    /* #FFFFFF */
-  --foreground: 222.2 84% 4.9%;               /* #020817 - Deep Navy/Black */
+  --card: 35 30% 92%;                         /* #F2EFE9 - Darker Parchment */
+  --card-foreground: 220 15% 20%;             /* #2B303B */
   
-  --card: 0 0% 100%;                          /* #FFFFFF */
-  --card-foreground: 222.2 84% 4.9%;          /* #020817 */
+  --popover: 35 30% 96%;                      /* #F9F7F2 */
+  --popover-foreground: 220 15% 20%;          /* #2B303B */
   
-  --popover: 0 0% 100%;                       /* #FFFFFF */
-  --popover-foreground: 222.2 84% 4.9%;       /* #020817 */
+  --primary: 45 90% 40%;                      /* #C2A000 - Antique Gold */
+  --primary-foreground: 35 30% 96%;           /* #F9F7F2 */
   
-  --primary: 221.2 83.2% 53.3%;               /* #2563EB - Blue 600 */
-  --primary-foreground: 210 40% 98%;          /* #F8FAFC */
+  --secondary: 220 10% 85%;                   /* #D6D8DB - Light Stone */
+  --secondary-foreground: 220 15% 20%;        /* #2B303B */
   
-  --secondary: 210 40% 96.1%;                 /* #F1F5F9 - Slate 100 */
-  --secondary-foreground: 222.2 47.4% 11.2%;  /* #0F172A - Slate 900 */
+  --muted: 35 15% 90%;                        /* #EBE9E4 */
+  --muted-foreground: 220 10% 45%;            /* #676C75 */
   
-  --muted: 210 40% 96.1%;                     /* #F1F5F9 */
-  --muted-foreground: 215.4 16.3% 46.9%;      /* #64748B - Slate 500 */
+  --accent: 190 60% 40%;                      /* #29A3B9 - Mystic Blue */
+  --accent-foreground: 35 30% 96%;            /* #F9F7F2 */
   
-  --accent: 210 40% 96.1%;                    /* #F1F5F9 */
-  --accent-foreground: 222.2 47.4% 11.2%;     /* #0F172A */
+  --destructive: 0 70% 40%;                   /* #AD1F1F - Crimson */
+  --destructive-foreground: 35 30% 96%;       /* #F9F7F2 */
   
-  --destructive: 0 84.2% 60.2%;               /* #EF4444 - Red 500 */
-  --destructive-foreground: 210 40% 98%;      /* #F8FAFC */
-  
-  --border: 214.3 31.8% 91.4%;                /* #E2E8F0 - Slate 200 */
-  --input: 214.3 31.8% 91.4%;                 /* #E2E8F0 */
-  --ring: 221.2 83.2% 53.3%;                  /* #2563EB */
+  --border: 35 15% 80%;                       /* #D1CEC7 */
+  --input: 35 15% 80%;                        /* #D1CEC7 */
+  --ring: 45 90% 40%;                         /* #C2A000 */
   
   /* Charts */
-  --chart-1: 221.2 83.2% 53.3%;
-  --chart-2: 262.1 83.3% 57.8%;
+  --chart-1: 45 90% 40%;
+  --chart-2: 190 60% 40%;
+  --chart-3: 220 15% 30%;
+  --chart-4: 30 60% 50%;
+  --chart-5: 0 70% 40%;
+  
+  --sidebar: 35 30% 94%;
+  --sidebar-foreground: 220 15% 20%;
+  --sidebar-primary: 45 90% 40%;
+  --sidebar-primary-foreground: 35 30% 96%;
+  --sidebar-accent: 35 20% 88%;
+  --sidebar-accent-foreground: 220 15% 20%;
+  --sidebar-border: 35 15% 80%;
+  --sidebar-ring: 45 90% 40%;
+}
+
+.dark {
+  color-scheme: dark;
+  
+  /* ========== DARK MODE (Dark Stone/Metal) ========== */
+  --background: 220 15% 8%;                   /* #111316 - Deep Stone */
+  --foreground: 35 20% 90%;                   /* #EBE9E4 - Light Parchment Text */
+  
+  --card: 220 15% 12%;                        /* #1A1D21 - Stone Surface */
+  --card-foreground: 35 20% 90%;              /* #EBE9E4 */
+  
+  --popover: 220 15% 12%;                     /* #1A1D21 */
+  --popover-foreground: 35 20% 90%;           /* #EBE9E4 */
+  
+  --primary: 45 80% 50%;                      /* #E6B800 - Bright Gold */
+  --primary-foreground: 220 15% 10%;          /* #16181C */
+  
+  --secondary: 220 15% 20%;                   /* #2B303B - Dark Metal */
+  --secondary-foreground: 35 20% 90%;         /* #EBE9E4 */
+  
+  --muted: 220 15% 16%;                       /* #23262E */
+  --muted-foreground: 220 10% 60%;            /* #9499A3 */
+  
+  --accent: 190 70% 50%;                      /* #26C6DA - Glowing Mystic Blue */
+  --accent-foreground: 220 15% 10%;           /* #16181C */
+  
+  --destructive: 0 70% 50%;                   /* #D92626 */
+  --destructive-foreground: 35 20% 90%;       /* #EBE9E4 */
+  
+  --border: 220 15% 20%;                      /* #2B303B */
+  --input: 220 15% 20%;                       /* #2B303B */
+  --ring: 45 80% 50%;                         /* #E6B800 */
+  
+  /* Charts */
+  --chart-1: 45 80% 50%;
+  --chart-2: 190 70% 50%;
+  --chart-3: 220 15% 40%;
+  --chart-4: 30 70% 60%;
+  --chart-5: 0 70% 50%;
+  
+  --sidebar: 220 15% 10%;
+  --sidebar-foreground: 35 20% 90%;
+  --sidebar-primary: 45 80% 50%;
+  --sidebar-primary-foreground: 220 15% 10%;
+  --sidebar-accent: 220 15% 16%;
+  --sidebar-accent-foreground: 35 20% 90%;
+  --sidebar-border: 220 15% 20%;
+  --sidebar-ring: 45 80% 50%;
+}
   --chart-3: 142.1 70.6% 45.3%;
   --chart-4: 47.9 95.8% 53.1%;
   --chart-5: 24.6 95% 53.1%;

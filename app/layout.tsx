@@ -1,13 +1,14 @@
 import type { Metadata, Viewport } from "next"
 import Script from "next/script"
-import { Inter } from "next/font/google"
+import { Cinzel, Inter } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/app/components/ui/sonner"
 import { ErrorBoundary } from "@/app/components/shared/ErrorBoundary"
 import AuthProvider from "@/app/components/providers/SessionProvider"
 import { ThemeProvider } from "@/app/components/theme/ThemeProvider"
 
-const inter = Inter({ subsets: ["latin"] })
+const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel" })
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export const metadata: Metadata = {
   title: "EduRPG - Školní gamifikační platforma",
@@ -62,8 +63,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
-        <ThemeProvider>
+      <body className={`${inter.variable} ${cinzel.variable} font-sans antialiased bg-background text-foreground min-h-screen selection:bg-primary/30 selection:text-primary-foreground`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <ErrorBoundary>
               {children}
