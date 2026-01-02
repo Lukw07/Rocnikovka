@@ -28,7 +28,7 @@ const rpgBadgeVariants = cva(
         epic:
           "bg-gradient-to-b from-purple-500 to-purple-700 dark:from-purple-400 dark:to-purple-600 text-white shadow-md dark:shadow-lg border border-purple-500/30 dark:border-purple-400/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent dark:before:from-white/10 before:pointer-events-none",
         legendary:
-          "bg-gradient-to-b from-orange-500 via-yellow-500 to-orange-600 dark:from-orange-400 dark:via-yellow-400 dark:to-orange-500 text-white shadow-gold dark:shadow-[0_4px_16px_rgba(217,119,6,0.5)] border border-orange-500/30 dark:border-orange-400/40 animate-pulse before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/25 before:to-transparent dark:before:from-white/15 before:pointer-events-none",
+          "bg-gradient-to-b from-orange-500 via-yellow-500 to-orange-600 dark:from-orange-400 dark:via-yellow-400 dark:to-orange-500 text-white shadow-gold dark:shadow-[0_4px_16px_rgba(217,119,6,0.5)] border border-orange-500/30 dark:border-orange-400/40 before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/25 before:to-transparent dark:before:from-white/15 before:pointer-events-none hover:shadow-[0_6px_20px_rgba(217,119,6,0.6)] dark:hover:shadow-[0_8px_24px_rgba(217,119,6,0.6)]",
       },
       size: {
         default: "text-xs px-2.5 py-0.5",
