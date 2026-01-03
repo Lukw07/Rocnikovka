@@ -14,7 +14,7 @@ import { Loader2, Plus, Trash2, ArrowRightLeft } from 'lucide-react';
 interface Friend {
   id: string;
   name: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 }
 
 interface InventoryItem {
