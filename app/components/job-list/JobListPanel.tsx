@@ -50,10 +50,18 @@ export default function JobListPanel() {
     return body.data?.assignment
   }, {
     onSuccess: () => {
+      // Trigger stats update
+      fetch('/api/progression/stats').catch(() => {})
+      
       execute(loadJobs)
       toast.success("Přihlášeno", {
         description: "Úspěšně jste se přihlásili k úkolu."
       })
+      
+      // Reload after short delay
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
     },
     onError: (err) => {
       toast.error("Chyba", {

@@ -119,7 +119,16 @@ export function BossBattleUI({ eventId, onVictory }: BossBattleUIProps) {
       }
       
       if (data.isDefeated) {
+        // Trigger stats update on victory
+        fetch('/api/progression/stats').catch(() => {})
+        toast.success('Boss poražen!', {
+          description: 'Získali jste odměny za vítězství!'
+        })
         onVictory?.()
+        
+        setTimeout(() => {
+          window.location.reload()
+        }, 2000)
       }
       
       await fetchStats()

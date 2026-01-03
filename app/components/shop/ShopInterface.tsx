@@ -81,12 +81,20 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
         throw new Error(errorData.error || "Failed to purchase item")
       }
       
+      // Trigger stats update
+      fetch('/api/progression/stats').catch(() => {})
+      
       // Refresh shop data to update balance and purchases
       await fetchShopData()
       setSelectedItem(null)
       toast.success("Předmět zakoupen", {
         description: "Předmět byl úspěšně přidán do vašeho inventáře."
       })
+      
+      // Trigger page reload to update inventory and balance
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000)
     } catch (error) {
       console.error("Error buying item:", error)
       const message = error instanceof Error ? error.message : "Failed to purchase item"

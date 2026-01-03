@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 interface Quest {
   id: string
@@ -120,9 +121,11 @@ export function QuestCard({ quest, onUpdate }: QuestCardProps) {
       })
       if (!res.ok) throw new Error("Nepodařilo se přijmout quest")
       setStatus("ACCEPTED")
+      toast.success("Quest přijat!", { description: quest.title })
       onUpdate?.()
     } catch (error) {
       console.error("Failed to accept quest:", error)
+      toast.error("Chyba při přijímání questu")
     } finally {
       setLoading(false)
     }
@@ -137,10 +140,27 @@ export function QuestCard({ quest, onUpdate }: QuestCardProps) {
         body: JSON.stringify({})
       })
       if (!res.ok) throw new Error("Nepodařilo se dokončit quest")
+      
+      const data = await res.json()
       setStatus("COMPLETED")
+      
+      // Trigger stats update
+      fetch('/api/progression/stats').catch(() => {})
+      
+      // Show success toast with rewards
+      toast.success("Quest dokončen!", {
+        description: `Získali jste ${quest.xpReward} XP${quest.moneyReward > 0 ? ` a ${quest.moneyReward} coinů` : ''}`
+      })
+      
       onUpdate?.()
+      
+      // Reload quest list after a short delay
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
     } catch (error) {
       console.error("Failed to complete quest:", error)
+      toast.error("Chyba při dokončování questu")
     } finally {
       setLoading(false)
     }

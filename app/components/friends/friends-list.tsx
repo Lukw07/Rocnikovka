@@ -7,7 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar'
 import { Badge } from '@/app/components/ui/badge';
 import { getFriends, removeFriend } from '@/app/actions/friends';
 import { toast } from 'sonner';
-import { Users, UserMinus, Trophy, Loader2, Calendar } from 'lucide-react';
+import { Users, UserMinus, Trophy, Loader2, Calendar, ArrowRightLeft } from 'lucide-react';
+import { CreateTradeDialog } from './create-trade-dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -98,6 +99,13 @@ export function FriendsList() {
 
   return (
     <>
+      <div className="flex justify-between items-center mb-4">
+        <p className="text-sm text-muted-foreground">
+          Máte {friends.length} {friends.length === 1 ? 'přítele' : friends.length < 5 ? 'přátele' : 'přátel'}
+        </p>
+        <CreateTradeDialog friends={friends} />
+      </div>
+      
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {friends.map((friend) => (
           <Card key={friend.id} className="overflow-hidden">

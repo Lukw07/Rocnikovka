@@ -108,8 +108,17 @@ export function MarketplaceView() {
 
       if (response.ok) {
         toast.success(`✅ Úspěšně jsi koupil ${quantity}x ${selectedListing.item.name}!`);
+        
+        // Trigger stats update
+        fetch('/api/progression/stats').catch(() => {});
+        
         setBuyDialogOpen(false);
         fetchListings();
+        
+        // Reload after short delay to update inventory
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         toast.error(data.error || 'Nákup selhal');
       }

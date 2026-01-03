@@ -2,10 +2,11 @@ import { Metadata } from "next";
 import { auth } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
-import { Users } from "lucide-react";
+import { Users, ArrowRightLeft } from "lucide-react";
 import { FriendsList } from "@/app/components/friends/friends-list";
 import { FriendRequests } from "@/app/components/friends/friend-requests";
 import { SearchUsers } from "@/app/components/friends/search-users";
+import { TradingList } from "@/app/components/friends/trading-list";
 
 export const metadata: Metadata = {
   title: "Přátelé | EduRPG",
@@ -34,10 +35,14 @@ export default async function FriendsPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="friends" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="friends">Moji přátelé</TabsTrigger>
           <TabsTrigger value="requests">Žádosti</TabsTrigger>
           <TabsTrigger value="search">Hledat</TabsTrigger>
+          <TabsTrigger value="trading">
+            <ArrowRightLeft className="h-4 w-4 mr-2" />
+            Obchody
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="friends" className="space-y-4">
@@ -50,6 +55,10 @@ export default async function FriendsPage() {
 
         <TabsContent value="search" className="space-y-4">
           <SearchUsers />
+        </TabsContent>
+
+        <TabsContent value="trading" className="space-y-4">
+          <TradingList />
         </TabsContent>
       </Tabs>
     </div>

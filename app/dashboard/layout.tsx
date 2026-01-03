@@ -47,12 +47,21 @@ export default async function DashboardLayout({ children }: { children: React.Re
     menuItems = [
       { icon: 'Home', label: 'Přehled', href: '/dashboard' },
       { icon: 'BookOpen', label: 'Předměty', href: '/dashboard/subjects' },
+      { icon: 'Sword', label: 'Questy', href: '/dashboard/quests' },
+      { icon: 'Calendar', label: 'Eventy', href: '/dashboard/events' },
       { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements' },
       { icon: 'Award', label: 'Leaderboard', href: '/dashboard/leaderboard' },
       { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges' },
       { icon: 'ListChecks', label: 'Seznam Úloh', href: '/dashboard/job-list' },
+      { icon: 'Shield', label: 'Guildy', href: '/dashboard/guilds' },
+      { icon: 'Users', label: 'Přátelé', href: '/dashboard/friends' },
+      { icon: 'ArrowRightLeft', label: 'Obchody', href: '/dashboard/trading' },
+      { icon: 'Home', label: 'Personal Space', href: '/dashboard/personal-space' },
+      { icon: 'Wallet', label: 'Wallet', href: '/dashboard/wallet' },
+      { icon: 'Package', label: 'Inventář', href: '/dashboard/inventory' },
       { icon: 'FileText', label: 'Záznam', href: '/dashboard/log' },
       { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/shop' },
+      { icon: 'Store', label: 'Marketplace', href: '/dashboard/marketplace' },
       { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings' },
     ]
   }
