@@ -3,7 +3,7 @@ import { auth } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { Store } from "lucide-react";
-import MarketplaceView from "@/app/components/marketplace/MarketplaceView";
+import { MarketplaceView } from "@/app/components/marketplace/MarketplaceView";
 import { SellItemDialog } from "@/app/components/marketplace/SellItem";
 import MarketStats from "@/app/components/marketplace/MarketStats";
 

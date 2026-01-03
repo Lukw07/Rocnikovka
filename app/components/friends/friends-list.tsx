@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/app/components/ui/alert-dialog";
 
-interface Friend {
+interface FriendListItem {
   id: string;
   name: string;
   email: string;
@@ -33,10 +33,10 @@ interface Friend {
 }
 
 export function FriendsList() {
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<FriendListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
-  const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
+  const [friendToRemove, setFriendToRemove] = useState<FriendListItem | null>(null);
 
   useEffect(() => {
     loadFriends();
