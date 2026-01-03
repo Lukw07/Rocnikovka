@@ -22,7 +22,7 @@
  * ============================================================================
  */
 
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../app/lib/generated'
 
 const prisma = new PrismaClient()
 
@@ -175,6 +175,168 @@ async function seedAchievements() {
       reputationReward: 50,
       moneyReward: 250,
       sortOrder: 12
+    },
+    {
+      name: 'Quest Legend',
+      description: 'Dokončit 100 questů',
+      type: 'NORMAL',
+      category: 'QUEST',
+      icon: '🏆',
+      color: '#f59e0b',
+      rarity: 'EPIC',
+      target: 100,
+      xpReward: 1000,
+      skillpointsReward: 10,
+      reputationReward: 100,
+      moneyReward: 500,
+      sortOrder: 13
+    }
+  ]
+
+  const xpAchievements = [
+    {
+      name: 'XP Collector',
+      description: 'Získej 1000 XP',
+      type: 'NORMAL',
+      category: 'XP',
+      icon: '💎',
+      color: '#06b6d4',
+      rarity: 'COMMON',
+      target: 1000,
+      xpReward: 100,
+      skillpointsReward: 1,
+      reputationReward: 10,
+      moneyReward: 50,
+      sortOrder: 30
+    },
+    {
+      name: 'XP Hoarder',
+      description: 'Získej 10000 XP',
+      type: 'NORMAL',
+      category: 'XP',
+      icon: '💰',
+      color: '#14b8a6',
+      rarity: 'UNCOMMON',
+      target: 10000,
+      xpReward: 500,
+      skillpointsReward: 3,
+      reputationReward: 25,
+      moneyReward: 150,
+      sortOrder: 31
+    },
+    {
+      name: 'XP Tycoon',
+      description: 'Získej 50000 XP',
+      type: 'NORMAL',
+      category: 'XP',
+      icon: '👑',
+      color: '#f59e0b',
+      rarity: 'EPIC',
+      target: 50000,
+      xpReward: 2000,
+      skillpointsReward: 10,
+      reputationReward: 100,
+      moneyReward: 500,
+      sortOrder: 32
+    }
+  ]
+
+  const skillAchievements = [
+    {
+      name: 'Skill Novice',
+      description: 'Odemkni 5 skillů',
+      type: 'NORMAL',
+      category: 'SKILL',
+      icon: '🎯',
+      color: '#8b5cf6',
+      rarity: 'COMMON',
+      target: 5,
+      xpReward: 100,
+      skillpointsReward: 2,
+      reputationReward: 10,
+      moneyReward: 50,
+      sortOrder: 40
+    },
+    {
+      name: 'Polymath',
+      description: 'Odemkni 10 skillů',
+      type: 'NORMAL',
+      category: 'SKILL',
+      icon: '🧠',
+      color: '#ec4899',
+      rarity: 'RARE',
+      target: 10,
+      xpReward: 300,
+      skillpointsReward: 5,
+      reputationReward: 30,
+      moneyReward: 150,
+      sortOrder: 41
+    }
+  ]
+
+  const socialAchievements = [
+    {
+      name: 'Social Butterfly',
+      description: 'Přidej si 5 přátel',
+      type: 'NORMAL',
+      category: 'SOCIAL',
+      icon: '👥',
+      color: '#06b6d4',
+      rarity: 'COMMON',
+      target: 5,
+      xpReward: 50,
+      skillpointsReward: 1,
+      reputationReward: 10,
+      moneyReward: 25,
+      sortOrder: 50
+    },
+    {
+      name: 'Team Player',
+      description: 'Dokončit 5 týmových questů',
+      type: 'NORMAL',
+      category: 'SOCIAL',
+      icon: '🤝',
+      color: '#14b8a6',
+      rarity: 'UNCOMMON',
+      target: 5,
+      xpReward: 150,
+      skillpointsReward: 2,
+      reputationReward: 20,
+      moneyReward: 100,
+      sortOrder: 51
+    }
+  ]
+
+  const jobAchievements = [
+    {
+      name: 'First Job',
+      description: 'Dokončit první job',
+      type: 'NORMAL',
+      category: 'JOB',
+      icon: '💼',
+      color: '#3b82f6',
+      rarity: 'COMMON',
+      target: 1,
+      xpReward: 50,
+      skillpointsReward: 1,
+      reputationReward: 5,
+      moneyReward: 50,
+      sortOrder: 60
+    },
+    {
+      name: 'Hard Worker',
+      description: 'Dokončit 25 jobů',
+      type: 'NORMAL',
+      category: 'JOB',
+      icon: '⚡',
+      color: '#f59e0b',
+      rarity: 'UNCOMMON',
+      target: 25,
+      xpReward: 200,
+      skillpointsReward: 3,
+      reputationReward: 25,
+      moneyReward: 150,
+      sortOrder: 61
     }
   ]
 
@@ -183,7 +345,7 @@ async function seedAchievements() {
       name: 'Consistency Rookie',
       description: 'Udrž 7denní streak',
       type: 'NORMAL',
-      category: 'STREAK',
+      category: 'ACTIVITY',
       icon: '🔥',
       color: '#ef4444',
       rarity: 'COMMON',
@@ -198,7 +360,7 @@ async function seedAchievements() {
       name: 'Consistency Pro',
       description: 'Udrž 30denní streak',
       type: 'NORMAL',
-      category: 'STREAK',
+      category: 'ACTIVITY',
       icon: '🔥',
       color: '#f97316',
       rarity: 'RARE',
@@ -212,11 +374,11 @@ async function seedAchievements() {
   ]
 
   await prisma.achievement.createMany({
-    data: [...levelAchievements, ...questAchievements, ...streakAchievements],
+    data: [...levelAchievements, ...questAchievements, ...xpAchievements, ...skillAchievements, ...socialAchievements, ...jobAchievements, ...streakAchievements],
     skipDuplicates: true
   })
 
-  console.log(`✅ Created ${levelAchievements.length + questAchievements.length + streakAchievements.length} achievements`)
+  console.log(`✅ Created ${levelAchievements.length + questAchievements.length + xpAchievements.length + skillAchievements.length + socialAchievements.length + jobAchievements.length + streakAchievements.length} achievements`)
 }
 
 // ============================================================================
@@ -233,8 +395,7 @@ async function seedCoreAttributes() {
       category: "Core",
       icon: "⏰",
       maxLevel: 10,
-      unlockLevel: 0,
-      isCoreAttribute: true
+      unlockLevel: 0
     },
     {
       name: "Focus",
@@ -242,8 +403,7 @@ async function seedCoreAttributes() {
       category: "Core",
       icon: "🎯",
       maxLevel: 10,
-      unlockLevel: 0,
-      isCoreAttribute: true
+      unlockLevel: 0
     },
     {
       name: "Leadership",
@@ -251,8 +411,7 @@ async function seedCoreAttributes() {
       category: "Core",
       icon: "👑",
       maxLevel: 10,
-      unlockLevel: 0,
-      isCoreAttribute: true
+      unlockLevel: 0
     },
     {
       name: "Communication",
@@ -260,8 +419,7 @@ async function seedCoreAttributes() {
       category: "Core",
       icon: "💬",
       maxLevel: 10,
-      unlockLevel: 0,
-      isCoreAttribute: true
+      unlockLevel: 0
     },
     {
       name: "Consistency",
@@ -269,18 +427,14 @@ async function seedCoreAttributes() {
       category: "Core",
       icon: "🔄",
       maxLevel: 10,
-      unlockLevel: 0,
-      isCoreAttribute: true
+      unlockLevel: 0
     }
   ]
 
-  for (const attr of coreAttributes) {
-    await prisma.skill.upsert({
-      where: { name: attr.name },
-      update: attr,
-      create: attr
-    })
-  }
+  await prisma.skill.createMany({
+    data: coreAttributes,
+    skipDuplicates: true
+  })
 
   console.log(`✅ Created ${coreAttributes.length} core attributes`)
 }
@@ -294,36 +448,51 @@ async function seedSkills() {
 
   const skills = [
     // Programming Skills
-    { name: "JavaScript", category: "Programming", icon: "🟨", maxLevel: 100, unlockLevel: 0 },
-    { name: "TypeScript", category: "Programming", icon: "🔷", maxLevel: 100, unlockLevel: 5 },
-    { name: "Python", category: "Programming", icon: "🐍", maxLevel: 100, unlockLevel: 0 },
-    { name: "Java", category: "Programming", icon: "☕", maxLevel: 100, unlockLevel: 3 },
-    { name: "React", category: "Programming", icon: "⚛️", maxLevel: 100, unlockLevel: 10 },
+    { name: "JavaScript", category: "Programming", icon: "🟨", maxLevel: 100, unlockLevel: 0, description: "Master vanilla JavaScript programming" },
+    { name: "TypeScript", category: "Programming", icon: "🔷", maxLevel: 100, unlockLevel: 5, description: "Learn typed JavaScript superset" },
+    { name: "Python", category: "Programming", icon: "🐍", maxLevel: 100, unlockLevel: 0, description: "Learn Python programming language" },
+    { name: "Java", category: "Programming", icon: "☕", maxLevel: 100, unlockLevel: 3, description: "Master object-oriented Java" },
+    { name: "React", category: "Programming", icon: "⚛️", maxLevel: 100, unlockLevel: 10, description: "Build modern web interfaces" },
+    { name: "Node.js", category: "Programming", icon: "🟩", maxLevel: 100, unlockLevel: 8, description: "Backend JavaScript development" },
+    { name: "SQL", category: "Programming", icon: "🗄️", maxLevel: 100, unlockLevel: 5, description: "Database query language" },
+    { name: "Git", category: "Programming", icon: "📦", maxLevel: 100, unlockLevel: 0, description: "Version control mastery" },
+    { name: "Docker", category: "Programming", icon: "🐳", maxLevel: 100, unlockLevel: 15, description: "Containerization skills" },
+    { name: "C++", category: "Programming", icon: "⚙️", maxLevel: 100, unlockLevel: 10, description: "Systems programming language" },
     
     // Math Skills
-    { name: "Algebra", category: "Math", icon: "🔢", maxLevel: 100, unlockLevel: 0 },
-    { name: "Geometry", category: "Math", icon: "📐", maxLevel: 100, unlockLevel: 0 },
-    { name: "Calculus", category: "Math", icon: "∫", maxLevel: 100, unlockLevel: 15 },
-    { name: "Statistics", category: "Math", icon: "📊", maxLevel: 100, unlockLevel: 10 },
+    { name: "Algebra", category: "Math", icon: "🔢", maxLevel: 100, unlockLevel: 0, description: "Basic algebraic operations" },
+    { name: "Geometry", category: "Math", icon: "📐", maxLevel: 100, unlockLevel: 0, description: "Spatial reasoning and shapes" },
+    { name: "Calculus", category: "Math", icon: "∫", maxLevel: 100, unlockLevel: 15, description: "Advanced mathematical analysis" },
+    { name: "Statistics", category: "Math", icon: "📊", maxLevel: 100, unlockLevel: 10, description: "Data analysis and probability" },
+    { name: "Linear Algebra", category: "Math", icon: "🔺", maxLevel: 100, unlockLevel: 20, description: "Vectors and matrices" },
+    { name: "Trigonometry", category: "Math", icon: "📏", maxLevel: 100, unlockLevel: 8, description: "Angles and triangles" },
     
     // Science Skills
-    { name: "Physics", category: "Science", icon: "⚛️", maxLevel: 100, unlockLevel: 0 },
-    { name: "Chemistry", category: "Science", icon: "🧪", maxLevel: 100, unlockLevel: 0 },
-    { name: "Biology", category: "Science", icon: "🧬", maxLevel: 100, unlockLevel: 0 },
+    { name: "Physics", category: "Science", icon: "⚛️", maxLevel: 100, unlockLevel: 5, description: "Understanding natural phenomena" },
+    { name: "Chemistry", category: "Science", icon: "🧪", maxLevel: 100, unlockLevel: 5, description: "Study of matter and reactions" },
+    { name: "Biology", category: "Science", icon: "🧬", maxLevel: 100, unlockLevel: 0, description: "Life sciences fundamentals" },
     
     // Language Skills
-    { name: "English", category: "Languages", icon: "🇬🇧", maxLevel: 100, unlockLevel: 0 },
-    { name: "Czech", category: "Languages", icon: "🇨🇿", maxLevel: 100, unlockLevel: 0 },
-    { name: "German", category: "Languages", icon: "🇩🇪", maxLevel: 100, unlockLevel: 5 },
+    { name: "English", category: "Language", icon: "🇬🇧", maxLevel: 100, unlockLevel: 0, description: "English language proficiency" },
+    { name: "Czech", category: "Language", icon: "🇨🇿", maxLevel: 100, unlockLevel: 0, description: "Czech language mastery" },
+    { name: "German", category: "Language", icon: "🇩🇪", maxLevel: 100, unlockLevel: 5, description: "German language skills" },
+    { name: "Spanish", category: "Language", icon: "🇪🇸", maxLevel: 100, unlockLevel: 5, description: "Spanish language learning" },
+    
+    // Design Skills
+    { name: "UI/UX Design", category: "Design", icon: "🎨", maxLevel: 100, unlockLevel: 8, description: "User interface design" },
+    { name: "Graphic Design", category: "Design", icon: "🖼️", maxLevel: 100, unlockLevel: 5, description: "Visual communication design" },
+    { name: "3D Modeling", category: "Design", icon: "🎮", maxLevel: 100, unlockLevel: 15, description: "3D graphics creation" },
+    
+    // Business Skills
+    { name: "Marketing", category: "Business", icon: "📢", maxLevel: 100, unlockLevel: 10, description: "Business promotion skills" },
+    { name: "Project Management", category: "Business", icon: "📋", maxLevel: 100, unlockLevel: 12, description: "Managing projects effectively" },
+    { name: "Finance", category: "Business", icon: "💰", maxLevel: 100, unlockLevel: 10, description: "Financial literacy" }
   ]
 
-  for (const skill of skills) {
-    await prisma.skill.upsert({
-      where: { name: skill.name },
-      update: skill,
-      create: { ...skill, description: `Master ${skill.name}` }
-    })
-  }
+  await prisma.skill.createMany({
+    data: skills,
+    skipDuplicates: true
+  })
 
   console.log(`✅ Created ${skills.length} skills`)
 }
@@ -340,51 +509,68 @@ async function seedJobCategories() {
       name: "Frontend Development",
       description: "Work on user interfaces and web design",
       icon: "🎨",
-      baseReward: 100,
-      reputationReward: 10,
-      requiredLevel: 0
+      color: "#3b82f6"
     },
     {
       name: "Backend Development",
       description: "Build server-side logic and databases",
       icon: "⚙️",
-      baseReward: 120,
-      reputationReward: 12,
-      requiredLevel: 5
+      color: "#8b5cf6"
     },
     {
       name: "Data Science",
       description: "Analyze data and build ML models",
       icon: "📊",
-      baseReward: 150,
-      reputationReward: 15,
-      requiredLevel: 10
+      color: "#10b981"
     },
     {
       name: "Teaching Assistant",
       description: "Help other students learn",
       icon: "👨‍🏫",
-      baseReward: 80,
-      reputationReward: 20,
-      requiredLevel: 0
+      color: "#f59e0b"
     },
     {
       name: "Research",
       description: "Conduct research projects",
       icon: "🔬",
-      baseReward: 130,
-      reputationReward: 18,
-      requiredLevel: 8
+      color: "#ec4899"
+    },
+    {
+      name: "Mobile Development",
+      description: "Create mobile applications",
+      icon: "📱",
+      color: "#06b6d4"
+    },
+    {
+      name: "DevOps",
+      description: "Manage infrastructure and deployment",
+      icon: "🚀",
+      color: "#14b8a6"
+    },
+    {
+      name: "UI/UX Design",
+      description: "Design user experiences and interfaces",
+      icon: "✨",
+      color: "#a855f7"
+    },
+    {
+      name: "Content Writing",
+      description: "Write articles and documentation",
+      icon: "✍️",
+      color: "#f97316"
+    },
+    {
+      name: "Quality Assurance",
+      description: "Test software and find bugs",
+      icon: "🐛",
+      color: "#ef4444"
     }
   ]
 
-  for (const category of jobCategories) {
-    await prisma.jobCategory.upsert({
-      where: { name: category.name },
-      update: category,
-      create: category
-    })
-  }
+  await prisma.jobCategory.createMany({
+    data: jobCategories,
+    skipDuplicates: true
+  })
 
   console.log(`✅ Created ${jobCategories.length} job categories`)
 }
@@ -396,21 +582,10 @@ async function seedJobCategories() {
 async function seedEconomy() {
   console.log('💰 Seeding economy...')
 
-  // Update starter currency for users with 0
-  const updatedUsers = await prisma.user.updateMany({
-    where: {
-      gold: 0,
-      gems: 0,
-    },
-    data: {
-      gold: 500,
-      gems: 10,
-    },
-  })
-  console.log(`✅ Updated ${updatedUsers.count} users with starter currency`)
+  // Note: Starter currency is set in User model defaults (gold: 500, gems: 10)
 
   const items = [
-    // COSMETIC Items
+    // COSMETIC Items - Frames
     {
       name: "Golden Frame",
       description: "Luxusní zlatý rámeček pro profilový obrázek",
@@ -430,6 +605,35 @@ async function seedEconomy() {
       isTradeable: true,
     },
     {
+      name: "Bronze Frame",
+      description: "Základní bronzový rámeček",
+      price: 50,
+      rarity: 'COMMON',
+      type: 'COSMETIC',
+      category: "frame",
+      isTradeable: true,
+    },
+    {
+      name: "Platinum Frame",
+      description: "Exkluzivní platinový rámeček",
+      price: 1000,
+      rarity: 'EPIC',
+      type: 'COSMETIC',
+      category: "frame",
+      isTradeable: true,
+    },
+    {
+      name: "Diamond Frame",
+      description: "Legendární diamantový rámeček",
+      price: 5000,
+      rarity: 'LEGENDARY',
+      type: 'COSMETIC',
+      category: "frame",
+      isTradeable: false,
+    },
+    
+    // COSMETIC Items - Avatars
+    {
       name: "Dragon Avatar",
       description: "Epický dračí avatar",
       price: 1500,
@@ -438,14 +642,61 @@ async function seedEconomy() {
       category: "avatar",
       isTradeable: true,
     },
+    {
+      name: "Knight Avatar",
+      description: "Rytířský avatar",
+      price: 500,
+      rarity: 'RARE',
+      type: 'COSMETIC',
+      category: "avatar",
+      isTradeable: true,
+    },
+    {
+      name: "Wizard Avatar",
+      description: "Kouzelný avatar čaroděje",
+      price: 800,
+      rarity: 'RARE',
+      type: 'COSMETIC',
+      category: "avatar",
+      isTradeable: true,
+    },
+    {
+      name: "Phoenix Avatar",
+      description: "Legendární fénix",
+      price: 3000,
+      rarity: 'LEGENDARY',
+      type: 'COSMETIC',
+      category: "avatar",
+      isTradeable: false,
+    },
     
-    // CONSUMABLE Items
+    // COSMETIC Items - Badges
+    {
+      name: "Gold Star Badge",
+      description: "Zlatá hvězda pro nejlepší studenty",
+      price: 750,
+      rarity: 'RARE',
+      type: 'COSMETIC',
+      category: "badge",
+      isTradeable: true,
+    },
+    {
+      name: "Achievement Hunter Badge",
+      description: "Badge pro sběratele achievementů",
+      price: 1200,
+      rarity: 'EPIC',
+      type: 'COSMETIC',
+      category: "badge",
+      isTradeable: true,
+    },
+    
+    // BOOST Items (Consumables)
     {
       name: "XP Potion",
       description: "Zvyšuje XP gain o 50% na 1 hodinu",
       price: 100,
       rarity: 'COMMON',
-      type: 'CONSUMABLE',
+      type: 'BOOST',
       category: "buff",
       isTradeable: true,
     },
@@ -454,18 +705,54 @@ async function seedEconomy() {
       description: "Zvyšuje šanci na rare items o 25%",
       price: 250,
       rarity: 'UNCOMMON',
-      type: 'CONSUMABLE',
+      type: 'BOOST',
+      category: "buff",
+      isTradeable: true,
+    },
+    {
+      name: "Mega XP Potion",
+      description: "Zdvojnásobí XP gain na 2 hodiny",
+      price: 300,
+      rarity: 'RARE',
+      type: 'BOOST',
+      category: "buff",
+      isTradeable: true,
+    },
+    {
+      name: "Skill Boost",
+      description: "Zrychlí skill learning o 30% na 1 hodinu",
+      price: 200,
+      rarity: 'UNCOMMON',
+      type: 'BOOST',
+      category: "buff",
+      isTradeable: true,
+    },
+    {
+      name: "Money Multiplier",
+      description: "Zvýší gold rewards o 50% na 2 hodiny",
+      price: 350,
+      rarity: 'RARE',
+      type: 'BOOST',
+      category: "buff",
+      isTradeable: true,
+    },
+    {
+      name: "Focus Elixir",
+      description: "Maximální koncentrace na 30 minut",
+      price: 150,
+      rarity: 'COMMON',
+      type: 'BOOST',
       category: "buff",
       isTradeable: true,
     },
     
-    // MATERIAL Items
+    // COLLECTIBLE Items (Materials)
     {
       name: "Leather",
       description: "Základní crafting materiál",
       price: 10,
       rarity: 'COMMON',
-      type: 'MATERIAL',
+      type: 'COLLECTIBLE',
       category: "resource",
       isTradeable: true,
     },
@@ -474,30 +761,90 @@ async function seedEconomy() {
       description: "Cenný crafting materiál",
       price: 50,
       rarity: 'RARE',
-      type: 'MATERIAL',
+      type: 'COLLECTIBLE',
+      category: "resource",
+      isTradeable: true,
+    },
+    {
+      name: "Iron Ore",
+      description: "Běžný kov pro crafting",
+      price: 20,
+      rarity: 'COMMON',
+      type: 'COLLECTIBLE',
+      category: "resource",
+      isTradeable: true,
+    },
+    {
+      name: "Mithril",
+      description: "Vzácný magický kov",
+      price: 200,
+      rarity: 'EPIC',
+      type: 'COLLECTIBLE',
+      category: "resource",
+      isTradeable: true,
+    },
+    {
+      name: "Dragon Scale",
+      description: "Legendární crafting materiál",
+      price: 500,
+      rarity: 'LEGENDARY',
+      type: 'COLLECTIBLE',
+      category: "resource",
+      isTradeable: true,
+    },
+    {
+      name: "Enchanted Crystal",
+      description: "Krystal plný magické energie",
+      price: 150,
+      rarity: 'RARE',
+      type: 'COLLECTIBLE',
       category: "resource",
       isTradeable: true,
     },
     
-    // SPECIAL Items
+    // COLLECTIBLE Items (Special)
     {
       name: "Mystery Box",
       description: "Obsahuje náhodný item",
       price: 300,
       rarity: 'RARE',
-      type: 'SPECIAL',
+      type: 'COLLECTIBLE',
+      category: "lootbox",
+      isTradeable: false,
+    },
+    {
+      name: "Epic Loot Chest",
+      description: "Obsahuje epic nebo legendární item",
+      price: 1000,
+      rarity: 'EPIC',
+      type: 'COLLECTIBLE',
+      category: "lootbox",
+      isTradeable: false,
+    },
+    {
+      name: "Starter Pack",
+      description: "Balíček pro nové hráče",
+      price: 150,
+      rarity: 'COMMON',
+      type: 'COLLECTIBLE',
+      category: "lootbox",
+      isTradeable: false,
+    },
+    {
+      name: "Legendary Treasure",
+      description: "Nejlepší lootbox v celém systému",
+      price: 5000,
+      rarity: 'LEGENDARY',
+      type: 'COLLECTIBLE',
       category: "lootbox",
       isTradeable: false,
     }
   ]
 
-  for (const item of items) {
-    await prisma.item.upsert({
-      where: { name: item.name },
-      update: item,
-      create: item
-    })
-  }
+  await prisma.item.createMany({
+    data: items,
+    skipDuplicates: true
+  })
 
   console.log(`✅ Created ${items.length} items`)
 }
@@ -510,6 +857,7 @@ async function seedQuests() {
   console.log('📋 Seeding quests...')
 
   const quests = [
+    // Easy Quests
     {
       title: "Matematický Maraton",
       description: "Vyřešte 10 matematických příkladů z algebry",
@@ -518,8 +866,55 @@ async function seedQuests() {
       requiredLevel: 0,
       xpReward: 100,
       moneyReward: 50,
-      createdBy: "system"
+      createdBy: "system",
+      questType: 'DAILY'
     },
+    {
+      title: "První Krok",
+      description: "Dokončit první úkol v systému",
+      category: "Tutorial",
+      difficulty: 'EASY',
+      requiredLevel: 0,
+      xpReward: 50,
+      moneyReward: 25,
+      createdBy: "system",
+      questType: 'STANDARD'
+    },
+    {
+      title: "Angličtina pro Začátečníky",
+      description: "Přeložte 5 jednoduchých vět do angličtiny",
+      category: "Language",
+      difficulty: 'EASY',
+      requiredLevel: 0,
+      xpReward: 80,
+      moneyReward: 40,
+      createdBy: "system",
+      questType: 'DAILY'
+    },
+    {
+      title: "Git Basics",
+      description: "Proveďte první commit a push do repozitáře",
+      category: "Programming",
+      difficulty: 'EASY',
+      requiredLevel: 0,
+      xpReward: 120,
+      moneyReward: 60,
+      createdBy: "system",
+      questType: 'STANDARD'
+    },
+    {
+      title: "Čtení s Porozuměním",
+      description: "Přečtěte si krátký text a odpovězte na 5 otázek",
+      category: "Literature",
+      difficulty: 'EASY',
+      requiredLevel: 0,
+      xpReward: 90,
+      moneyReward: 45,
+      createdBy: "system",
+      questType: 'DAILY'
+    },
+    
+    // Medium Quests
     {
       title: "Vědecký Experiment",
       description: "Proveďte experiment o fotosyntéze a napište report",
@@ -528,17 +923,8 @@ async function seedQuests() {
       requiredLevel: 5,
       xpReward: 250,
       moneyReward: 100,
-      createdBy: "system"
-    },
-    {
-      title: "Literární Analýza",
-      description: "Napište rozbor 3 klasických děl",
-      category: "Literature",
-      difficulty: 'HARD',
-      requiredLevel: 10,
-      xpReward: 500,
-      moneyReward: 200,
-      createdBy: "system"
+      createdBy: "system",
+      questType: 'STANDARD'
     },
     {
       title: "Programovací Výzva",
@@ -548,7 +934,8 @@ async function seedQuests() {
       requiredLevel: 8,
       xpReward: 300,
       moneyReward: 150,
-      createdBy: "system"
+      createdBy: "system",
+      questType: 'STANDARD'
     },
     {
       title: "Historická Prezentace",
@@ -558,17 +945,127 @@ async function seedQuests() {
       requiredLevel: 3,
       xpReward: 200,
       moneyReward: 75,
-      createdBy: "system"
+      createdBy: "system",
+      questType: 'STANDARD'
+    },
+    {
+      title: "Geometrické Důkazy",
+      description: "Dokažte 3 geometrické věty",
+      category: "Math",
+      difficulty: 'MEDIUM',
+      requiredLevel: 6,
+      xpReward: 280,
+      moneyReward: 120,
+      createdBy: "system",
+      questType: 'STANDARD'
+    },
+    {
+      title: "Web Development Project",
+      description: "Vytvoř responzivní landing page",
+      category: "Programming",
+      difficulty: 'MEDIUM',
+      requiredLevel: 10,
+      xpReward: 350,
+      moneyReward: 175,
+      createdBy: "system",
+      questType: 'WEEKLY'
+    },
+    {
+      title: "Chemická Rovnice",
+      description: "Vyvažte 10 chemických rovnic",
+      category: "Science",
+      difficulty: 'MEDIUM',
+      requiredLevel: 7,
+      xpReward: 220,
+      moneyReward: 90,
+      createdBy: "system",
+      questType: 'DAILY'
+    },
+    {
+      title: "SQL Databáze",
+      description: "Vytvoř databázové schéma pro e-shop",
+      category: "Programming",
+      difficulty: 'MEDIUM',
+      requiredLevel: 12,
+      xpReward: 320,
+      moneyReward: 160,
+      createdBy: "system",
+      questType: 'STANDARD'
+    },
+    
+    // Hard Quests
+    {
+      title: "Literární Analýza",
+      description: "Napište rozbor 3 klasických děl",
+      category: "Literature",
+      difficulty: 'HARD',
+      requiredLevel: 10,
+      xpReward: 500,
+      moneyReward: 200,
+      createdBy: "system",
+      questType: 'STANDARD'
+    },
+    {
+      title: "Pokročilý Kalkulus",
+      description: "Řešte integrály a derivace složitých funkcí",
+      category: "Math",
+      difficulty: 'HARD',
+      requiredLevel: 15,
+      xpReward: 600,
+      moneyReward: 250,
+      createdBy: "system",
+      questType: 'WEEKLY'
+    },
+    {
+      title: "Full Stack Application",
+      description: "Vytvořte kompletní aplikaci s backendem a frontendem",
+      category: "Programming",
+      difficulty: 'HARD',
+      requiredLevel: 20,
+      xpReward: 800,
+      moneyReward: 400,
+      createdBy: "system",
+      questType: 'WEEKLY'
+    },
+    {
+      title: "Výzkumný Paper",
+      description: "Napište vědecký článek s výzkumem a experimenty",
+      category: "Science",
+      difficulty: 'HARD',
+      requiredLevel: 18,
+      xpReward: 750,
+      moneyReward: 350,
+      createdBy: "system",
+      questType: 'WEEKLY'
+    },
+    {
+      title: "Machine Learning Model",
+      description: "Natrénujte ML model na real-world datech",
+      category: "Programming",
+      difficulty: 'HARD',
+      requiredLevel: 25,
+      xpReward: 1000,
+      moneyReward: 500,
+      createdBy: "system",
+      questType: 'WEEKLY'
+    },
+    {
+      title: "Literární Dílo",
+      description: "Napište vlastní povídku (min. 5000 slov)",
+      category: "Literature",
+      difficulty: 'HARD',
+      requiredLevel: 12,
+      xpReward: 650,
+      moneyReward: 300,
+      createdBy: "system",
+      questType: 'WEEKLY'
     }
   ]
 
-  for (const quest of quests) {
-    await prisma.quest.upsert({
-      where: { title: quest.title },
-      update: quest,
-      create: quest
-    })
-  }
+  await prisma.quest.createMany({
+    data: quests,
+    skipDuplicates: true
+  })
 
   console.log(`✅ Created ${quests.length} quests`)
 }
@@ -614,16 +1111,14 @@ async function seedGuilds() {
     }
   ]
 
-  for (const guild of guilds) {
-    try {
-      await prisma.guild.upsert({
-        where: { name: guild.name },
-        update: guild,
-        create: guild
-      })
-    } catch (error) {
-      console.log(`⚠️  Could not create guild ${guild.name}`)
-    }
+  try {
+    await prisma.guild.createMany({
+      data: guilds,
+      skipDuplicates: true
+    })
+    console.log(`✅ Created ${guilds.length} guilds`)
+  } catch (error) {
+    console.log(`⚠️  Could not create guilds (might need existing users as leaders)`)
   }
 
   console.log(`✅ Guild seeding completed`)
