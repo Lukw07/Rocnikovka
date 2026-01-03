@@ -22,7 +22,7 @@
  * ============================================================================
  */
 
-import { PrismaClient } from '../app/lib/generated'
+import { PrismaClient, AchievementType, AchievementCategory, ItemType, ItemRarity, QuestDifficulty } from '../app/lib/generated'
 
 const prisma = new PrismaClient()
 
@@ -374,7 +374,7 @@ async function seedAchievements() {
   ]
 
   await prisma.achievement.createMany({
-    data: [...levelAchievements, ...questAchievements, ...xpAchievements, ...skillAchievements, ...socialAchievements, ...jobAchievements, ...streakAchievements],
+    data: [...levelAchievements, ...questAchievements, ...xpAchievements, ...skillAchievements, ...socialAchievements, ...jobAchievements, ...streakAchievements] as any,
     skipDuplicates: true
   })
 
@@ -842,7 +842,7 @@ async function seedEconomy() {
   ]
 
   await prisma.item.createMany({
-    data: items,
+    data: items as any,
     skipDuplicates: true
   })
 
@@ -1063,7 +1063,7 @@ async function seedQuests() {
   ]
 
   await prisma.quest.createMany({
-    data: quests,
+    data: quests as any,
     skipDuplicates: true
   })
 
