@@ -10,19 +10,25 @@ datasource db {
 }
 
 model User {
-  id                     String               @id @default(cuid())
-  email                  String               @unique
-  name                   String
-  role                   UserRole             @default(STUDENT)
-  classId                String?
-  grade                  Int?
-  bakalariId             String?              @unique
-  bakalariToken          String?
-  avatarUrl              String?
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
-  achievementAwardsGiven AchievementAward[]   @relation("AchievementAwardedBy")
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  role          UserRole @default(STUDENT)
+  classId       String?
+  grade         Int?
+  bakalariId    String?  @unique
+  bakalariToken String?
+  avatarUrl     String?
+
+  // Currency fields
+  gold Int @default(0) // Základní měna získaná z aktivit
+  gems Int @default(0) // Premium měna (vzácnější, pro speciální věci)
+
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  achievementAwardsGiven AchievementAward[]    @relation("AchievementAwardedBy")
   achievementAwards      AchievementAward[]
+  achievementProgresses  AchievementProgress[]
   enrollments            Enrollment[]
   eventParticipations    EventParticipation[]
   jobs                   Job[]
@@ -31,15 +37,47 @@ model User {
   purchases              Purchase[]
   systemLogs             SystemLog[]
   teacherDailyBudgets    TeacherDailyBudget[]
-  class                  Class?               @relation(fields: [classId], references: [id])
+  class                  Class?                @relation(fields: [classId], references: [id])
   xpAudits               XPAudit[]
   badges                 UserBadge[]
+  xpSources              XPSource[]
+  streak                 Streak?
+  dailyActivities        DailyActivity[]
+  skillPoints            SkillPoint?
+  playerSkills           PlayerSkill[]
+  reputation             Reputation?
+  reputationLogs         ReputationLog[]
+  questProgresses        QuestProgress[]
+  guildMembers           GuildMember[]
+  randomFinds            RandomFind[]
+  randomFindCooldowns    RandomFindCooldown[]
+  userInventory          UserInventory[]
+  tradesRequested        Trade[]               @relation("TradeRequester")
+  tradesReceived         Trade[]               @relation("TradeRecipient")
+  contrabandTrades       ContrabandTrade[]
+  personalGoals          PersonalGoal[]
+  virtualAwards          VirtualAward[]
+  personalSpace          PersonalSpace?
+  notifications          Notification[]
+
+  // Friends system
+  friendshipsInitiated   Friendship[]    @relation("FriendshipInitiator")
+  friendshipsReceived    Friendship[]    @relation("FriendshipReceiver")
+  friendRequestsSent     FriendRequest[] @relation("FriendRequestSender")
+  friendRequestsReceived FriendRequest[] @relation("FriendRequestReceiver")
+
+  // Friend Quests system
+  friendQuestsAsUser1 FriendQuestProgress[] @relation("FriendQuestUser1")
+  friendQuestsAsUser2 FriendQuestProgress[] @relation("FriendQuestUser2")
 
   @@index([role])
   @@index([classId])
   @@index([bakalariId])
   @@index([grade])
+  @@index([gold])
+  @@index([gems])
 }
+
 view LeaderboardView {
   id         String   @unique
   name       String
@@ -90,26 +128,54 @@ model Enrollment {
   @@index([classId])
 }
 
+model JobCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  icon        String? // Emoji nebo ikona
+  color       String? // Hex barva pro UI
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  jobs        Job[]
+
+  @@index([isActive])
+}
+
 model Job {
-  id          String          @id @default(cuid())
-  title       String
-  description String
-  subjectId   String
-  teacherId   String
-  xpReward    Int
-  moneyReward Int
-  status      JobStatus       @default(OPEN)
-  maxStudents Int             @default(1)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  closedAt    DateTime?
-  subject     Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  teacher     User            @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  assignments JobAssignment[]
+  id                 String          @id @default(cuid())
+  title              String
+  description        String
+  subjectId          String
+  teacherId          String
+  categoryId         String?
+  tier               JobTier         @default(BASIC)
+  xpReward           Int
+  moneyReward        Int
+  skillpointsReward  Int             @default(1)
+  reputationReward   Int             @default(0)
+  status             JobStatus       @default(OPEN)
+  maxStudents        Int             @default(1)
+  isTeamJob          Boolean         @default(false)
+  requiredLevel      Int             @default(0)
+  requiredSkillId    String?
+  requiredSkillLevel Int?
+  estimatedHours     Int?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  closedAt           DateTime?
+  subject            Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher            User            @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  category           JobCategory?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  requiredSkill      Skill?          @relation(fields: [requiredSkillId], references: [id], onDelete: SetNull)
+  assignments        JobAssignment[]
 
   @@index([subjectId])
   @@index([teacherId])
+  @@index([categoryId])
   @@index([status])
+  @@index([tier])
+  @@index([isTeamJob])
 }
 
 model JobAssignment {
@@ -185,13 +251,29 @@ model Item {
   imageUrl      String?
   isActive      Boolean    @default(true)
   isPurchasable Boolean    @default(true)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  purchases     Purchase[]
+
+  // Trading properties
+  isTradeable Boolean @default(true)
+
+  // Item effects (optional JSON for complex items)
+  effects Json? // { "xpBoost": 10, "duration": 3600 }
+
+  // Cosmetic properties
+  category String? // "avatar", "background", "frame", "badge"
+
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  purchases          Purchase[]
+  randomFinds        RandomFind[]
+  userInventory      UserInventory[]
+  tradeItems         TradeItem[]
+  friendQuestRewards FriendQuestReward[]
 
   @@index([rarity])
   @@index([type])
   @@index([isActive])
+  @@index([isPurchasable])
+  @@index([isTradeable])
 }
 
 model Purchase {
@@ -208,18 +290,67 @@ model Purchase {
 }
 
 model Achievement {
-  id          String             @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String
   badgeUrl    String?
-  criteria    String?
-  target      Int?
-  isActive    Boolean            @default(true)
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  awards      AchievementAward[]
+  criteria    String? // Textový popis jak dosáhnout achievement
+  target      Int? // Cílová hodnota pro progressive achievements
+
+  // Nové atributy
+  type     AchievementType     @default(NORMAL)
+  category AchievementCategory @default(OTHER)
+  isHidden Boolean             @default(false) // Deprecated - use type instead
+  isActive Boolean             @default(true)
+
+  // Časové omezení (pro TEMPORARY achievementy)
+  availableFrom DateTime? // Datum od kdy je achievement dostupný
+  availableTo   DateTime? // Datum do kdy je achievement dostupný
+
+  // Odměny
+  xpReward          Int @default(0) // XP odměna za achievement
+  skillpointsReward Int @default(0) // Skillpoints odměna
+  reputationReward  Int @default(0) // Reputace odměna
+  moneyReward       Int @default(0) // Peníze odměna
+
+  // Icon & vizualizace
+  icon   String? // Emoji nebo icon identifikátor
+  color  String? // Hex barva pro UI
+  rarity ItemRarity @default(COMMON) // Rarita achievementu
+
+  // Metadata
+  sortOrder Int      @default(0) // Pro řazení v UI
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  awards     AchievementAward[]
+  progresses AchievementProgress[]
 
   @@index([isActive])
+  @@index([type])
+  @@index([category])
+  @@index([availableFrom])
+  @@index([availableTo])
+}
+
+// Tracking progressu pro progressive achievementy
+model AchievementProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  currentValue  Int      @default(0) // Aktuální hodnota (např. kolik XP získáno)
+  targetValue   Int // Cílová hodnota (zkopírováno z achievement.target)
+  lastUpdated   DateTime @updatedAt
+  createdAt     DateTime @default(now())
+
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@index([currentValue])
 }
 
 model AchievementAward {
@@ -239,22 +370,59 @@ model AchievementAward {
   @@index([requestId])
 }
 
+// Typy eventů
+enum EventType {
+  TIMED // Časově omezený event (např. double XP weekend)
+  STORY // Příběhový event s fázemi
+  BOSS_BATTLE // Boss fight event
+  SEASONAL // Sezónní event (vánoce, Halloween)
+  COMPETITION // Soutěž mezi studenty/guildami
+}
+
+// Kategorie eventů
+enum EventCategory {
+  ACADEMIC // Akademický event
+  SOCIAL // Sociální event
+  COMPETITION // Soutěžní event
+  SPECIAL // Speciální event
+  SEASONAL // Sezónní event
+}
+
 model Event {
-  id             String               @id @default(cuid())
-  description    String?
-  xpBonus        Int                  @default(0)
-  isActive       Boolean              @default(true)
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-  endsAt         DateTime?
-  rarityReward   ItemRarity?
-  startsAt       DateTime
-  title          String
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  type         EventType     @default(TIMED)
+  category     EventCategory @default(SPECIAL)
+  xpBonus      Int           @default(0)
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  startsAt     DateTime
+  endsAt       DateTime?
+  rarityReward ItemRarity?
+
+  // Story-driven eventy
+  storyContent    String? // Obsah příběhu v Markdown
+  unlockCondition Json? // Podmínky pro unlock (level, quest, achievement)
+
+  // Odměny
+  coinReward  Int   @default(0)
+  itemRewards Json? // Pole itemů k udělení
+
+  // Boss reference (propojení s existujícím dungeon systémem)
+  dungeonBossId String?
+
+  // Relations
   participations EventParticipation[]
+  phases         EventPhase[] // Pro story-driven eventy
+  rewards        EventReward[] // Všechny odměny pro event
 
   @@index([startsAt])
   @@index([endsAt])
   @@index([isActive])
+  @@index([type])
+  @@index([category])
 }
 
 model EventParticipation {
@@ -263,13 +431,107 @@ model EventParticipation {
   userId    String
   requestId String?
   createdAt DateTime @default(now())
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Progress tracking
+  progress       Int       @default(0) // 0-100 procent
+  currentPhaseId String? // Pro story eventy
+  isCompleted    Boolean   @default(false)
+  completedAt    DateTime?
+
+  event        Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentPhase EventPhase? @relation(fields: [currentPhaseId], references: [id])
 
   @@unique([eventId, userId])
   @@index([eventId])
   @@index([userId])
   @@index([requestId])
+  @@index([isCompleted])
+  @@index([eventId, userId, isCompleted], name: "event_user_status")
+}
+
+// Fáze pro story-driven eventy
+model EventPhase {
+  id              String   @id @default(cuid())
+  eventId         String
+  phaseNumber     Int // Pořadí fáze (1, 2, 3...)
+  title           String
+  description     String?
+  storyContent    String? // Obsah příběhu této fáze
+  unlockCondition Json? // Podmínky pro unlock této fáze
+  xpReward        Int      @default(0)
+  coinReward      Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  event          Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  participations EventParticipation[]
+
+  @@unique([eventId, phaseNumber])
+  @@index([eventId])
+}
+
+// Všechny typy odměn pro event
+model EventReward {
+  id         String          @id @default(cuid())
+  eventId    String
+  rewardType EventRewardType
+  amount     Int             @default(0)
+  itemId     String? // Reference na item pokud je type ITEM
+  metadata   Json? // Dodatečná data
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([rewardType])
+}
+
+enum EventRewardType {
+  XP
+  COINS
+  ITEM
+  BADGE
+  TITLE
+  ACHIEVEMENT
+}
+
+// Notifikace pro achievementy a další gamifikační události
+enum NotificationType {
+  ACHIEVEMENT_UNLOCKED // Získán nový achievement
+  ACHIEVEMENT_PROGRESS // Pokrok v progressive achievementu
+  STREAK_MILESTONE // Dosažen streak milník
+  LEVEL_UP // Zvýšení levelu
+  QUEST_COMPLETED // Dokončení questu
+  REWARD_RECEIVED // Obdržení odměny
+  GUILD_INVITE // Pozvánka do guildy
+  EVENT_STARTED // Nový event začal
+  EVENT_ENDING_SOON // Event brzy končí
+  BOSS_SPAWNED // Boss se objevil
+  BOSS_DEFEATED // Boss byl poražen
+  EVENT_PHASE_UNLOCKED // Nová fáze příběhu
+  FRIEND_REQUEST // Nová žádost o přátelství
+  FRIEND_REQUEST_ACCEPTED // Žádost o přátelství přijata
+  FRIEND_EVENT_JOIN // Přítel se připojil k eventu
+  FRIEND_ACHIEVEMENT // Přítel získal achievement
+  SYSTEM // Systémová notifikace
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json? // Dodatečná data (např. achievementId, questId)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([type])
+  @@index([userId, isRead, createdAt], name: "notification_unread")
 }
 
 model SystemLog {
@@ -315,6 +577,14 @@ enum JobStatus {
   CANCELLED
 }
 
+enum JobTier {
+  BASIC // Základní úkoly, nízká odměna
+  INTERMEDIATE // Středně náročné úkoly
+  ADVANCED // Pokročilé úkoly
+  EXPERT // Expertní úkoly, vysoká odměna
+  LEGENDARY // Legendární úkoly, maximální odměna
+}
+
 enum JobAssignmentStatus {
   APPLIED
   APPROVED
@@ -341,6 +611,28 @@ enum ItemType {
   COSMETIC
   BOOST
   COLLECTIBLE
+}
+
+enum AchievementType {
+  NORMAL // Standardní achievement, vždy viditelný
+  HIDDEN // Skrytý achievement - uživatel neví o jeho existenci dokud ho nedosáhne
+  TEMPORARY // Časově omezený achievement (např. event-based)
+  PROGRESSIVE // Achievement s postupným progressem (např. "získej 100 XP")
+  STREAK // Achievement spojený se streaky
+}
+
+enum AchievementCategory {
+  LEVEL // Dosažení určitého levelu
+  XP // Získání určitého množství XP
+  ACTIVITY // Aktivity (streaky, denní úkoly)
+  QUEST // Dokončení questů
+  JOB // Dokončení jobů
+  SKILL // Dovednosti a skillpoints
+  REPUTATION // Reputace
+  SOCIAL // Guildy, trading
+  COLLECTION // Sběratelské achievementy
+  SPECIAL // Speciální události
+  OTHER // Ostatní
 }
 
 enum LogLevel {
@@ -375,4 +667,1526 @@ model UserBadge {
   @@unique([userId, badgeId])
   @@index([userId])
   @@index([badgeId])
+}
+
+// ============================================================================
+// GAMIFICATION: Skillpoints & Reputation System
+// ============================================================================
+
+/**
+ * Skillpoints - earned from leveling up
+ * Each level grants skillpoints to distribute among skills
+ * Helps track player specialization and progression
+ */
+model SkillPoint {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  available Int      @default(0) // Unspent skillpoints
+  spent     Int      @default(0) // Spent skillpoints
+  total     Int      @default(0) // Total earned (available + spent)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/**
+ * Player Skills - individual skill progression
+ * Each skill can be leveled up using skillpoints
+ * Different skills represent different competencies
+ */
+model PlayerSkill {
+  id            String    @id @default(cuid())
+  userId        String
+  skillId       String
+  level         Int       @default(0) // 0-10 typically
+  experience    Int       @default(0) // XP within the skill
+  points        Int       @default(0) // Skillpoints invested
+  unlockLevel   Int       @default(0) // Level when skill becomes available
+  lastLeveledAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill         Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@index([userId])
+  @@index([skillId])
+  @@index([level])
+}
+
+/**
+ * Master list of available skills
+ * Defined by admins, students specialize in them
+ */
+model Skill {
+  id              String        @id @default(cuid())
+  name            String
+  description     String
+  category        String // e.g., "Academic", "Social", "Leadership", "Creative"
+  icon            String? // Icon/emoji
+  maxLevel        Int           @default(10)
+  unlockLevel     Int           @default(0) // Minimum character level to unlock
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  playerSkills    PlayerSkill[]
+  requiredForJobs Job[] // Jobs that require this skill
+
+  @@index([category])
+  @@index([isActive])
+}
+
+/**
+ * Reputation - character alignment and standing
+ * Reputation with different factions/groups
+ * Affects available quests, prices, and special privileges
+ */
+model Reputation {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  points    Int      @default(0) // Can be negative (disliked) or positive (loved)
+  tier      Int      @default(0) // Reputation tier (0-10), affects benefits
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tier])
+}
+
+/**
+ * Reputation log - track reputation changes
+ * Each action that affects reputation is logged
+ */
+model ReputationLog {
+  id         String   @id @default(cuid())
+  userId     String
+  change     Int // Can be positive or negative
+  reason     String // Why reputation changed
+  sourceId   String? // ID of action that caused change (job, achievement, etc.)
+  sourceType String? // Type of source (job, achievement, event)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([sourceId])
+}
+
+// ============================================================================
+// GAMIFICATION: Streaks & Activity Tracking
+// ============================================================================
+
+enum XPSourceType {
+  ATTENDANCE // Přítomnost v hodině
+  JOB // Splnění jobu
+  QUEST // Splnění questu
+  ACTIVITY // Aktivita v hodinách
+  EVENT // Účast na eventu
+  ACHIEVEMENT // Dosažení achievementu
+  BONUS // Bonusové XP (streak, speciální akce)
+}
+
+model XPSource {
+  id          String       @id @default(cuid())
+  type        XPSourceType
+  userId      String
+  amount      Int // Základní XP bez bonusů
+  bonusAmount Int          @default(0) // Streak bonus, atd.
+  totalAmount Int // baseAmount + bonusAmount
+  multiplier  Float        @default(1.0) // Multiplier aplikovaný (streak, special event)
+  reason      String // "Job completed", "Attended class", etc.
+  sourceId    String? // ID jobAssignment, eventParticipation, atd.
+  sourceType  String? // Type of sourceId (jobAssignment, eventParticipation)
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([sourceId])
+}
+
+model Streak {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  currentStreak      Int       @default(0) // Počet po sobě jdoucích dní s aktivitou
+  maxStreak          Int       @default(0) // Historické maximum
+  lastActivityDate   DateTime? // Poslední den s aktivitou
+  streakBrokenAt     DateTime? // Když se streak prolomil
+  totalParticipation Int       @default(0) // Počet aktivit za celý čas
+  currentMultiplier  Float     @default(1.0) // Aktuální XP multiplikátor
+
+  // Milníky a odměny
+  milestonesReached Int[]     @default([]) // Pole dosažených milníků (např. [7, 30, 100])
+  lastRewardedAt    DateTime? // Kdy byla naposledy udělena odměna za streak
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewards StreakReward[] // Historie odměn za streaky
+
+  @@index([userId])
+  @@index([currentStreak])
+  @@index([maxStreak])
+}
+
+// Streak odměny - tracking udělených odměn za dosažené milníky
+model StreakReward {
+  id          String   @id @default(cuid())
+  streakId    String
+  milestone   Int // Jaký milník byl dosažen (např. 7, 30, 100 dní)
+  xpReward    Int      @default(0)
+  moneyReward Int      @default(0)
+  itemReward  String? // ID itemu nebo achievement
+  createdAt   DateTime @default(now())
+
+  streak Streak @relation(fields: [streakId], references: [id], onDelete: Cascade)
+
+  @@index([streakId])
+  @@index([milestone])
+}
+
+// Denní tracking pro streaky - pro přesné výpočty
+model DailyActivity {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime @db.Date // Český čas
+  xpEarned      Int      @default(0) // Celkem XP za den
+  activityCount Int      @default(0) // Počet aktivit
+  sources       String[] // Array of XPSourceTypes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+}
+
+// ============================================================================
+// GAMIFICATION: Quests System
+// ============================================================================
+
+enum QuestDifficulty {
+  EASY // Nováčci - 50-100 XP
+  MEDIUM // Průměrní - 100-300 XP
+  HARD // Pokročilí - 300-800 XP
+  LEGENDARY // Elita - 800+ XP
+}
+
+enum QuestStatus {
+  ACTIVE // Quest je dostupný
+  INACTIVE // Quest není dostupný
+  ARCHIVED // Historický quest
+}
+
+enum QuestType {
+  STANDARD // Běžný quest
+  MINI_GAME // Quest s mini hrou
+  GUILD // Guild quest
+  DAILY // Denní quest
+  WEEKLY // Týdenní quest
+  EVENT // Speciální event quest
+}
+
+/**
+ * Quest - hlavní task system
+ * Studenti mohou přijmout questy, plnit jejich cíle a obdržet rewards
+ */
+model Quest {
+  id                String          @id @default(cuid())
+  title             String
+  description       String
+  category          String // e.g., "Math", "Science", "Social", "Challenge"
+  difficulty        QuestDifficulty
+  questType         QuestType       @default(STANDARD) // STANDARD, MINI_GAME, GUILD, DAILY, WEEKLY
+  requiredLevel     Int             @default(0) // Minimální level pro přijmutí
+  xpReward          Int
+  moneyReward       Int             @default(0)
+  skillpointsReward Int             @default(0)
+  reputationReward  Int             @default(0)
+  status            QuestStatus     @default(ACTIVE)
+  isRepeatable      Boolean         @default(false)
+  expiresAt         DateTime? // Pro časově omezené questy
+  guildId           String? // Pro guild questy
+  miniGameType      String? // Typ mini hry (quiz, memory, puzzle, math, typing)
+  miniGameData      Json? // Data pro mini hru (questions, settings, etc.)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String // Teacher/Admin ID
+
+  // Relations
+  questProgresses QuestProgress[]
+  prerequisiteFor Quest[]         @relation("QuestPrerequisites")
+  prerequisites   Quest[]         @relation("QuestPrerequisites")
+  guild           Guild?          @relation(fields: [guildId], references: [id], onDelete: SetNull)
+
+  @@index([category])
+  @@index([difficulty])
+  @@index([questType])
+  @@index([requiredLevel])
+  @@index([status])
+  @@index([guildId])
+  @@index([isRepeatable])
+  @@index([status, requiredLevel, category], name: "quest_search")
+}
+
+/**
+ * Quest Progress - tracking player progress
+ * Slouží k sledování, zda hráč quest splnil
+ */
+model QuestProgress {
+  id            String    @id @default(cuid())
+  userId        String
+  questId       String
+  status        String    @default("ACCEPTED") // "ACCEPTED", "IN_PROGRESS", "COMPLETED", "ABANDONED"
+  progress      Int       @default(0) // 0-100 pro sledování progresu
+  miniGameScore Int? // Skóre z mini hry
+  miniGameData  Json? // Data o průběhu mini hry
+  startedAt     DateTime  @default(now())
+  completedAt   DateTime?
+  abandonedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest Quest @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId])
+  @@index([userId])
+  @@index([questId])
+  @@index([status])
+  @@index([completedAt])
+  @@index([userId, status], name: "user_quest_active")
+}
+
+// ============================================================================
+// GAMIFICATION: Guilds System
+// ============================================================================
+
+enum GuildMemberRole {
+  LEADER // Vůdce gildy
+  OFFICER // Důstojník
+  MEMBER // Člen
+}
+
+/**
+ * Guild - skupiny hráčů s společným pokladem a aktivitami
+ */
+model Guild {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  leaderId    String
+  treasury    Int      @default(0) // Skupinové peníze
+  level       Int      @default(1) // Úroveň gildy
+  xp          Int      @default(0) // Celkové XP gildy
+  memberCount Int      @default(1)
+  maxMembers  Int      @default(10) // Maximum členů
+  motto       String? // Motto gildy
+  logoUrl     String? // Logo gildy
+  isPublic    Boolean  @default(true) // Veřejná vs. soukromá
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members      GuildMember[]
+  quests       Quest[] // Guild questy
+  activities   GuildActivity[]
+  benefits     GuildBenefit[]
+  chatMessages GuildChatMessage[]
+
+  @@index([leaderId])
+  @@index([level])
+  @@index([isPublic])
+}
+
+/**
+ * Guild Member - členství v gildě
+ */
+model GuildMember {
+  id               String          @id @default(cuid())
+  userId           String
+  guildId          String
+  role             GuildMemberRole @default(MEMBER)
+  contributedXP    Int             @default(0) // XP přispěl do gildy
+  contributedMoney Int             @default(0) // Peníze přispěl do gildy
+  joinedAt         DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guild        Guild              @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  chatMessages GuildChatMessage[]
+
+  @@unique([userId, guildId])
+  @@index([userId])
+  @@index([guildId])
+  @@index([role])
+}
+
+/**
+ * Guild Activity - log aktivit v gildě
+ */
+model GuildActivity {
+  id        String   @id @default(cuid())
+  guildId   String
+  userId    String
+  action    String // "quest_completed", "member_joined", "treasure_added", atd.
+  details   String?
+  createdAt DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([createdAt])
+  @@index([guildId, createdAt], name: "guild_recent_activity")
+}
+
+/**
+ * Guild Benefit - výhody pro guildu podle levelu
+ */
+model GuildBenefit {
+  id            String   @id @default(cuid())
+  guildId       String
+  name          String
+  description   String
+  benefitType   String // "XP_BOOST", "MONEY_BOOST", "QUEST_BONUS", "SHOP_DISCOUNT"
+  value         Int // Procentuální bonus (10 = 10%)
+  requiredLevel Int      @default(1)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([isActive])
+}
+
+/**
+ * Guild Chat Message - chat v gildě
+ */
+model GuildChatMessage {
+  id        String   @id @default(cuid())
+  guildId   String
+  memberId  String // GuildMember ID
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guild  Guild       @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  member GuildMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// GAMIFICATION: Dungeon/Boss System
+// ============================================================================
+
+enum DungeonStatus {
+  AVAILABLE // Dungeon je dostupný
+  IN_COMBAT // Probíhá boj
+  COMPLETED // Dungeon je hotový
+  FAILED // Boj byl prohran
+}
+
+/**
+ * Boss - nepřítelé v dungeonech
+ */
+model Boss {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  hp          Int
+  maxHp       Int
+  level       Int
+  xpReward    Int
+  moneyReward Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  dungeonRuns DungeonRun[]
+
+  @@index([level])
+  @@index([isActive])
+}
+
+/**
+ * Dungeon Run - instance bossfight
+ */
+model DungeonRun {
+  id             String        @id @default(cuid())
+  bossId         String
+  leaderId       String
+  status         DungeonStatus @default(AVAILABLE)
+  currentHp      Int
+  totalDamage    Int           @default(0)
+  participantIds String[] // Array of user IDs
+  startedAt      DateTime      @default(now())
+  completedAt    DateTime?
+  updatedAt      DateTime      @updatedAt
+
+  boss      Boss        @relation(fields: [bossId], references: [id], onDelete: Cascade)
+  damageLog DamageLog[]
+
+  @@index([bossId])
+  @@index([leaderId])
+  @@index([status])
+}
+
+/**
+ * Damage Log - zaznamenání příspěvků k bossfightu
+ */
+model DamageLog {
+  id           String   @id @default(cuid())
+  dungeonRunId String
+  userId       String
+  damage       Int
+  timestamp    DateTime @default(now())
+
+  dungeonRun DungeonRun @relation(fields: [dungeonRunId], references: [id], onDelete: Cascade)
+
+  @@index([dungeonRunId])
+  @@index([userId])
+}
+
+// ============================================================================
+// GAMIFICATION: Random Finds & Treasure
+// ============================================================================
+
+/**
+ * Random Find - náhodné objevy předmětů
+ */
+model RandomFind {
+  id      String     @id @default(cuid())
+  userId  String
+  itemId  String? // Odkaz na Item pokud je předmět
+  name    String
+  rarity  ItemRarity
+  value   Int // Peníze/pointy
+  foundAt DateTime   @default(now())
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([rarity])
+}
+
+// ============================================================================
+// GAMIFICATION: Trading System
+// ============================================================================
+
+enum TradeStatus {
+  PENDING // Čekání na přijetí
+  ACCEPTED // Akceptováno
+  REJECTED // Odmítnuté
+  COMPLETED // Hotové
+  CANCELLED // Zrušené
+}
+
+/**
+ * Trade - výměna mezi hráči
+ */
+model Trade {
+  id          String      @id @default(cuid())
+  offerId     String      @unique
+  requesterId String
+  recipientId String
+  status      TradeStatus @default(PENDING)
+
+  // Dodatečné info
+  message String? // Zpráva od requestera
+
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  completedAt DateTime?
+  cancelledAt DateTime?
+
+  offer      TradeOffer  @relation(fields: [offerId], references: [id])
+  requester  User        @relation("TradeRequester", fields: [requesterId], references: [id])
+  recipient  User        @relation("TradeRecipient", fields: [recipientId], references: [id])
+  tradeItems TradeItem[]
+
+  @@index([requesterId])
+  @@index([recipientId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([requesterId, status], name: "trade_user_status")
+  @@index([recipientId, status], name: "trade_recipient_status")
+}
+
+/**
+ * Trade Offer - co nabízí/chce hráč
+ */
+model TradeOffer {
+  id             String   @id @default(cuid())
+  offeredItemIds String[] // Array of Item IDs
+  wantedItemIds  String[] // Array of Item IDs
+  createdAt      DateTime @default(now())
+
+  trade Trade?
+
+  @@index([createdAt])
+}
+
+// ============================================================================
+// GAMIFICATION: Black Market
+// ============================================================================
+
+/**
+ * Black Market Item - rizikové zboží
+ */
+model BlackMarketItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Int
+  risk        Int      @default(50) // 0-100, vyšší = horší následky
+  reward      Int // Speciální reward za riziková zboží
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  trades ContrabandTrade[]
+
+  @@index([risk])
+  @@index([isActive])
+}
+
+/**
+ * Contraband Trade - nelegální obchod
+ */
+model ContrabandTrade {
+  id           String   @id @default(cuid())
+  userId       String
+  itemId       String
+  quantity     Int
+  status       String   @default("COMPLETED") // "COMPLETED", "CAUGHT"
+  discoveredBy String? // Guard ID pokud byl chycen
+  createdAt    DateTime @default(now())
+
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item BlackMarketItem @relation(fields: [itemId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ============================================================================
+// GAMIFICATION: Personal Goals
+// ============================================================================
+
+enum GoalStatus {
+  ACTIVE // Aktivní cíl
+  COMPLETED // Hotový cíl
+  ABANDONED // Opuštěný cíl
+  EXPIRED // Vypršelý cíl
+}
+
+/**
+ * Personal Goal - osobní cíle hráčů
+ */
+model PersonalGoal {
+  id           String     @id @default(cuid())
+  userId       String
+  title        String
+  description  String?
+  targetValue  Int
+  currentValue Int        @default(0)
+  reward       Int // XP reward
+  status       GoalStatus @default(ACTIVE)
+  deadline     DateTime?
+  reflection   String? // Textové sebehodnocení k cíli
+  createdAt    DateTime   @default(now())
+  completedAt  DateTime?
+  updatedAt    DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ============================================================================
+// GAMIFICATION: Virtual Awards & Trophies
+// ============================================================================
+
+/**
+ * Virtual Award - virtuální trofeje a ocenění
+ */
+model VirtualAward {
+  id       String     @id @default(cuid())
+  userId   String
+  name     String
+  icon     String // Emoji nebo URL
+  rarity   ItemRarity
+  earnedAt DateTime   @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([rarity])
+}
+
+// ============================================================================
+// GAMIFICATION: Personal Space
+// ============================================================================
+
+/**
+ * Personal Space - osobní prostor hráče
+ */
+model PersonalSpace {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  theme     String   @default("default") // Motiv místnosti
+  layout    String? // JSON string pro pozice prvků
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  furniture Furniture[]
+
+  @@index([userId])
+}
+
+/**
+ * Furniture - nábytek v osobním prostoru
+ */
+model Furniture {
+  id              String   @id @default(cuid())
+  personalSpaceId String
+  name            String
+  type            String // "desk", "chair", "painting", atd.
+  positionX       Int
+  positionY       Int
+  rotation        Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  personalSpace PersonalSpace @relation(fields: [personalSpaceId], references: [id], onDelete: Cascade)
+
+  @@index([personalSpaceId])
+}
+
+// ============================================================================
+// GAMIFICATION: User Inventory System
+// ============================================================================
+
+/**
+ * User Inventory - vlastněné itemy jednotlivých hráčů
+ * Odděluje zakoupené/získané itemy od samotného Item modelu
+ */
+model UserInventory {
+  id         String    @id @default(cuid())
+  userId     String
+  itemId     String
+  quantity   Int       @default(1) // Počet kusů (stackable items)
+  isEquipped Boolean   @default(false) // Pro cosmetic items
+  obtainedAt DateTime  @default(now())
+  usedAt     DateTime? // Pro consumable items
+  expiresAt  DateTime? // Pro časově omezené items
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+  @@index([isEquipped])
+}
+
+// ============================================================================
+// GAMIFICATION: Enhanced Trading System
+// ============================================================================
+
+/**
+ * Trade Item - detailní tracking itemů v tradu
+ * Propojuje Trade s konkrétními itemy a jejich množstvím
+ */
+model TradeItem {
+  id        String   @id @default(cuid())
+  tradeId   String
+  itemId    String
+  quantity  Int      @default(1)
+  isOffered Boolean  @default(true) // true = nabídka, false = poptávka
+  createdAt DateTime @default(now())
+
+  trade Trade @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  item  Item  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([tradeId])
+  @@index([itemId])
+}
+
+// ============================================================================
+// GAMIFICATION: Random Finds Cooldown System
+// ============================================================================
+
+/**
+ * Random Find Cooldown - tracking cooldownů pro náhodné nálezy
+ * Zabraňuje spammování a kontroluje, kdy může hráč najít další item
+ */
+model RandomFindCooldown {
+  id              String   @id @default(cuid())
+  userId          String
+  lastFindAt      DateTime @default(now())
+  nextAvailableAt DateTime // Vypočítané datum dalšího možného nálezu
+  findsToday      Int      @default(1)
+  dailyLimit      Int      @default(5) // Max nálezů za den
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@index([userId])
+  @@index([nextAvailableAt])
+}
+
+// ============================================================================
+// GAMIFICATION: Black Market Rotation System
+// ============================================================================
+
+/**
+ * Black Market Offer - časově omezené nabídky vzácných itemů
+ * Rotují se automaticky (např. každý týden nové itemy)
+ */
+model BlackMarketOffer {
+  id          String     @id @default(cuid())
+  itemId      String // Může být běžný Item nebo speciální
+  name        String // Název nabídky
+  description String?
+  price       Int
+  gemPrice    Int        @default(0) // Alternativní cena v gems
+  rarity      ItemRarity @default(RARE)
+  stock       Int        @default(1) // Omezené množství
+  soldCount   Int        @default(0)
+
+  // Časové omezení
+  availableFrom DateTime
+  availableTo   DateTime
+
+  // Metadata
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false) // Zvýrazněná nabídka
+  discount   Int     @default(0) // Procento slevy
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  purchases BlackMarketPurchase[]
+
+  @@index([isActive])
+  @@index([availableFrom])
+  @@index([availableTo])
+  @@index([isFeatured])
+  @@index([rarity])
+}
+
+/**
+ * Black Market Purchase - tracking nákupů z blackmarketu
+ */
+model BlackMarketPurchase {
+  id        String   @id @default(cuid())
+  userId    String
+  offerId   String
+  pricePaid Int
+  gemsPaid  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  offer BlackMarketOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([offerId])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// GAMIFICATION: Real-Life Rewards System
+// ============================================================================
+
+/**
+ * RealLifeReward - fyzické odměny, které studenti mohou získat za in-game měnu
+ * Omezené zásoby, expirace, různé kategorie
+ */
+model RealLifeReward {
+  id          String         @id @default(cuid())
+  name        String // Např. "Lístek do kina", "Pizza na oběd"
+  description String
+  category    RewardCategory @default(FOOD)
+  imageUrl    String?
+
+  // Cena a dostupnost
+  goldPrice     Int @default(0) // Cena v základní měně
+  gemsPrice     Int @default(0) // Alternativní cena v gems
+  levelRequired Int @default(0) // Minimální level pro nárok
+
+  // Omezené zásoby
+  totalStock     Int     @default(1) // Celkový počet kusů
+  availableStock Int     @default(1) // Zbývající kusy
+  isLimited      Boolean @default(true) // Omezená dostupnost
+
+  // Časové omezení
+  availableFrom DateTime? // Od kdy je dostupná
+  availableTo   DateTime? // Do kdy je dostupná
+
+  // Status a metadata
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+  priority   Int     @default(0) // Pro řazení (vyšší = důležitější)
+
+  // Tracking
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String? // ID učitele, který vytvořil
+
+  claims RewardClaim[]
+
+  @@index([isActive])
+  @@index([category])
+  @@index([availableFrom])
+  @@index([availableTo])
+  @@index([isFeatured])
+  @@index([priority])
+}
+
+enum RewardCategory {
+  FOOD // Jídlo a pití
+  ENTERTAINMENT // Zábava (kino, bowling, atd.)
+  SCHOOL_PERKS // Školní výhody (svobodný úkol, změna místa)
+  MERCHANDISE // Merchandise (trička, hrníčky)
+  GIFT_CARD // Dárkové poukazy
+  EVENT_TICKET // Vstupenky na akce
+  OTHER // Ostatní
+}
+
+/**
+ * RewardClaim - žádost studenta o získání reálné odměny
+ * Workflow: PENDING -> APPROVED/REJECTED -> COMPLETED
+ */
+model RewardClaim {
+  id       String @id @default(cuid())
+  userId   String
+  rewardId String
+
+  // Status workflow
+  status ClaimStatus @default(PENDING)
+
+  // Cena zaplacená studentem
+  goldPaid Int @default(0)
+  gemsPaid Int @default(0)
+
+  // Poznámky a zprávy
+  studentNote String? // Poznámka od studenta
+  adminNote   String? // Poznámka od admina/učitele
+
+  // Schvalování
+  approvedBy     String? // ID učitele, který schválil
+  approvedAt     DateTime?
+  rejectedReason String?
+
+  // Předání odměny
+  completedAt DateTime? // Kdy byla odměna předána
+  completedBy String? // ID učitele, který předal
+
+  // Tracking
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reward RealLifeReward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([rewardId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ClaimStatus {
+  PENDING // Čeká na schválení
+  APPROVED // Schváleno, čeká na předání
+  REJECTED // Zamítnuto
+  COMPLETED // Předáno studentovi
+  CANCELLED // Zrušeno studentem
+}
+
+// ============================================================================
+// GAMIFICATION: Teacher Motivation & Statistics System
+// ============================================================================
+
+/**
+ * TeacherStatistics - komplexní statistiky učitele
+ * Tracking všech aktivit, bodování pro motivační systém
+ */
+model TeacherStatistics {
+  id        String @id @default(cuid())
+  teacherId String @unique
+
+  // Job statistics
+  totalJobsCreated   Int   @default(0)
+  totalJobsCompleted Int   @default(0)
+  totalXPAwarded     Int   @default(0)
+  totalMoneyAwarded  Int   @default(0)
+  averageJobRating   Float @default(0.0) // Průměrné hodnocení jobů studenty
+
+  // Quest statistics
+  totalQuestsCreated   Int   @default(0)
+  totalQuestsCompleted Int   @default(0)
+  questCompletionRate  Float @default(0.0)
+
+  // Event statistics
+  totalEventsCreated     Int @default(0)
+  totalEventParticipants Int @default(0)
+
+  // Engagement metrics
+  totalStudentsHelped Int @default(0) // Unikátních studentů
+  averageResponseTime Int @default(0) // V hodinách
+  activeDaysCount     Int @default(0) // Počet dní s aktivitou
+
+  // Awards & Recognition
+  totalBadgesEarned   Int @default(0)
+  totalAwardsReceived Int @default(0)
+  motivationPoints    Int @default(0) // Body pro žebříček
+
+  // Monthly/Weekly stats (pro trending)
+  monthlyJobsCreated Int @default(0)
+  weeklyJobsCreated  Int @default(0)
+  monthlyXPAwarded   Int @default(0)
+
+  // Tracking
+  lastActivityAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  badges       TeacherBadge[]
+  achievements TeacherAchievement[]
+
+  @@index([teacherId])
+  @@index([motivationPoints])
+  @@index([totalJobsCreated])
+  @@index([lastActivityAt])
+}
+
+/**
+ * TeacherBadge - odznaky pro učitele za výjimečnou práci
+ */
+model TeacherBadge {
+  id          String           @id @default(cuid())
+  teacherId   String
+  badgeType   TeacherBadgeType
+  title       String
+  description String
+  icon        String // Emoji nebo URL
+  rarity      BadgeRarity      @default(COMMON)
+  earnedAt    DateTime         @default(now())
+
+  statistics TeacherStatistics @relation(fields: [teacherId], references: [teacherId], onDelete: Cascade)
+
+  @@index([teacherId])
+  @@index([badgeType])
+  @@index([rarity])
+}
+
+enum TeacherBadgeType {
+  JOB_MASTER // Vytvořil 100+ jobů
+  QUEST_ARCHITECT // Vytvořil 50+ questů
+  EVENT_ORGANIZER // Vytvořil 20+ eventů
+  STUDENT_FAVORITE // Vysoké hodnocení od studentů
+  FAST_RESPONDER // Rychlé odpovědi na dotazy
+  ENGAGEMENT_CHAMPION // Nejvíce aktivních studentů
+  INNOVATION_AWARD // Za inovativní úkoly
+  CONSISTENCY_MASTER // 30+ dní v řadě s aktivitou
+  TOP_MOTIVATOR // Nejvíce motivovaných studentů
+  LEGENDARY_EDUCATOR // Top 1% učitelů
+}
+
+enum BadgeRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+/**
+ * TeacherAchievement - achievementy pro učitele
+ * Podobné jako student achievementy, ale pro učitele
+ */
+model TeacherAchievement {
+  id             String    @id @default(cuid())
+  teacherId      String
+  achievementKey String // Např. "FIRST_JOB", "100_JOBS"
+  name           String
+  description    String
+  progress       Int       @default(0)
+  maxProgress    Int
+  isCompleted    Boolean   @default(false)
+  completedAt    DateTime?
+  rewardPoints   Int       @default(0) // Motivační body
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  statistics TeacherStatistics @relation(fields: [teacherId], references: [teacherId], onDelete: Cascade)
+
+  @@unique([teacherId, achievementKey])
+  @@index([teacherId])
+  @@index([isCompleted])
+  @@index([achievementKey])
+}
+
+// ============================================================================
+// GAMIFICATION: Marketplace & Dynamic Pricing System
+// ============================================================================
+
+/**
+ * MarketplaceListing - veřejné nabídky itemů od hráčů
+ * Decentralizovaný marketplace kde hráči mohou prodávat své itemy
+ * S dynamickým pricing podle popularity, rarity a poptávky
+ */
+model MarketplaceListing {
+  id            String @id @default(cuid())
+  sellerId      String
+  itemId        String
+  quantity      Int    @default(1)
+  pricePerUnit  Int // Aktuální cena za kus v gold
+  originalPrice Int // Původní cena při vytvoření listingu
+  gemPrice      Int    @default(0) // Alternativní cena v gems
+
+  // Dynamic pricing factors
+  demandMultiplier Float @default(1.0) // Multiplikátor podle poptávky (0.5 - 2.0)
+  rarityBonus      Int   @default(0) // Bonus za raritu itemu
+  trendingScore    Int   @default(0) // Skóre popularity (0-100)
+
+  // Status
+  status ListingStatus @default(ACTIVE)
+
+  // Metadata
+  title       String? // Vlastní název nabídky
+  description String? // Popis od prodejce
+  featured    Boolean @default(false) // Zvýrazněný listing
+
+  // Tracking
+  views     Int       @default(0)
+  favorites Int       @default(0) // Počet hráčů, kteří si item přidali do watchlistu
+  createdAt DateTime  @default(now())
+  expiresAt DateTime? // Automatické stažení po expiraci
+  updatedAt DateTime  @updatedAt
+
+  // Completion
+  soldAt  DateTime?
+  buyerId String?
+
+  transactions MarketTransaction[]
+
+  @@index([sellerId])
+  @@index([itemId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@index([pricePerUnit])
+  @@index([trendingScore])
+  @@index([featured])
+  @@index([status, itemId, pricePerUnit], name: "market_search")
+}
+
+/**
+ * MarketTransaction - log všech marketplace transakcí
+ * Pro sledování historie obchodů, výpočet průměrných cen a trendů
+ */
+model MarketTransaction {
+  id           String @id @default(cuid())
+  listingId    String
+  sellerId     String
+  buyerId      String
+  itemId       String
+  quantity     Int    @default(1)
+  pricePerUnit Int // Cena za kterou byl item prodán
+  totalPrice   Int // Celková cena (pricePerUnit * quantity)
+  gemPrice     Int    @default(0)
+
+  // Market conditions v čase prodeje
+  demandLevel Float @default(1.0)
+  supplyLevel Float @default(1.0)
+
+  createdAt DateTime @default(now())
+
+  listing MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@index([sellerId])
+  @@index([buyerId])
+  @@index([itemId])
+  @@index([createdAt])
+}
+
+/**
+ * MarketDemand - tracking aktuální poptávky po itemech
+ * Aktualizuje se automaticky podle activity na marketu
+ * Používá se pro výpočet dynamických cen
+ */
+model MarketDemand {
+  id     String @id @default(cuid())
+  itemId String @unique
+
+  // Supply & Demand metrics
+  totalListings    Int @default(0) // Aktuální počet aktivních listingů
+  totalSales24h    Int @default(0) // Prodeje za posledních 24h
+  totalSales7d     Int @default(0) // Prodeje za posledních 7 dní
+  totalViews24h    Int @default(0) // Zobrazení za 24h
+  totalSearches24h Int @default(0) // Vyhledávání za 24h
+  watchlistCount   Int @default(0) // Kolik hráčů má item na watchlistu
+
+  // Pricing data
+  currentAvgPrice  Int @default(0) // Aktuální průměrná cena
+  recommendedPrice Int @default(0) // Doporučená cena (base price z Item)
+  lowestPrice      Int @default(0) // Nejnižší aktuální cena
+  highestPrice     Int @default(0) // Nejvyšší aktuální cena
+
+  // Trend calculation
+  priceChange24h Float  @default(0.0) // Změna ceny za 24h (%)
+  priceChange7d  Float  @default(0.0) // Změna ceny za 7 dní (%)
+  demandTrend    String @default("STABLE") // "RISING", "FALLING", "STABLE", "VOLATILE"
+
+  // Popularity score (0-100)
+  popularityScore Int @default(50) // Celkové skóre popularity
+
+  // Timestamps
+  lastUpdated DateTime  @default(now())
+  lastSaleAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([itemId])
+  @@index([popularityScore])
+  @@index([demandTrend])
+  @@index([lastUpdated])
+}
+
+enum ListingStatus {
+  ACTIVE // Aktivní nabídka
+  SOLD // Prodáno
+  CANCELLED // Zrušeno prodejcem
+  EXPIRED // Expirováno
+}
+
+/**
+ * ItemPriceHistory - historie cen itemů pro dynamické pricing
+ * Sleduje průměrné ceny, supply/demand pro realistické oceňování
+ */
+model ItemPriceHistory {
+  id     String @id @default(cuid())
+  itemId String
+
+  // Cenová data
+  averagePrice Int // Průměrná cena za období
+  lowestPrice  Int // Nejnižší cena
+  highestPrice Int // Nejvyšší cena
+  medianPrice  Int // Medián
+
+  // Volume data
+  totalSold     Int @default(0)
+  totalListings Int @default(0)
+
+  // Period tracking
+  period      String // "daily", "weekly", "monthly"
+  periodStart DateTime
+  periodEnd   DateTime
+
+  createdAt DateTime @default(now())
+
+  @@unique([itemId, period, periodStart])
+  @@index([itemId])
+  @@index([period])
+  @@index([periodStart])
+}
+
+/**
+ * TradingTransaction - kompletní log všech obchodních transakcí
+ * Pro audit trail, statistiky a prevenci abuse
+ */
+model TradingTransaction {
+  id String @id @default(cuid())
+
+  // Účastníci
+  sellerId String
+  buyerId  String
+
+  // Item info
+  itemId   String
+  quantity Int    @default(1)
+
+  // Pricing
+  goldAmount Int @default(0)
+  gemAmount  Int @default(0)
+
+  // Type
+  transactionType TransactionType @default(MARKETPLACE)
+
+  // References
+  tradeId   String? // Odkaz na Trade pokud je P2P
+  listingId String? // Odkaz na MarketplaceListing
+
+  // Metadata
+  createdAt DateTime @default(now())
+
+  @@index([sellerId])
+  @@index([buyerId])
+  @@index([itemId])
+  @@index([transactionType])
+  @@index([createdAt])
+  @@index([tradeId])
+  @@index([listingId])
+}
+
+enum TransactionType {
+  MARKETPLACE // Prodej přes marketplace
+  P2P_TRADE // Přímý trade mezi hráči
+  SHOP_PURCHASE // Nákup z oficiálního shopu
+  BLACK_MARKET // Nákup z black marketu
+  QUEST_REWARD // Item z questu
+  EVENT_REWARD // Item z eventu
+  ADMIN_GRANT // Uděleno adminem
+}
+
+/**
+ * TradingReputation - reputace hráčů v tradingu
+ * Důvěryhodnost, počet obchodů, rating
+ */
+model TradingReputation {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Trading stats
+  totalSales      Int @default(0)
+  totalPurchases  Int @default(0)
+  totalGoldEarned Int @default(0)
+  totalGoldSpent  Int @default(0)
+
+  // Reputation score
+  trustScore      Int @default(100) // 0-100
+  positiveReviews Int @default(0)
+  negativeReviews Int @default(0)
+
+  // Badges
+  isVerifiedTrader Boolean @default(false)
+  isTrustedSeller  Boolean @default(false)
+
+  // Tracking
+  lastTradeAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([trustScore])
+  @@index([totalSales])
+}
+
+/**
+ * ItemWatchlist - watchlist itemů pro hráče
+ * Notifikace když je item v akci nebo dostupný
+ */
+model ItemWatchlist {
+  id        String   @id @default(cuid())
+  userId    String
+  itemId    String
+  maxPrice  Int? // Notifikuj když cena klesne pod tuto hodnotu
+  createdAt DateTime @default(now())
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+}
+
+/**
+ * Friendship - vztah přátelství mezi dvěma uživateli
+ * Vztah je symetrický, ale ukládáme ho jednosměrně (s nižším ID jako iniciátorem)
+ */
+model Friendship {
+  id        String   @id @default(cuid())
+  userId1   String // Uživatel s nižším ID (iniciátor)
+  userId2   String // Uživatel s vyšším ID (příjemce)
+  createdAt DateTime @default(now())
+
+  user1 User @relation("FriendshipInitiator", fields: [userId1], references: [id], onDelete: Cascade)
+  user2 User @relation("FriendshipReceiver", fields: [userId2], references: [id], onDelete: Cascade)
+
+  @@unique([userId1, userId2])
+  @@index([userId1])
+  @@index([userId2])
+}
+
+/**
+ * FriendRequest - žádost o přátelství
+ * Dokud není přijata, existuje jako pending request
+ */
+model FriendRequest {
+  id          String              @id @default(cuid())
+  senderId    String // Kdo poslal žádost
+  receiverId  String // Komu je žádost určena
+  status      FriendRequestStatus @default(PENDING)
+  message     String? // Volitelná zpráva k žádosti
+  createdAt   DateTime            @default(now())
+  respondedAt DateTime? // Kdy byla žádost přijata/odmítnuta
+
+  sender   User @relation("FriendRequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("FriendRequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+// ============================================================================
+// GAMIFICATION: Friend Quests System
+// ============================================================================
+
+enum FriendQuestType {
+  ONE_TIME // Splnitelný pouze jednou
+  DAILY // Denně opakovatelný
+  WEEKLY // Týdně opakovatelný
+  LIMITED // Omezený počet opakování
+}
+
+enum FriendQuestStatus {
+  AVAILABLE // Quest je dostupný k přijetí
+  ACCEPTED // Quest byl přijat oběma hráči
+  IN_PROGRESS // Quest probíhá
+  COMPLETED // Quest byl dokončen
+  EXPIRED // Quest vypršel
+  ABANDONED // Quest byl opuštěn
+}
+
+enum FriendQuestRewardType {
+  XP
+  MONEY
+  ITEM
+  REPUTATION
+  SKILLPOINTS
+}
+
+/**
+ * FriendQuest - speciální questy pro dvojice přátel
+ * Tyto questy vyžadují spolupráci dvou hráčů
+ */
+model FriendQuest {
+  id          String          @id @default(cuid())
+  title       String
+  description String
+  category    String // "Team", "Challenge", "Social", "Learning"
+  difficulty  QuestDifficulty
+  questType   FriendQuestType @default(ONE_TIME)
+
+  // Omezení opakování
+  maxCompletions Int? // Null = neomezené, jinak max počet dokončení
+  cooldownHours  Int? // Cooldown mezi opakováními (pro DAILY, WEEKLY)
+
+  // Požadavky
+  requiredLevel      Int @default(0)
+  requiredReputation Int @default(0)
+  friendshipMinDays  Int @default(0) // Minimální stáří přátelství v dnech
+
+  // Metadata
+  isActive  Boolean   @default(true)
+  expiresAt DateTime? // Pro časově omezené questy
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  createdBy String // Teacher/Admin ID
+
+  // Relations
+  rewards     FriendQuestReward[]
+  progresses  FriendQuestProgress[]
+  completions FriendQuestCompletion[]
+
+  @@index([questType])
+  @@index([difficulty])
+  @@index([isActive])
+  @@index([category])
+}
+
+/**
+ * FriendQuestReward - odměny za splnění friend questu
+ * Můžou být různé typy (XP, money, items, reputation)
+ */
+model FriendQuestReward {
+  id            String                @id @default(cuid())
+  friendQuestId String
+  rewardType    FriendQuestRewardType
+  amount        Int? // Pro XP, money, reputation, skillpoints
+  itemId        String? // Pro item rewards
+  description   String? // Popis odměny
+
+  friendQuest FriendQuest @relation(fields: [friendQuestId], references: [id], onDelete: Cascade)
+  item        Item?       @relation(fields: [itemId], references: [id], onDelete: SetNull)
+
+  @@index([friendQuestId])
+  @@index([rewardType])
+}
+
+/**
+ * FriendQuestProgress - sledování pokroku pro dvojici přátel
+ * Každá dvojice má vlastní progress pro každý quest
+ */
+model FriendQuestProgress {
+  id            String            @id @default(cuid())
+  friendQuestId String
+  user1Id       String // První hráč (iniciátor)
+  user2Id       String // Druhý hráč (partner)
+  status        FriendQuestStatus @default(AVAILABLE)
+
+  // Progress tracking
+  progress      Int @default(0) // 0-100 procent
+  user1Progress Int @default(0) // Individuální progres hráče 1
+  user2Progress Int @default(0) // Individuální progres hráče 2
+
+  // Quest lifecycle
+  acceptedAt  DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  expiredAt   DateTime?
+  abandonedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  friendQuest FriendQuest @relation(fields: [friendQuestId], references: [id], onDelete: Cascade)
+  user1       User        @relation("FriendQuestUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2       User        @relation("FriendQuestUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+
+  @@unique([friendQuestId, user1Id, user2Id])
+  @@index([friendQuestId])
+  @@index([user1Id])
+  @@index([user2Id])
+  @@index([status])
+}
+
+/**
+ * FriendQuestCompletion - historie dokončených questů
+ * Používá se pro tracking maxCompletions a cooldowns
+ */
+model FriendQuestCompletion {
+  id            String   @id @default(cuid())
+  friendQuestId String
+  user1Id       String // První hráč
+  user2Id       String // Druhý hráč
+  completedAt   DateTime @default(now())
+
+  // Obdržené odměny
+  xpReward          Int   @default(0)
+  moneyReward       Int   @default(0)
+  reputationReward  Int   @default(0)
+  skillpointsReward Int   @default(0)
+  itemsReceived     Json? // Array of item IDs
+
+  friendQuest FriendQuest @relation(fields: [friendQuestId], references: [id], onDelete: Cascade)
+
+  @@index([friendQuestId])
+  @@index([user1Id])
+  @@index([user2Id])
+  @@index([completedAt])
+  @@index([friendQuestId, user1Id, user2Id, completedAt], name: "friend_quest_cooldown")
 }

@@ -36,10 +36,49 @@ services:
       - postgres
     restart: unless-stopped
 
+  # Redis for ML service caching
+  redis:
+    image: redis:7-alpine
+    container_name: edurpg-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ML Service (Python FastAPI)
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
+    container_name: edurpg-ml-service
+    environment:
+      DATABASE_URL: postgresql://edurpg_user:edurpg_password@postgres:5432/edurpg
+      REDIS_URL: redis://redis:6379/0
+      API_KEY: ${ML_SERVICE_API_KEY:-development-key}
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ml-service/models:/app/models
+      - ./ml-service/app:/app/app:ro
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
 volumes:
   postgres_data:
     driver: local
   pgadmin_data:
+    driver: local
+  redis_data:
     driver: local
 
 networks:

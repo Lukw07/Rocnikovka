@@ -1,6 +1,8 @@
 import { prisma } from "../prisma"
-import { JobStatus, JobAssignmentStatus, UserRole } from "../generated"
+import { JobStatus, JobAssignmentStatus, UserRole, JobTier } from "../generated"
 import { generateRequestId, sanitizeForLog } from "../utils"
+import { ProgressionService } from "./progression"
+import { TeacherStatsService } from "./teacher-stats"
 
 export class JobsService {
   static async createJob(data: {
@@ -8,13 +10,22 @@ export class JobsService {
     description: string
     subjectId: string
     teacherId: string
+    categoryId?: string
+    tier?: JobTier
     xpReward: number
     moneyReward: number
+    skillpointsReward?: number
+    reputationReward?: number
     maxStudents?: number
+    isTeamJob?: boolean
+    requiredLevel?: number
+    requiredSkillId?: string
+    requiredSkillLevel?: number
+    estimatedHours?: number
   }, requestId?: string) {
     const reqId = requestId || generateRequestId()
     
-    return await prisma.$transaction(async (tx) => {
+    const job = await prisma.$transaction(async (tx) => {
       // Verify teacher exists and has TEACHER role
       const teacher = await tx.user.findFirst({
         where: {
@@ -34,9 +45,18 @@ export class JobsService {
           description: data.description,
           subjectId: data.subjectId,
           teacherId: data.teacherId,
+          categoryId: data.categoryId,
+          tier: data.tier || JobTier.BASIC,
           xpReward: data.xpReward,
           moneyReward: data.moneyReward,
+          skillpointsReward: data.skillpointsReward || 1,
+          reputationReward: data.reputationReward || 0,
           maxStudents: data.maxStudents || 1,
+          isTeamJob: data.isTeamJob || false,
+          requiredLevel: data.requiredLevel || 0,
+          requiredSkillId: data.requiredSkillId,
+          requiredSkillLevel: data.requiredSkillLevel,
+          estimatedHours: data.estimatedHours,
           status: JobStatus.OPEN
         }
       })
@@ -51,14 +71,28 @@ export class JobsService {
           metadata: {
             jobId: job.id,
             subjectId: data.subjectId,
+            tier: job.tier,
             xpReward: data.xpReward,
-            moneyReward: data.moneyReward
+            moneyReward: data.moneyReward,
+            isTeamJob: data.isTeamJob
           }
         }
       })
       
       return job
     })
+    
+    // Track teacher statistics (outside transaction to avoid deadlocks)
+    try {
+      await TeacherStatsService.trackJobCreated(data.teacherId, {
+        xpReward: data.xpReward,
+        moneyReward: data.moneyReward
+      }, reqId)
+    } catch (error) {
+      console.error("Failed to track teacher stats:", error)
+    }
+    
+    return job
   }
   
   static async applyForJob(jobId: string, studentId: string, requestId?: string) {
@@ -173,7 +207,7 @@ export class JobsService {
   static async closeJob(jobId: string, teacherId: string, requestId?: string) {
     const reqId = requestId || generateRequestId()
     
-    return await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const job = await tx.job.findUnique({
         where: { id: jobId },
         include: {
@@ -225,26 +259,117 @@ export class JobsService {
         const moneyPerStudent = Math.floor(job.moneyReward / approvedAssignments.length)
         
         for (const assignment of approvedAssignments) {
-          // Award XP
+          // Get student's Leadership level for job reward bonus
+          const leadershipSkill = await tx.skill.findFirst({
+            where: { name: "Leadership" }
+          })
+          
+          let leadershipBonus = 1.0
+          if (leadershipSkill) {
+            const leadershipLevel = await tx.playerSkill.findUnique({
+              where: {
+                userId_skillId: {
+                  userId: assignment.studentId,
+                  skillId: leadershipSkill.id
+                }
+              }
+            })
+            
+            if (leadershipLevel && leadershipLevel.level > 0) {
+              // Apply Leadership bonus: +2% per level (max +20%)
+              leadershipBonus = Math.min(1.2, 1.0 + (leadershipLevel.level * 0.02))
+            }
+          }
+          
+          // Award XP with Leadership bonus applied
+          const xpWithBonus = Math.floor(xpPerStudent * leadershipBonus)
           await tx.xPAudit.create({
             data: {
               userId: assignment.studentId,
-              amount: xpPerStudent,
-              reason: `Job completion: ${job.title}`,
+              amount: xpWithBonus,
+              reason: `Job completion: ${job.title}${leadershipBonus > 1.0 ? ` (Leadership bonus +${((leadershipBonus - 1) * 100).toFixed(0)}%)` : ""}`,
               requestId: reqId
             }
           })
           
-          // Award money
+          // Award money with Leadership bonus applied
+          const moneyWithBonus = Math.floor(moneyPerStudent * leadershipBonus)
           await tx.moneyTx.create({
             data: {
               userId: assignment.studentId,
-              amount: moneyPerStudent,
+              amount: moneyWithBonus,
               type: "EARNED",
               reason: `Job completion: ${job.title}`,
               requestId: reqId
             }
           })
+          
+          // Award skillpoint (1 skillpoint per job completion)
+          try {
+            const skillpointsToAward = job.skillpointsReward || 1
+            await tx.skillPoint.upsert({
+              where: { userId: assignment.studentId },
+              update: {
+                available: { increment: skillpointsToAward },
+                total: { increment: skillpointsToAward }
+              },
+              create: {
+                userId: assignment.studentId,
+                available: skillpointsToAward,
+                total: skillpointsToAward,
+                spent: 0
+              }
+            })
+          } catch (err) {
+            console.error("Error awarding skillpoint:", err)
+            // Continue anyway - skillpoint is nice-to-have
+          }
+
+          // Award reputation if job has reputation reward
+          if (job.reputationReward && job.reputationReward !== 0) {
+            try {
+              await tx.reputation.upsert({
+                where: { userId: assignment.studentId },
+                update: {
+                  points: { increment: job.reputationReward }
+                },
+                create: {
+                  userId: assignment.studentId,
+                  points: job.reputationReward,
+                  tier: 0
+                }
+              })
+
+              // Log reputation change
+              await tx.reputationLog.create({
+                data: {
+                  userId: assignment.studentId,
+                  change: job.reputationReward,
+                  reason: `Job completion: ${job.title}`,
+                  sourceId: job.id,
+                  sourceType: 'job'
+                }
+              })
+
+              // Calculate new reputation tier (every 100 points = 1 tier)
+              const reputation = await tx.reputation.findUnique({
+                where: { userId: assignment.studentId }
+              })
+
+              if (reputation) {
+                const newTier = Math.floor(Math.abs(reputation.points) / 100)
+                if (newTier !== reputation.tier) {
+                  await tx.reputation.update({
+                    where: { userId: assignment.studentId },
+                    data: { tier: newTier }
+                  })
+                }
+              }
+            } catch (err) {
+              console.error("Error awarding reputation:", err)
+              // Continue anyway - reputation is nice-to-have
+            }
+          }
           
           // Update assignment status
           await tx.jobAssignment.update({
@@ -254,9 +379,58 @@ export class JobsService {
               completedAt: new Date()
             }
           })
+
+          // Guild integration - if student is in a guild and it's a team job
+          if (job.isTeamJob) {
+            try {
+              const guildMember = await tx.guildMember.findFirst({
+                where: { userId: assignment.studentId }
+              })
+
+              if (guildMember) {
+                // Add bonus to guild treasury (5% of money reward)
+                const treasuryBonus = Math.floor(moneyPerStudent * 0.05)
+                if (treasuryBonus > 0) {
+                  await tx.guild.update({
+                    where: { id: guildMember.guildId },
+                    data: { treasury: { increment: treasuryBonus } }
+                  })
+                }
+
+                // Add XP to guild (25% of XP reward)
+                const guildXP = Math.floor(xpPerStudent * 0.25)
+                await tx.guild.update({
+                  where: { id: guildMember.guildId },
+                  data: { xp: { increment: guildXP } }
+                })
+
+                // Update member contribution
+                await tx.guildMember.update({
+                  where: { id: guildMember.id },
+                  data: {
+                    contributedXP: { increment: guildXP },
+                    contributedMoney: { increment: treasuryBonus }
+                  }
+                })
+
+                // Log guild activity
+                await tx.guildActivity.create({
+                  data: {
+                    guildId: guildMember.guildId,
+                    userId: assignment.studentId,
+                    action: "team_job_completed",
+                    details: `Completed team job: ${job.title}`
+                  }
+                })
+              }
+            } catch (err) {
+              console.error("Error processing guild integration:", err)
+              // Continue anyway - guild integration is optional
+            }
+          }
           
-          totalXpPaid += xpPerStudent
-          totalMoneyPaid += moneyPerStudent
+          totalXpPaid += xpWithBonus
+          totalMoneyPaid += moneyWithBonus
           
           payouts.push({
             studentId: assignment.studentId,
@@ -318,32 +492,75 @@ export class JobsService {
         }
       }
     })
+    
+    // Track teacher statistics for job completion (outside transaction)
+    try {
+      await TeacherStatsService.trackJobCompleted(teacherId, {
+        xpAwarded: result.payouts.reduce((sum, p) => sum + p.xpAmount, 0),
+        moneyAwarded: result.payouts.reduce((sum, p) => sum + p.moneyAmount, 0),
+        studentsCount: result.payouts.length
+      }, reqId)
+    } catch (error) {
+      console.error("Failed to track teacher stats:", error)
+    }
+    
+    return result
   }
   
-  static async getJobsForStudent(studentId: string, classId?: string) {
+  static async getJobsForStudent(studentId: string, classId?: string, filters?: {
+    categoryId?: string
+    tier?: string
+    isTeamJob?: boolean
+    status?: string
+  }) {
     try {
-      return await prisma.job.findMany({
-        where: {
-          status: JobStatus.OPEN,
-          subject: {
-            enrollments: {
-              some: {
-                userId: studentId,
-                ...(classId && { classId })
-              }
+      const whereClause: any = {
+        status: filters?.status || JobStatus.OPEN,
+        subject: {
+          enrollments: {
+            some: {
+              userId: studentId,
+              ...(classId && { classId })
             }
           }
-        },
+        }
+      }
+
+      // Filter by category if provided
+      if (filters?.categoryId) {
+        whereClause.categoryId = filters.categoryId
+      }
+
+      // Filter by tier if provided
+      if (filters?.tier) {
+        whereClause.tier = filters.tier
+      }
+
+      // Filter by team job if provided
+      if (filters?.isTeamJob !== undefined) {
+        whereClause.isTeamJob = filters.isTeamJob
+      }
+
+      return await prisma.job.findMany({
+        where: whereClause,
         include: {
           subject: true,
+          category: true,
+          requiredSkill: true,
           teacher: {
             select: { name: true }
           },
           assignments: {
             where: { studentId }
+          },
+          _count: {
+            select: { assignments: true }
           }
         },
-        orderBy: { createdAt: "desc" }
+        orderBy: [
+          { tier: 'asc' },
+          { createdAt: 'desc' }
+        ]
       })
     } catch (error) {
       console.error("Error in getJobsForStudent:", error)

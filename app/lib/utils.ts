@@ -165,20 +165,17 @@ export function getRarityBgColor(rarity: string): string {
   }
 }
 
+/**
+ * @deprecated Use LevelingSystem from lib/leveling.ts instead
+ * This is kept for backward compatibility only
+ */
 export function calculateLevel(xp: number): { level: number; progress: number } {
-  // Simple level calculation: each level requires level * 100 XP
-  let level = 1
-  let remainingXP = xp
+  // Import dynamically to avoid circular dependency
+  const { LevelingSystem } = require('./leveling')
+  const levelInfo = LevelingSystem.getLevelInfo(xp)
+  const progress = Math.round(LevelingSystem.getProgressToNextLevel(xp))
   
-  while (remainingXP >= level * 100) {
-    remainingXP -= level * 100
-    level++
-  }
-  
-  const xpForNextLevel = level * 100
-  const progress = Math.round((remainingXP / xpForNextLevel) * 100)
-  
-  return { level, progress }
+  return { level: levelInfo.level, progress }
 }
 
 export function sanitizeForLog(message: string): string {

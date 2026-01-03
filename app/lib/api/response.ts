@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
 
+/**
+ * Simple success response creator for APIs
+ */
+export function createSuccessResponse<T>(data: T, status = 200, requestId?: string): NextResponse {
+  return NextResponse.json(
+    {
+      ok: true,
+      data,
+      requestId,
+      timestamp: new Date().toISOString(),
+    },
+    { status }
+  )
+}
+
 export interface ApiResponse<T = unknown> {
   ok: boolean
   data?: T

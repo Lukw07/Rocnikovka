@@ -45,9 +45,18 @@ export const POST = withApiErrorHandler(
         description: validatedData.description,
         subjectId: validatedData.subjectId,
         teacherId: user.id,
+        categoryId: validatedData.categoryId,
+        tier: validatedData.tier,
         xpReward: validatedData.xpReward,
         moneyReward: validatedData.moneyReward,
-        ...(validatedData.maxStudents !== undefined && { maxStudents: validatedData.maxStudents })
+        skillpointsReward: validatedData.skillpointsReward,
+        reputationReward: validatedData.reputationReward,
+        maxStudents: validatedData.maxStudents,
+        isTeamJob: validatedData.isTeamJob,
+        requiredLevel: validatedData.requiredLevel,
+        requiredSkillId: validatedData.requiredSkillId,
+        requiredSkillLevel: validatedData.requiredSkillLevel,
+        estimatedHours: validatedData.estimatedHours
       })
       
       return createSuccessResponse({ job }, 201, requestId)

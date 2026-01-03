@@ -475,6 +475,14 @@ declare module "next-auth" {
   }
 }
 
+/**
+ * Server-side auth helper for server components and server actions
+ */
+export async function auth() {
+  const { getServerSession } = await import('next-auth')
+  return getServerSession(authOptions)
+}
+
 declare module "next-auth/jwt" {
   interface JWT {
     role: UserRole

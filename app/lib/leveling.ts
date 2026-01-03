@@ -14,11 +14,17 @@
  * - High levels (61-90): Slower progression, 800-2000 XP per level
  * - Elite levels (91-100): Very slow progression, 2000-5000 XP per level
  * 
+ * Streak Bonuses:
+ * - Daily streak: +5% XP per consecutive day (max 50% at 10+ day streak)
+ * - Consistency bonus: Regular activity multiplies by 1.1x every 7 days
+ * - Used to reward long-term engagement and prevent burnout
+ * 
  * This creates a satisfying progression curve that:
  * - Rewards early engagement with quick level-ups
  * - Maintains long-term engagement through challenging high levels
  * - Prevents burnout by not requiring excessive daily grinding
  * - Allows for meaningful progression throughout the academic career
+ * - Incentivizes consistent, regular participation through streak bonuses
  */
 
 export interface LevelInfo {
@@ -26,6 +32,13 @@ export interface LevelInfo {
   xpRequired: number
   totalXpForLevel: number
   xpForNextLevel: number
+}
+
+export interface StreakInfo {
+  currentStreak: number
+  maxStreak: number
+  xpMultiplier: number // 1.0 = no bonus, 1.05 = +5% bonus, etc.
+  lastActivityDate: Date | null
 }
 
 export class LevelingSystem {
@@ -140,6 +153,46 @@ export class LevelingSystem {
     const level100XP = this.getTotalXPForLevel(100)
     const daysAvailable = 1370 // 3.75 years
     return Math.ceil(level100XP / daysAvailable)
+  }
+
+  /**
+   * Calculate XP multiplier based on streak
+   * - Day 1: 1.0x (no bonus)
+   * - Days 2-5: 1.0x + (streak * 0.05) = up to 1.25x
+   * - Days 6-10: 1.25x to 1.5x
+   * - Days 11+: 1.5x (capped at 50% bonus)
+   */
+  static getStreakMultiplier(currentStreak: number): number {
+    if (currentStreak <= 1) return 1.0
+    
+    const multiplier = Math.min(
+      1.5, // Cap at 50% bonus
+      1.0 + (currentStreak * 0.05) // +5% per day in streak
+    )
+    
+    return multiplier
+  }
+
+  /**
+   * Apply streak bonus to XP amount
+   * Preserves integer XP amounts while respecting multipliers
+   */
+  static applyStreakBonus(baseXP: number, currentStreak: number): {
+    baseXP: number
+    bonusXP: number
+    totalXP: number
+    multiplier: number
+  } {
+    const multiplier = this.getStreakMultiplier(currentStreak)
+    const totalXP = Math.floor(baseXP * multiplier)
+    const bonusXP = totalXP - baseXP
+    
+    return {
+      baseXP,
+      bonusXP,
+      totalXP,
+      multiplier
+    }
   }
 }
 

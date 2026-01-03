@@ -38,13 +38,21 @@ export async function POST(request: NextRequest) {
     const { studentId, subjectId, amount, reason } = validatedData
     
     // Grant XP with budget enforcement
-    const xpAudit = await XPService.grantXP({
+    const result = await XPService.grantXP({
       studentId,
       teacherId: session.user.id,
       subjectId,
       amount,
       reason
     }, requestId)
+    
+    const xpAudit = result.xpAudit
+    
+    // Process potential level ups asynchronously
+    // Don't wait for this to complete
+    XPService.processLevelUp(studentId).catch(err => {
+      console.error("Error processing level up:", err)
+    })
     
     await logEvent("INFO", "xp_grant_success", {
       ...(requestId && { requestId }),
