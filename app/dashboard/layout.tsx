@@ -18,51 +18,56 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (role === UserRole.TEACHER) {
     menuItems = [
-      { icon: 'Home', label: 'Přehled', href: '/dashboard' },
-      { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list' },
-      { icon: 'Users', label: 'Studenti', href: '/dashboard/students' },
-      { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget' },
-      { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings' },
+      { icon: 'Home', label: 'Přehled', href: '/dashboard', section: 'Hlavní' },
+      { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list', section: 'Výuka' },
+      { icon: 'Users', label: 'Studenti', href: '/dashboard/students', section: 'Výuka' },
+      { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget', section: 'Správa' },
+      { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings', section: 'Systém' },
     ]
   } else if (role === UserRole.OPERATOR) {
     menuItems = [
-      { icon: 'Home', label: 'Přehled', href: '/dashboard' },
+      { icon: 'Home', label: 'Přehled', href: '/dashboard', section: 'Hlavní' },
       // Teacher items for Operator
-      { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list' },
-      { icon: 'Users', label: 'Studenti', href: '/dashboard/students' },
-      { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget' },
+      { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list', section: 'Výuka' },
+      { icon: 'Users', label: 'Studenti', href: '/dashboard/students', section: 'Výuka' },
+      { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget', section: 'Výuka' },
       // Management items
-      { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements', variant: 'operator' },
-      { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges', variant: 'operator' },
-      { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/admin/shop', variant: 'operator' },
+      { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements', section: 'Správa', variant: 'operator' },
+      { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges', section: 'Správa', variant: 'operator' },
+      { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/admin/shop', section: 'Správa', variant: 'operator' },
       // Operator specific items
-      { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users', variant: 'operator' },
-      { icon: 'Server', label: 'Systém', href: '/dashboard/system', variant: 'operator' },
-      { icon: 'Database', label: 'Zálohy', href: '/dashboard/backups', variant: 'operator' },
-      { icon: 'Activity', label: 'Logy', href: '/dashboard/activity', variant: 'operator' },
-      { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings' },
+      { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users', section: 'Admin', variant: 'operator' },
+      { icon: 'Server', label: 'Systém', href: '/dashboard/system', section: 'Admin', variant: 'operator' },
+      { icon: 'Database', label: 'Zálohy', href: '/dashboard/backups', section: 'Admin', variant: 'operator' },
+      { icon: 'Activity', label: 'Logy', href: '/dashboard/activity', section: 'Admin', variant: 'operator' },
+      { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings', section: 'Systém' },
     ]
   } else {
     // Student (Default)
     menuItems = [
-      { icon: 'Home', label: 'Přehled', href: '/dashboard' },
-      { icon: 'BookOpen', label: 'Předměty', href: '/dashboard/subjects' },
-      { icon: 'Sword', label: 'Questy', href: '/dashboard/quests' },
-      { icon: 'Calendar', label: 'Eventy', href: '/dashboard/events' },
-      { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements' },
-      { icon: 'Award', label: 'Leaderboard', href: '/dashboard/leaderboard' },
-      { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges' },
-      { icon: 'ListChecks', label: 'Seznam Úloh', href: '/dashboard/job-list' },
-      { icon: 'Shield', label: 'Guildy', href: '/dashboard/guilds' },
-      { icon: 'Users', label: 'Přátelé', href: '/dashboard/friends' },
-      { icon: 'ArrowRightLeft', label: 'Obchody', href: '/dashboard/trading' },
-      { icon: 'Home', label: 'Personal Space', href: '/dashboard/personal-space' },
-      { icon: 'Wallet', label: 'Wallet', href: '/dashboard/wallet' },
-      { icon: 'Package', label: 'Inventář', href: '/dashboard/inventory' },
-      { icon: 'FileText', label: 'Záznam', href: '/dashboard/log' },
-      { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/shop' },
-      { icon: 'Store', label: 'Marketplace', href: '/dashboard/marketplace' },
-      { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings' },
+      { icon: 'Home', label: 'Přehled', href: '/dashboard', section: 'Hlavní' },
+      // Aktivity
+      { icon: 'BookOpen', label: 'Předměty', href: '/dashboard/subjects', section: 'Aktivity' },
+      { icon: 'Sword', label: 'Questy', href: '/dashboard/quests', section: 'Aktivity' },
+      { icon: 'Calendar', label: 'Eventy', href: '/dashboard/events', section: 'Aktivity' },
+      // Progression
+      { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements', section: 'Postup' },
+      { icon: 'Award', label: 'Leaderboard', href: '/dashboard/leaderboard', section: 'Postup' },
+      { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges', section: 'Postup' },
+      // Sociální
+      { icon: 'Shield', label: 'Guildy', href: '/dashboard/guilds', section: 'Sociální' },
+      { icon: 'Users', label: 'Přátelé', href: '/dashboard/friends', section: 'Sociální' },
+      { icon: 'ArrowRightLeft', label: 'Obchody', href: '/dashboard/trading', section: 'Sociální' },
+      // Inventář & Ekonomika
+      { icon: 'Package', label: 'Inventář', href: '/dashboard/inventory', section: 'Inventář' },
+      { icon: 'Wallet', label: 'Peněženka', href: '/dashboard/wallet', section: 'Inventář' },
+      { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/shop', section: 'Inventář' },
+      { icon: 'Store', label: 'Marketplace', href: '/dashboard/marketplace', section: 'Inventář' },
+      // Ostatní
+      { icon: 'Home', label: 'Personal Space', href: '/dashboard/personal-space', section: 'Ostatní' },
+      { icon: 'ListChecks', label: 'Seznam Úloh', href: '/dashboard/job-list', section: 'Ostatní' },
+      { icon: 'FileText', label: 'Záznam', href: '/dashboard/log', section: 'Ostatní' },
+      { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings', section: 'Ostatní' },
     ]
   }
 

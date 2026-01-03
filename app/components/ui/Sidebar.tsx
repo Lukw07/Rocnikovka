@@ -66,6 +66,13 @@ export type MenuItem = {
   panel?: SidebarPanel
   href: string
   variant?: 'default' | 'operator'
+  section?: string
+  subsection?: string
+}
+
+export type MenuSection = {
+  title: string
+  items: MenuItem[]
 }
 
 type SidebarLayoutProps = {
@@ -223,7 +230,7 @@ const SidebarLayout = ({
           onClick={() => handleItemClick(index)}
           className={`flex items-center transition-all duration-300 ease-out ${
             showExpanded ? 'w-[92%] px-4' : 'w-12 px-0 justify-center'
-          } py-3 rounded-2xl ${
+          } py-2.5 rounded-xl text-sm ${
             isActive 
               ? item.variant === 'operator' 
                 ? 'bg-linear-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/20'
@@ -234,19 +241,19 @@ const SidebarLayout = ({
           } ${item.variant === 'operator' && !isActive ? 'border-l-2 border-l-red-500 bg-red-50/50 dark:bg-red-900/10' : ''}`}
         >
           {/* Icon */}
-          <div className={`flex items-center justify-center transition-all duration-300 ${
+          <div className={`flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
             isActive 
               ? 'text-primary-foreground' 
               : item.variant === 'operator' ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'
           }`}>
-            <Icon className="w-5 h-5" />
+            <Icon className="w-4 h-4" />
           </div>
 
           {/* Text */}
           <div className={`flex-1 flex items-center transition-all duration-300 ease-out overflow-hidden ${
-            showExpanded ? 'opacity-100 translate-x-0 max-w-full ml-3' : 'opacity-0 -translate-x-2 max-w-0 ml-0'
+            showExpanded ? 'opacity-100 translate-x-0 max-w-full ml-2' : 'opacity-0 -translate-x-2 max-w-0 ml-0'
           }`}>
-            <span className={`font-medium whitespace-nowrap transition-colors duration-200 text-sm ${
+            <span className={`font-medium whitespace-nowrap transition-colors duration-200 text-xs ${
               isActive ? 'text-primary-foreground' : 'text-foreground'
             }`}>
               {item.label}
@@ -254,12 +261,59 @@ const SidebarLayout = ({
             
             {/* Active indicator */}
             {isActive && (
-              <ChevronRight className={`w-4 h-4 text-primary-foreground/80 ml-2 transition-all duration-300 ease-out ${
+              <ChevronRight className={`w-3 h-3 text-primary-foreground/80 ml-auto transition-all duration-300 ease-out flex-shrink-0 ${
                 showExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'
               }`} />
             )}
           </div>
         </Link>
+      </div>
+    );
+  };
+
+  const renderMenuSections = () => {
+    const sections = new Map<string, MenuItem[]>();
+    
+    // Seskupit items do sekcí
+    menuItems.forEach(item => {
+      const section = item.section || 'Ostatní';
+      if (!sections.has(section)) {
+        sections.set(section, []);
+      }
+      sections.get(section)!.push(item);
+    });
+
+    const showExpanded = isMobile || isHovered;
+    const sectionOrder = ['Hlavní', 'Aktivity', 'Postup', 'Sociální', 'Inventář', 'Výuka', 'Správa', 'Admin', 'Systém', 'Ostatní'];
+    const sortedSections = Array.from(sections.entries()).sort((a, b) => {
+      const indexA = sectionOrder.indexOf(a[0]);
+      const indexB = sectionOrder.indexOf(b[0]);
+      return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+    });
+
+    return (
+      <div className="space-y-2">
+        {sortedSections.map(([sectionTitle, items], sectionIndex) => (
+          <div key={sectionTitle} className={sectionIndex > 0 ? 'pt-2 border-t border-border' : ''}>
+            {/* Section Label */}
+            {showExpanded && (
+              <div className={`px-4 py-2 transition-all duration-300 ${
+                isMobile || isHovered ? 'opacity-100 max-h-6' : 'opacity-0 max-h-0'
+              } overflow-hidden`}>
+                <span className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-widest">
+                  {sectionTitle}
+                </span>
+              </div>
+            )}
+            {/* Section Items */}
+            <div className="space-y-0.5">
+              {items.map((item, index) => {
+                const itemIndex = menuItems.indexOf(item);
+                return renderMenuItem(item, itemIndex);
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
@@ -295,21 +349,12 @@ const SidebarLayout = ({
          
           <div className="flex flex-col h-full pt-2">
             {/* Main Menu */}
-            <div className="flex-1 py-4 px-3">
-              <div className="mb-6">
-                <div className={`px-4 mb-3 transition-all duration-300 ${
-                  (isMobile || isHovered) ? 'opacity-100' : 'opacity-0'
-                }`}>
-                  <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Hlavní menu
-                  </span>
-                </div>
-                {menuItems.map((item, index) => renderMenuItem(item, index))}
-              </div>
+            <div className="flex-1 py-4 px-3 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted scrollbar-track-transparent">
+              {renderMenuSections()}
             </div>
 
             {/* Bottom Section with Theme Toggle */}
-            <div className="p-3 border-t border-border">
+            <div className="p-3 border-t border-border shrink-0">
               <div className={`flex items-center justify-center transition-all duration-300 ${
                 (isMobile || isHovered) ? 'justify-between px-4' : 'justify-center'
               }`}>
