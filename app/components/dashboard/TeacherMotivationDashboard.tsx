@@ -116,7 +116,7 @@ export function TeacherMotivationDashboard({ teacherId }: { teacherId: string })
   return (
     <div className="space-y-6">
       {/* Header with Rank */}
-      <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
+      <Card className="bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -389,7 +389,7 @@ export function TeacherMotivationDashboard({ teacherId }: { teacherId: string })
           </Card>
 
           {/* Motivational Quote */}
-          <Card className="bg-gradient-to-r from-purple-100 to-pink-100 border-purple-200">
+          <Card className="bg-linear-to-r from-purple-100 to-pink-100 border-purple-200">
             <CardContent className="p-6">
               <p className="text-lg italic text-center text-purple-900">
                 "Nejlepší učitelé učí ze srdce, ne z knih."

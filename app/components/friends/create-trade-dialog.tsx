@@ -201,7 +201,7 @@ export function CreateTradeDialog({ friends }: { friends: Friend[] }) {
                   <SelectItem key={friend.id} value={friend.id}>
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
-                        <AvatarImage src={friend.avatarUrl} alt={friend.name} />
+                        <AvatarImage src={friend.avatarUrl ?? undefined} alt={friend.name} />
                         <AvatarFallback>{friend.name[0]}</AvatarFallback>
                       </Avatar>
                       {friend.name}

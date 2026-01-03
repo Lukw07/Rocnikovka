@@ -70,7 +70,7 @@ export function UserProfileHoverCard({ userId, name, children, className }: User
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 p-0 overflow-hidden border-2 border-primary/20 shadow-xl">
-        <div className="bg-gradient-to-b from-primary/10 to-background p-4">
+        <div className="bg-linear-to-b from-primary/10 to-background p-4">
           <div className="flex items-start gap-4">
             <Avatar className="h-16 w-16 border-2 border-background shadow-md">
               {profile?.avatarUrl ? (
@@ -108,7 +108,7 @@ export function UserProfileHoverCard({ userId, name, children, className }: User
               {profile.badges.map(({ badge }) => (
                 <div key={badge.id} className="group relative">
                   <div className={cn(
-                    "relative h-12 w-12 rounded-full p-[3px] transition-transform hover:scale-110 bg-gradient-to-br",
+                    "relative h-12 w-12 rounded-full p-[3px] transition-transform hover:scale-110 bg-linear-to-br",
                     rarityStyles[badge.rarity]
                   )}>
                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white/25 border border-white/30 shadow-sm"></div>

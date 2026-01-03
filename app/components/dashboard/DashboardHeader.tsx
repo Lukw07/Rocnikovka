@@ -71,7 +71,7 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
         <Button
           variant="ghost"
           size="icon"
-          className="flex-shrink-0"
+          className="shrink-0"
           onClick={onMenuToggle}
         >
           <Menu className="h-7 w-7" />

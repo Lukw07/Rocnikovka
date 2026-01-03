@@ -57,7 +57,7 @@ export function CoreAttributesCard({ userId }: CoreAttributesCardProps) {
 
   if (loading) {
     return (
-      <Card className="border-purple-500/30 bg-gradient-to-br from-purple-950 to-purple-900">
+      <Card className="border-purple-500/30 bg-linear-to-br from-purple-950 to-purple-900">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-purple-100">
             <Zap className="w-5 h-5" />
@@ -73,7 +73,7 @@ export function CoreAttributesCard({ userId }: CoreAttributesCardProps) {
 
   if (!data) {
     return (
-      <Card className="border-purple-500/30 bg-gradient-to-br from-purple-950 to-purple-900">
+      <Card className="border-purple-500/30 bg-linear-to-br from-purple-950 to-purple-900">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-purple-100">
             <Zap className="w-5 h-5" />
@@ -93,7 +93,7 @@ export function CoreAttributesCard({ userId }: CoreAttributesCardProps) {
     .slice(0, 3)
 
   return (
-    <Card className="border-purple-500/30 bg-gradient-to-br from-purple-950 to-purple-900">
+    <Card className="border-purple-500/30 bg-linear-to-br from-purple-950 to-purple-900">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-purple-100">
           <Zap className="w-5 h-5" />

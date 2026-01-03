@@ -158,7 +158,7 @@ export default function MarketStats() {
                 onClick={() => window.location.href = `/marketplace?searchQuery=${encodeURIComponent(item.itemName)}`}
               >
                 {/* Rank */}
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
                   {index + 1}
                 </div>
 
@@ -201,7 +201,7 @@ export default function MarketStats() {
                 </div>
 
                 {/* Popularity */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="w-16 h-16 rounded-full border-4 border-orange-200 flex items-center justify-center">
                     <div className="text-center">
                       <p className="text-xs text-gray-600">Score</p>

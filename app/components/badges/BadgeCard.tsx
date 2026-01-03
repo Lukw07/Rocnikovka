@@ -119,13 +119,13 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
             <CardHeader className="pb-2 pt-6 w-full flex flex-col items-center">
               <div className="relative mb-4">
                 <div className={cn(
-                  "relative rounded-full p-[4px] shadow-md",
-                  "bg-gradient-to-br",
+                  "relative rounded-full p-1 shadow-md",
+                  "bg-linear-to-br",
                   style.frame
                 )}>
                   {/* Full overlay tint across badge */}
                   <div className={cn(
-                    "absolute inset-[2px] rounded-full bg-gradient-to-br opacity-70 pointer-events-none",
+                    "absolute inset-0.5 rounded-full bg-linear-to-br opacity-70 pointer-events-none",
                     style.frame
                   )} />
                   <Avatar className="h-24 w-24 border-2 border-white/10 shadow-inner relative">

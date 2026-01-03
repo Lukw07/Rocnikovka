@@ -201,7 +201,7 @@ export default function LeaderboardPanel() {
   // Loading state
   if (loading && !userData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-4 md:p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/30 p-4 md:p-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Načítání dat...</p>
@@ -213,7 +213,7 @@ export default function LeaderboardPanel() {
   // Error state - pokud nemáme userData po načtení
   if (!loading && !userData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-4 md:p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/30 p-4 md:p-6 flex items-center justify-center">
         <div className="text-center">
           <Trophy className="w-16 h-16 mx-auto mb-4 opacity-50 text-muted-foreground" />
           <p className="text-lg font-medium mb-2">Nepodařilo se načíst data</p>
@@ -230,7 +230,7 @@ export default function LeaderboardPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 p-4 md:p-6">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/30 p-4 md:p-6">
       <div className="max-w mx-auto">
         {/* Header */}
         <motion.div 
@@ -248,7 +248,7 @@ export default function LeaderboardPanel() {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                 Školní žebříček
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
@@ -309,7 +309,7 @@ export default function LeaderboardPanel() {
               <Button
                 variant={showOnlyMyClass ? "default" : "outline"}
                 onClick={() => handleFilterChange(true)}
-                className="min-w-[160px]"
+                className="min-w-40"
                 disabled={!userData?.classId}
               >
                 <Users className="w-4 h-4 mr-2" />
@@ -321,7 +321,7 @@ export default function LeaderboardPanel() {
               <Button
                 variant={!showOnlyMyClass ? "default" : "outline"}
                 onClick={() => handleFilterChange(false)}
-                className="min-w-[160px]"
+                className="min-w-40"
                 disabled={!userData?.grade || userData?.grade === 0}
               >
                 <GraduationCap className="w-4 h-4 mr-2" />
@@ -376,10 +376,10 @@ export default function LeaderboardPanel() {
                   transition={{ duration: 0.5 }}
                   className="text-2xl font-bold mb-6 flex items-center gap-3"
                 >
-                  <div className="p-2 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-lg shadow-lg">
+                  <div className="p-2 bg-linear-to-r from-yellow-400 to-amber-500 rounded-lg shadow-lg">
                     <Crown className="w-5 h-5 text-white" />
                   </div>
-                  <span className="bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
                     Elitní Skupina - {getCurrentViewTitle()}
                   </span>
                 </motion.h3>
@@ -397,7 +397,7 @@ export default function LeaderboardPanel() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
                         whileHover={{ scale: 1.02 }}
-                        className={`p-4 rounded-xl border-2 bg-gradient-to-br ${style.bgColor} backdrop-blur-sm shadow-sm relative ${
+                        className={`p-4 rounded-xl border-2 bg-linear-to-br ${style.bgColor} backdrop-blur-sm shadow-sm relative ${
                           row.id === userData?.id 
                             ? "ring-2 ring-amber-300 " + style.borderColor
                             : style.borderColor
@@ -405,7 +405,7 @@ export default function LeaderboardPanel() {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className={`text-2xl font-bold ${style.positionColor} min-w-[40px] text-center`}>
+                            <div className={`text-2xl font-bold ${style.positionColor} min-w-10 text-center`}>
                               #{position}
                             </div>
                             <div className={`p-3 ${style.badgeColor} rounded-xl`}>
@@ -450,10 +450,10 @@ export default function LeaderboardPanel() {
                 <motion.h3 
                   className="text-xl font-bold mb-4 flex items-center gap-3"
                 >
-                  <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg">
+                  <div className="p-2 bg-linear-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg">
                     <Star className="w-4 h-4 text-white" />
                   </div>
-                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                     Šampióni (4. - 10.)
                   </span>
                 </motion.h3>
@@ -468,7 +468,7 @@ export default function LeaderboardPanel() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: (index + 3) * 0.05 }}
                         whileHover={{ scale: 1.02 }}
-                        className={`p-4 rounded-xl border bg-gradient-to-br from-blue-50/80 to-purple-50/80 backdrop-blur-sm shadow-sm ${
+                        className={`p-4 rounded-xl border bg-linear-to-br from-blue-50/80 to-purple-50/80 backdrop-blur-sm shadow-sm ${
                           row.id === userData?.id 
                             ? "ring-2 ring-blue-300 border-blue-200" 
                             : "border-blue-100"
@@ -476,7 +476,7 @@ export default function LeaderboardPanel() {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="text-lg font-bold text-blue-600 min-w-[32px]">#{position}</div>
+                            <div className="text-lg font-bold text-blue-600 min-w-8">#{position}</div>
                             <div className="p-2 bg-blue-100 rounded-lg">
                               <Star className="w-4 h-4 text-blue-600" />
                             </div>
@@ -519,10 +519,10 @@ export default function LeaderboardPanel() {
                 <motion.h3 
                   className="text-xl font-bold mb-4 flex items-center gap-3"
                 >
-                  <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg shadow-lg">
+                  <div className="p-2 bg-linear-to-r from-green-500 to-emerald-600 rounded-lg shadow-lg">
                     <Award className="w-4 h-4 text-white" />
                   </div>
-                  <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                     Nastupující Hvězdy (11. - 20.)
                   </span>
                 </motion.h3>
@@ -537,7 +537,7 @@ export default function LeaderboardPanel() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: (index + 10) * 0.05 }}
                         whileHover={{ scale: 1.01 }}
-                        className={`p-3 rounded-lg border bg-gradient-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm ${
+                        className={`p-3 rounded-lg border bg-linear-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm ${
                           row.id === userData?.id 
                             ? "ring-1 ring-green-300 border-green-200" 
                             : "border-green-100"
@@ -545,7 +545,7 @@ export default function LeaderboardPanel() {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <div className="text-sm font-bold text-green-600 min-w-[28px]">#{position}</div>
+                            <div className="text-sm font-bold text-green-600 min-w-7">#{position}</div>
                             <div className="p-1 bg-green-100 rounded-md">
                               <Award className="w-3 h-3 text-green-600" />
                             </div>
@@ -588,10 +588,10 @@ export default function LeaderboardPanel() {
                 <motion.h3 
                   className="text-xl font-bold mb-4 flex items-center gap-3"
                 >
-                  <div className="p-2 bg-gradient-to-r from-slate-500 to-gray-600 rounded-lg shadow-lg">
+                  <div className="p-2 bg-linear-to-r from-slate-500 to-gray-600 rounded-lg shadow-lg">
                     <Users className="w-4 h-4 text-white" />
                   </div>
-                  <span className="bg-gradient-to-r from-slate-600 to-gray-600 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-slate-600 to-gray-600 bg-clip-text text-transparent">
                     Zbytek třídy
                   </span>
                 </motion.h3>
@@ -614,7 +614,7 @@ export default function LeaderboardPanel() {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <div className="text-sm font-bold text-gray-600 min-w-[28px]">#{position}</div>
+                            <div className="text-sm font-bold text-gray-600 min-w-7">#{position}</div>
                             <div className="p-1 bg-gray-100 rounded-md">
                               <User className="w-3 h-3 text-gray-600" />
                             </div>
@@ -654,7 +654,7 @@ export default function LeaderboardPanel() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8 p-6 bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20 sticky bottom-6 z-50 shadow-xl backdrop-blur-md"
+            className="mt-8 p-6 bg-linear-to-r from-primary/10 to-primary/5 rounded-2xl border border-primary/20 sticky bottom-6 z-50 shadow-xl backdrop-blur-md"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">

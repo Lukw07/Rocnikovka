@@ -230,7 +230,7 @@ export default function HomePage() {
                   className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 ${THEME.text} drop-shadow-2xl`}
                 >
                   Vzdělávání jako
-                  <span className={`block bg-gradient-to-r ${THEME.gradient} bg-clip-text text-transparent drop-shadow-sm`}>
+                  <span className={`block bg-linear-to-r ${THEME.gradient} bg-clip-text text-transparent drop-shadow-sm`}>
                     dobrodružství
                   </span>
                 </motion.h1>
@@ -252,7 +252,7 @@ export default function HomePage() {
                 >
                   <Button
                     onClick={() => setShowLogin(true)}
-                    className={`bg-gradient-to-r ${THEME.gradient} hover:opacity-90 text-white px-6 sm:px-8 py-5 sm:py-6 text-lg rounded-xl transition-all duration-200 transform hover:-translate-y-1 shadow-lg border border-white/20 font-semibold`}
+                    className={`bg-linear-to-r ${THEME.gradient} hover:opacity-90 text-white px-6 sm:px-8 py-5 sm:py-6 text-lg rounded-xl transition-all duration-200 transform hover:-translate-y-1 shadow-lg border border-white/20 font-semibold`}
                   >
                     <span className="flex items-center space-x-2">
                       <span>Začít dobrodružství</span>
@@ -318,7 +318,7 @@ export default function HomePage() {
                     whileHover={{ y: -5, transition: { duration: 0.2 } }}
                     className={`p-4 sm:p-6 rounded-2xl ${THEME.card} border shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-md`}
                   >
-                    <div className={`inline-flex items-center justify-center p-3 rounded-xl bg-gradient-to-r ${THEME.gradient} text-white mb-3 sm:mb-4 shadow-lg`}>
+                    <div className={`inline-flex items-center justify-center p-3 rounded-xl bg-linear-to-r ${THEME.gradient} text-white mb-3 sm:mb-4 shadow-lg`}>
                       <feature.icon className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                     <h3 className={`font-bold text-lg sm:text-xl mb-2 sm:mb-3 ${THEME.text} drop-shadow-md`}>
@@ -368,7 +368,7 @@ export default function HomePage() {
                         transition={{ delay: 0.2, duration: 0.3 }}
                         className="space-y-3"
                       >
-                        <div className={`inline-flex items-center justify-center p-3 rounded-xl bg-gradient-to-r ${THEME.gradient} text-white mx-auto shadow-lg`}>
+                        <div className={`inline-flex items-center justify-center p-3 rounded-xl bg-linear-to-r ${THEME.gradient} text-white mx-auto shadow-lg`}>
                           <Shield className="w-6 h-6" />
                         </div>
                         <CardTitle className={`text-2xl font-bold ${THEME.text} drop-shadow-md`}>
@@ -449,7 +449,7 @@ export default function HomePage() {
 
                         <Button 
                           type="submit" 
-                          className={`w-full bg-gradient-to-r ${THEME.gradient} hover:opacity-90 text-white py-6 rounded-xl transition-all duration-200 flex items-center justify-center border border-white/20 shadow-lg font-semibold focus-visible:ring-white/50`}
+                          className={`w-full bg-linear-to-r ${THEME.gradient} hover:opacity-90 text-white py-6 rounded-xl transition-all duration-200 flex items-center justify-center border border-white/20 shadow-lg font-semibold focus-visible:ring-white/50`}
                           disabled={isLoading}
                         >
                           {isLoading ? (

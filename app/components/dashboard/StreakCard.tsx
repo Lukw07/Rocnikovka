@@ -83,7 +83,7 @@ export default function StreakCard() {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white pb-3">
+      <CardHeader className="bg-linear-to-r from-orange-500 to-red-500 text-white pb-3">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-2xl font-bold flex items-center gap-2">
@@ -198,7 +198,7 @@ export default function StreakCard() {
                   <Badge 
                     key={days}
                     variant="outline"
-                    className="bg-gradient-to-r from-yellow-50 to-orange-50 border-orange-200"
+                    className="bg-linear-to-r from-yellow-50 to-orange-50 border-orange-200"
                   >
                     🏆 {days} dní
                   </Badge>

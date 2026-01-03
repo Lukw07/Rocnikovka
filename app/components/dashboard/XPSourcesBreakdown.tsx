@@ -137,7 +137,7 @@ export function XPSourcesBreakdown({
                 {/* Progress Bar */}
                 <div className={cn("h-2 rounded-full bg-muted relative overflow-hidden", config.color)}>
                   <div
-                    className="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-300"
+                    className="h-full bg-linear-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-300"
                     style={{ width: `${percentage}%` }}
                   />
                 </div>

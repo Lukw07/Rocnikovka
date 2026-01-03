@@ -226,8 +226,8 @@ const SidebarLayout = ({
           } py-3 rounded-2xl ${
             isActive 
               ? item.variant === 'operator' 
-                ? 'bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/20'
-                : 'bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/20' 
+                ? 'bg-linear-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/20'
+                : 'bg-linear-to-r from-primary to-primary/80 shadow-lg shadow-primary/20' 
               : isHoveredItemState
               ? 'bg-muted border border-border shadow-md'
               : 'hover:bg-muted/50'

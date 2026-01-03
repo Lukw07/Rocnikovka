@@ -408,12 +408,12 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
                         return (
                           <React.Fragment key={idx}>
                             <div
-                              className={`flex-shrink-0 p-5 rounded-2xl min-w-[180px] transition-all duration-300 ${
+                              className={`shrink-0 p-5 rounded-2xl min-w-[180px] transition-all duration-300 ${
                                 isCurrent 
-                                  ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/10 border-2 border-green-500 scale-100 ring-4 ring-green-500/20' 
+                                  ? 'bg-linear-to-br from-green-500/20 to-emerald-500/10 border-2 border-green-500 scale-100 ring-4 ring-green-500/20' 
                                   : hasChange 
-                                  ? 'bg-gradient-to-br from-red-500/20 to-orange-500/10 border-2 border-red-500 shadow-lg' 
-                                  : 'bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg hover:scale-105'
+                                  ? 'bg-linear-to-br from-red-500/20 to-orange-500/10 border-2 border-red-500 shadow-lg' 
+                                  : 'bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:shadow-lg hover:scale-105'
                               }`}
                             >
                               <div className="flex items-center justify-between mb-3">
@@ -460,7 +460,7 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
                             
                             {/* Break indicator */}
                             {breakMinutes > 0 && (
-                              <div className="flex-shrink-0 flex items-center justify-center w-[30px] h-[140px] mx-1">
+                              <div className="shrink-0 flex items-center justify-center w-[30px] h-[140px] mx-1">
                                 <div className="flex flex-col items-center justify-center h-full bg-blue-50 dark:bg-blue-950/30 rounded-md border border-blue-200 dark:border-blue-800 px-1">
                                   <div className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 transform -rotate-90 whitespace-nowrap">
                                     ☕ {breakMinutes} min

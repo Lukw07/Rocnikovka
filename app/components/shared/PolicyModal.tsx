@@ -66,7 +66,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
 
         <div className="space-y-6 py-4">
           {/* Platform Overview */}
-          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+          <Card className="bg-linear-to-br from-blue-50 to-purple-50 border-blue-200">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
                 <BookOpen className="w-5 h-5 mr-2" />
@@ -102,7 +102,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
             
             <div className="space-y-3">
               <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
                 <div>
                   <h4 className="font-medium text-gray-900">Respektujte ostatní</h4>
                   <p className="text-sm text-gray-600">
@@ -113,7 +113,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
               </div>
 
               <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
                 <div>
                   <h4 className="font-medium text-gray-900">Férové hraní</h4>
                   <p className="text-sm text-gray-600">
@@ -124,7 +124,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
               </div>
 
               <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
                 <div>
                   <h4 className="font-medium text-gray-900">Ochrana soukromí</h4>
                   <p className="text-sm text-gray-600">
@@ -135,7 +135,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
               </div>
 
               <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
                 <div>
                   <h4 className="font-medium text-gray-900">Odpovědné používání</h4>
                   <p className="text-sm text-gray-600">
@@ -200,7 +200,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
           <Button
             onClick={handleAcknowledge}
             disabled={isAcknowledging}
-            className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+            className="w-full sm:w-auto bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
           >
             {isAcknowledging ? (
               <>

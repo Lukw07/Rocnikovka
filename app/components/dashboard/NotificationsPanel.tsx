@@ -189,7 +189,7 @@ export default function NotificationsPanel() {
                     )}
                   >
                     <div className="flex gap-3">
-                      <div className="flex-shrink-0 mt-1">
+                      <div className="shrink-0 mt-1">
                         {getNotificationIcon(notification.type)}
                       </div>
                       

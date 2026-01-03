@@ -267,7 +267,7 @@ export function TeacherRewardsManagement() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
+      <Card className="bg-linear-to-r from-purple-500 to-indigo-500 text-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
             <Gift className="w-8 h-8" />

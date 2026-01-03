@@ -23,10 +23,9 @@ export default async function TradingPage() {
   const friendships = await prisma.friendship.findMany({
     where: {
       OR: [
-        { user1Id: session.user.id },
-        { user2Id: session.user.id }
-      ],
-      status: 'ACCEPTED'
+        { userId1: session.user.id },
+        { userId2: session.user.id }
+      ]
     },
     include: {
       user1: {
@@ -47,7 +46,7 @@ export default async function TradingPage() {
   });
 
   const friends = friendships.map(f => 
-    f.user1Id === session.user.id ? f.user2 : f.user1
+    f.userId1 === session.user.id ? f.user2 : f.user1
   );
 
   return (

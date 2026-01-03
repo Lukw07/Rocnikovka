@@ -116,7 +116,7 @@ export default function RandomFindTrigger() {
           disabled={!canFind || finding}
           size="lg"
           className={`rounded-full h-16 w-16 shadow-lg transition-all ${
-            canFind ? 'animate-pulse bg-gradient-to-r from-yellow-500 to-orange-500 hover:scale-110' : ''
+            canFind ? 'animate-pulse bg-linear-to-r from-yellow-500 to-orange-500 hover:scale-110' : ''
           }`}
         >
           {finding ? (
@@ -147,7 +147,7 @@ export default function RandomFindTrigger() {
       {/* Result Modal */}
       {result && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-in fade-in">
-          <div className={`relative p-8 rounded-2xl bg-gradient-to-br ${getRarityColor(result.rarity)} text-white shadow-2xl animate-in zoom-in`}>
+          <div className={`relative p-8 rounded-2xl bg-linear-to-br ${getRarityColor(result.rarity)} text-white shadow-2xl animate-in zoom-in`}>
             <div className="text-center space-y-4">
               <div className="animate-bounce">
                 <Gift className="h-20 w-20 mx-auto" />

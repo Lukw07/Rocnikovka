@@ -131,7 +131,7 @@ export function SkillPointAllocator({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Skillpoints summary */}
-      <div className="bg-gradient-to-r from-green-900 to-emerald-900 rounded-lg p-6">
+      <div className="bg-linear-to-r from-green-900 to-emerald-900 rounded-lg p-6">
         <h3 className="text-lg font-bold text-green-100 mb-4">Skillpoints Pool</h3>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>

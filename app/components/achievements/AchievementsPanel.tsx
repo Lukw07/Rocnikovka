@@ -133,7 +133,7 @@ export default function AchievementsPanel({ canManage = false, isOperator = fals
                     {/* <Check className="h-4 w-4 text-green-600 shrink-0" /> */}
                   </div>
                   
-                  <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
+                  <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
                     {a.description}
                   </p>
 

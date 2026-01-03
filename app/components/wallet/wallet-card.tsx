@@ -51,7 +51,7 @@ export default function WalletCard() {
   }
 
   return (
-    <Card className="w-full bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20">
+    <Card className="w-full bg-linear-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Coins className="h-6 w-6 text-yellow-600" />
@@ -87,12 +87,12 @@ export default function WalletCard() {
         </div>
 
         {/* Total Wealth */}
-        <div className="p-4 bg-gradient-to-r from-yellow-500/10 to-cyan-500/10 rounded-lg border-2 border-yellow-500/20">
+        <div className="p-4 bg-linear-to-r from-yellow-500/10 to-cyan-500/10 rounded-lg border-2 border-yellow-500/20">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Celkové bohatství
             </span>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-600 to-cyan-600">
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-yellow-600 to-cyan-600">
               {balance.totalWealth.toLocaleString()}
             </span>
           </div>

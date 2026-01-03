@@ -99,7 +99,7 @@ export function SkillsDisplay({ userId, className = "" }: SkillsDisplayProps) {
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Overall power indicator */}
-      <div className="bg-gradient-to-r from-purple-900 to-blue-900 p-6 rounded-lg">
+      <div className="bg-linear-to-r from-purple-900 to-blue-900 p-6 rounded-lg">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-white mb-2">Core Attributes</h2>

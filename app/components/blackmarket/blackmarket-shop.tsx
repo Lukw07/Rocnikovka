@@ -100,7 +100,7 @@ export default function BlackMarketShop() {
   const regular = offers.filter(o => !o.isFeatured);
 
   return (
-    <Card className="w-full bg-gradient-to-br from-gray-900 to-purple-900 text-white">
+    <Card className="w-full bg-linear-to-br from-gray-900 to-purple-900 text-white">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
           <Skull className="h-8 w-8 text-purple-400" />

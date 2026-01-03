@@ -154,7 +154,7 @@ export function AttributesMiniWidget() {
   }, [request])
   
   return (
-    <div className="bg-gradient-to-br from-purple-900 to-blue-900 rounded-lg p-4">
+    <div className="bg-linear-to-br from-purple-900 to-blue-900 rounded-lg p-4">
       <h3 className="font-bold text-sm text-purple-100 mb-2">Core Attributes</h3>
       <div className="text-2xl font-bold text-yellow-400">{skillpoints.total}</div>
       <p className="text-xs text-purple-200">attributes developed</p>

@@ -356,7 +356,7 @@ export function BossBattleUI({ eventId, onVictory }: BossBattleUIProps) {
                       value={(dmg / stats.totalDamage) * 100} 
                       className="w-20 h-2"
                     />
-                    <span className="font-bold min-w-[80px] text-right">
+                    <span className="font-bold min-w-20 text-right">
                       {dmg.toLocaleString()}
                     </span>
                   </div>

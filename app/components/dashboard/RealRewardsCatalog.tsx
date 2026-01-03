@@ -170,7 +170,7 @@ export function RealRewardsCatalog({ studentId, studentGold, studentGems, studen
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+      <Card className="bg-linear-to-r from-purple-500 to-pink-500 text-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
             <Gift className="w-8 h-8" />

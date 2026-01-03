@@ -181,7 +181,7 @@ export default function AchievementsPanelEnhanced() {
                   <div className="flex items-center gap-2">
                     <div className={cn(
                       "w-10 h-10 rounded-full flex items-center justify-center text-xl",
-                      achievement.color ? `bg-[${achievement.color}]` : "bg-gradient-to-br from-yellow-400 to-orange-500"
+                      achievement.color ? `bg-[${achievement.color}]` : "bg-linear-to-br from-yellow-400 to-orange-500"
                     )}>
                       {achievement.icon || '🏆'}
                     </div>
