@@ -1,8 +1,8 @@
 import { Metadata } from "next"
 import { auth } from "@/app/lib/auth"
 import { redirect } from "next/navigation"
-import { WalletCard } from "@/app/components/wallet/wallet-card"
-import { TransactionHistory } from "@/app/components/wallet/transaction-history"
+import WalletCard from "@/app/components/wallet/wallet-card"
+import TransactionHistory from "@/app/components/wallet/transaction-history"
 import { Wallet } from "lucide-react"
 
 export const metadata: Metadata = {

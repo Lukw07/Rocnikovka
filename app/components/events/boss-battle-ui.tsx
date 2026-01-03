@@ -6,6 +6,7 @@ import { Button } from "@/app/components/ui/button"
 import { Progress } from "@/app/components/ui/progress"
 import { Badge } from "@/app/components/ui/badge"
 import { Input } from "@/app/components/ui/input"
+import { toast } from "sonner"
 import { Sword, Heart, Users, Trophy, Zap, Shield, TrendingUp } from "lucide-react"
 
 interface BossStats {

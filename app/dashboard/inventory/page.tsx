@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { auth } from "@/app/lib/auth"
 import { redirect } from "next/navigation"
-import { InventoryGrid } from "@/app/components/inventory/inventory-grid"
+import InventoryGrid from "@/app/components/inventory/inventory-grid"
 import { Package } from "lucide-react"
 
 export const metadata: Metadata = {

@@ -3,9 +3,9 @@ import { auth } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { Store } from "lucide-react";
-import { MarketplaceView } from "@/app/components/marketplace/MarketplaceView";
-import { SellItem } from "@/app/components/marketplace/SellItem";
-import { MarketStats } from "@/app/components/marketplace/MarketStats";
+import MarketplaceView from "@/app/components/marketplace/MarketplaceView";
+import { SellItemDialog } from "@/app/components/marketplace/SellItem";
+import MarketStats from "@/app/components/marketplace/MarketStats";
 
 export const metadata: Metadata = {
   title: "Marketplace | EduRPG",
@@ -45,7 +45,7 @@ export default async function MarketplacePage() {
         </TabsContent>
 
         <TabsContent value="sell" className="space-y-4">
-          <SellItem />
+          <SellItemDialog />
         </TabsContent>
 
         <TabsContent value="stats" className="space-y-4">
