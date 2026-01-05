@@ -171,6 +171,41 @@ export class ShopService {
         }
       })
       
+      // Create UserInventory entry
+      const existingInventory = await tx.userInventory.findUnique({
+        where: {
+          userId_itemId: {
+            userId,
+            itemId
+          }
+        }
+      })
+      
+      if (existingInventory) {
+        // If item already in inventory, increment quantity
+        await tx.userInventory.update({
+          where: {
+            userId_itemId: {
+              userId,
+              itemId
+            }
+          },
+          data: {
+            quantity: existingInventory.quantity + 1
+          }
+        })
+      } else {
+        // Create new inventory entry
+        await tx.userInventory.create({
+          data: {
+            userId,
+            itemId,
+            quantity: 1,
+            isEquipped: false
+          }
+        })
+      }
+      
       // Deduct money from user
       await tx.moneyTx.create({
         data: {

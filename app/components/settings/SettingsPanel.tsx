@@ -78,9 +78,9 @@ export function SettingsPanel() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl">
+        <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_1fr] gap-7 max-w-6xl mx-auto">
           {/* Theme Settings */}
-          <Card>
+            <Card className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Monitor className="h-5 w-5" />
@@ -154,7 +154,8 @@ export function SettingsPanel() {
           </Card>
 
           {/* Color Customization */}
-          <Card>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+              <Card className="h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Palette className="h-5 w-5" />
@@ -235,8 +236,9 @@ export function SettingsPanel() {
             </CardContent>
           </Card>
 
-          {/* Avatar Settings */}
-          <AvatarSelector />
+              {/* Avatar Settings */}
+              <AvatarSelector />
+            </div>
         </div>
       </div>
     </div>

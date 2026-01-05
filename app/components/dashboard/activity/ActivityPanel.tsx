@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
-import { Activity, AlertTriangle } from "lucide-react"
+import { Activity, AlertTriangle, CheckCircle2, Info, Clock, Loader2 } from "lucide-react"
 
 interface RecentActivity {
   id: string
@@ -35,46 +35,76 @@ export function ActivityPanel() {
   }, [])
 
   if (loading) {
-    return <div>Načítání...</div>
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-center p-12">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <span className="ml-3 text-muted-foreground">Načítání aktivit…</span>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold tracking-tight">Systémové logy</h2>
-      <Card>
-        <CardHeader>
-          <CardTitle>Poslední aktivita</CardTitle>
+      <div className="flex items-center gap-3 mb-2">
+        <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-md">
+          <Activity className="w-5 h-5 text-white" />
+        </div>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Systémové logy
+        </h2>
+      </div>
+      <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-2">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b">
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-blue-600" />
+            Poslední aktivita
+          </CardTitle>
           <CardDescription>
             Logy systémových událostí a chyb
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {activity.map((item) => (
-              <div key={item.id} className="flex items-start space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                <div className={`mt-1 p-2 rounded-full ${
-                  item.level === "ERROR" ? "bg-red-100 text-red-600" :
-                  item.level === "WARN" ? "bg-yellow-100 text-yellow-600" :
-                  "bg-green-100 text-green-600"
-                }`}>
-                  {item.level === "ERROR" ? <AlertTriangle className="w-4 h-4" /> :
-                   item.level === "WARN" ? <AlertTriangle className="w-4 h-4" /> :
-                   <Activity className="w-4 h-4" />}
-                </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{item.message}</p>
-                    <span className="text-xs text-muted-foreground">{item.timestamp}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="outline" className="text-xs">
-                      {item.type}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">ID: {item.id.substring(0, 8)}</span>
-                  </div>
-                </div>
+        <CardContent className="p-6">
+          <div className="space-y-3">
+            {activity.length === 0 ? (
+              <div className="text-center py-8">
+                <Activity className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                <p className="text-muted-foreground">Žádná aktivita</p>
               </div>
-            ))}
+            ) : (
+              activity.map((item) => (
+                <div key={item.id} className="group flex items-start space-x-4 p-4 border-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:border-blue-300 transition-all duration-300 hover:shadow-md">
+                  <div className={`mt-1 p-2.5 rounded-xl shadow-sm transition-all duration-300 ${
+                    item.level === "ERROR" ? "bg-gradient-to-br from-red-500 to-red-600 text-white" :
+                    item.level === "WARN" ? "bg-gradient-to-br from-yellow-500 to-amber-600 text-white" :
+                    "bg-gradient-to-br from-green-500 to-emerald-600 text-white"
+                  }`}>
+                    {item.level === "ERROR" ? <AlertTriangle className="w-5 h-5" /> :
+                     item.level === "WARN" ? <AlertTriangle className="w-5 h-5" /> :
+                     <CheckCircle2 className="w-5 h-5" />}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 transition-colors">{item.message}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded-md">
+                        <Clock className="w-3 h-3" />
+                        <span>{item.timestamp}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Badge variant="outline" className="text-xs bg-white">
+                        {item.type}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Info className="w-3 h-3" />
+                        ID: {item.id.substring(0, 8)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

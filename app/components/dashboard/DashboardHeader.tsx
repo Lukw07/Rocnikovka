@@ -9,22 +9,29 @@ import Image from "next/image"
 import { signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { UserRole } from "@/app/lib/generated"
-import { LogOut, Coins, Menu } from "lucide-react"
+import { LogOut, Coins } from "lucide-react"
 import { UserAvatarWithBadge } from "@/app/components/dashboard/UserAvatarWithBadge"
+import { NavigationDropdown } from "@/app/components/dashboard/NavigationDropdown"
+import { MenuItem } from "@/app/components/ui/Sidebar"
+import { Skeleton } from "@/app/components/ui/skeleton"
 
 interface DashboardHeaderProps {
   userName: string
   userRole?: UserRole
   userBalance?: number
-  onMenuToggle: () => void
+  menuItems?: MenuItem[]
 }
 
-export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle }: DashboardHeaderProps) {
+export function DashboardHeader({ userName, userRole, userBalance, menuItems = [] }: DashboardHeaderProps) {
   const router = useRouter()
   const [balance, setBalance] = useState<number | undefined>(userBalance)
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
     let mounted = true
+
+    // Ensure popover IDs hydrate consistently by rendering them only after client mount
+    setHydrated(true)
 
     const fetchBalance = async () => {
       try {
@@ -66,16 +73,9 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
 
   return (
     <div className="w-full bg-muted/30 dark:bg-muted/20 border-b border-border px-3 sm:px-4 py-3 flex items-center justify-between">
-      {/* Left: Mobile Menu Button */}
+      {/* Left: Navigation Dropdown */}
       <div className="flex md:hidden items-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0"
-          onClick={onMenuToggle}
-        >
-          <Menu className="h-7 w-7" />
-        </Button>
+        {menuItems.length > 0 && <NavigationDropdown menuItems={menuItems} />}
       </div>
 
       {/* Center: Logo + Brand (centered on mobile) */}
@@ -111,28 +111,35 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
         </Badge>
 
         {/* User Menu - Full name on desktop */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2 h-10">
-              <UserAvatarWithBadge name={userName || "U"} className="h-6 w-6" />
-              <span className="max-w-[140px] truncate text-sm">
-                {userName}
-              </span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-56 p-2">
-            <div className="flex flex-col gap-1">
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950 text-sm"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Odhlásit se</span>
+        {hydrated ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2 h-10">
+                <UserAvatarWithBadge name={userName || "U"} className="h-6 w-6" />
+                <span className="max-w-[140px] truncate text-sm">
+                  {userName}
+                </span>
               </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-56 p-2">
+              <div className="flex flex-col gap-1">
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950 text-sm"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Odhlásit se</span>
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <div className="flex items-center gap-2 h-10">
+            <Skeleton className="h-6 w-6 rounded-full" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+        )}
       </div>
 
       {/* Mobile: Right side - Only balance and user icon */}
@@ -144,29 +151,33 @@ export function DashboardHeader({ userName, userRole, userBalance, onMenuToggle 
         </Badge>
 
         {/* User Menu - Only icon on mobile */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="icon" className="h-9 w-9">
-              <UserAvatarWithBadge name={userName || "U"} className="h-5 w-5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-48 p-2">
-            <div className="flex flex-col gap-1">
-              <div className="px-2 py-1 text-xs text-muted-foreground border-b mb-1">
-                <p>{userName}</p>
-                <p>Role: {getRoleDisplayName(userRole)}</p>
-              </div>
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950 text-xs"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Odhlásit se</span>
+        {hydrated ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                <UserAvatarWithBadge name={userName || "U"} className="h-5 w-5" />
               </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-48 p-2">
+              <div className="flex flex-col gap-1">
+                <div className="px-2 py-1 text-xs text-muted-foreground border-b mb-1">
+                  <p>{userName}</p>
+                  <p>Role: {getRoleDisplayName(userRole)}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950 text-xs"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Odhlásit se</span>
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Skeleton className="h-9 w-9 rounded-md" />
+        )}
       </div>
     </div>
   )

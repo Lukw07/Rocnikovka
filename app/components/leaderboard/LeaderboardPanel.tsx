@@ -230,8 +230,19 @@ export default function LeaderboardPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/30 p-4 md:p-6">
-      <div className="max-w mx-auto">
+    <div 
+      className="h-full relative overflow-y-auto"
+      style={{
+        backgroundImage: 'url(/Backgrounds/leaderboard_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Overlay pro lepší čitelnost */}
+      <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px] pointer-events-none" />
+      
+      <div className="max-w mx-auto relative z-10 p-4 md:p-6">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}

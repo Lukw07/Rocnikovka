@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/app/lib/auth"
+import { prisma } from "@/app/lib/prisma"
 import { UserRole } from "@/app/lib/generated"
 import { MenuItem } from "@/app/components/ui/Sidebar"
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader"
@@ -14,12 +15,21 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   const role = session.user.role as UserRole
+
+  // Fetch pending friend requests count
+  const pendingRequestsCount = await prisma.friendRequest.count({
+    where: {
+      receiverId: session.user.id,
+      status: 'PENDING'
+    }
+  })
+
   let menuItems: MenuItem[] = []
 
   if (role === UserRole.TEACHER) {
     menuItems = [
       { icon: 'Home', label: 'Přehled', href: '/dashboard', section: 'Hlavní' },
-      { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list', section: 'Výuka' },
+      { icon: 'ListChecks', label: 'Joby', href: '/dashboard/job-list', section: 'Výuka' },
       { icon: 'Users', label: 'Studenti', href: '/dashboard/students', section: 'Výuka' },
       { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget', section: 'Správa' },
       { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings', section: 'Systém' },
@@ -28,7 +38,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     menuItems = [
       { icon: 'Home', label: 'Přehled', href: '/dashboard', section: 'Hlavní' },
       // Teacher items for Operator
-      { icon: 'ListChecks', label: 'Správa úloh', href: '/dashboard/job-list', section: 'Výuka' },
+      { icon: 'ListChecks', label: 'Joby', href: '/dashboard/job-list', section: 'Výuka' },
       { icon: 'Users', label: 'Studenti', href: '/dashboard/students', section: 'Výuka' },
       { icon: 'Coins', label: 'Rozpočet', href: '/dashboard/budget', section: 'Výuka' },
       // Management items
@@ -52,21 +62,19 @@ export default async function DashboardLayout({ children }: { children: React.Re
       { icon: 'Calendar', label: 'Eventy', href: '/dashboard/events', section: 'Aktivity' },
       // Progression
       { icon: 'Trophy', label: 'Úspěchy', href: '/dashboard/achievements', section: 'Postup' },
-      { icon: 'Award', label: 'Leaderboard', href: '/dashboard/leaderboard', section: 'Postup' },
+      { icon: 'Leaderboard', label: 'Leaderboard', href: '/dashboard/leaderboard', section: 'Postup' },
       { icon: 'Award', label: 'Odznaky', href: '/dashboard/badges', section: 'Postup' },
       // Sociální
-      { icon: 'Shield', label: 'Guildy', href: '/dashboard/guilds', section: 'Sociální' },
-      { icon: 'Users', label: 'Přátelé', href: '/dashboard/friends', section: 'Sociální' },
-      { icon: 'ArrowRightLeft', label: 'Obchody', href: '/dashboard/trading', section: 'Sociální' },
+      { icon: 'Shield', label: 'Klany', href: '/dashboard/guilds', section: 'Sociální' },
+      { icon: 'Users', label: 'Přátelé', href: '/dashboard/friends', section: 'Sociální', badge: pendingRequestsCount },
+      { icon: 'ArrowRightLeft', label: 'Trade', href: '/dashboard/trading', section: 'Sociální' },
       // Inventář & Ekonomika
       { icon: 'Package', label: 'Inventář', href: '/dashboard/inventory', section: 'Inventář' },
       { icon: 'Wallet', label: 'Peněženka', href: '/dashboard/wallet', section: 'Inventář' },
       { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/shop', section: 'Inventář' },
       { icon: 'Store', label: 'Marketplace', href: '/dashboard/marketplace', section: 'Inventář' },
-      // Ostatní
-      { icon: 'Home', label: 'Personal Space', href: '/dashboard/personal-space', section: 'Ostatní' },
-      { icon: 'ListChecks', label: 'Seznam Úloh', href: '/dashboard/job-list', section: 'Ostatní' },
-      { icon: 'FileText', label: 'Záznam', href: '/dashboard/log', section: 'Ostatní' },
+      { icon: 'ListChecks', label: 'Joby', href: '/dashboard/job-list', section: 'Ostatní' },
+      { icon: 'FileText', label: 'Log událostí', href: '/dashboard/log', section: 'Ostatní' },
       { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings', section: 'Ostatní' },
     ]
   }

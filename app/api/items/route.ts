@@ -8,11 +8,14 @@ import { createItemSchema, CreateItemRequest } from "./schema"
 
 export async function GET(request: NextRequest) {
   try {
+    console.log("GET /api/items - Starting request")
     const items = await ItemsService.getAllItems()
+    console.log(`GET /api/items - Found ${items.length} items`)
     return NextResponse.json({ items })
   } catch (error) {
     console.error("Items GET error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    return NextResponse.json({ error: "Internal server error", details: errorMessage }, { status: 500 })
   }
 }
 

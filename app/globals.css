@@ -406,6 +406,23 @@ body::before {
     0 0 32px hsl(var(--primary) / 0.25);
 }
 
+/* Dialog-specific rpg-card adjustments */
+[role="dialog"] .rpg-card,
+[role="dialog"].rpg-card {
+  overflow: visible;
+  position: relative;
+}
+
+[role="dialog"] .rpg-card::before,
+[role="dialog"].rpg-card::before {
+  display: none;
+}
+
+[role="dialog"] .rpg-card::after,
+[role="dialog"].rpg-card::after {
+  display: none;
+}
+
 /* RPG Badge styles */
 .rpg-badge {
   display: inline-flex;

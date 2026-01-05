@@ -51,35 +51,33 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="max-w-2xl max-h-[80vh] flex flex-col p-0"
+        className="max-w-sm flex flex-col gap-0 p-0"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <div className="sticky top-0 bg-background border-b border-border z-10">
-          <DialogHeader className="p-6">
-            <DialogTitle className="flex items-center space-x-2 text-xl">
-              <Shield className="w-6 h-6 text-blue-600 shrink-0" />
-              <span>Vítejte v EduRPG!</span>
-            </DialogTitle>
-            <DialogDescription className="text-base mt-2">
-              Před začátkem používání platformy si prosím přečtěte následující pravidla a podmínky.
-            </DialogDescription>
-          </DialogHeader>
+        <div className="sticky top-0 bg-background border-b border-border z-10 -mx-6 px-4 pt-4 pb-3">
+          <DialogTitle className="flex items-center space-x-2 text-base mb-1">
+            <Shield className="w-5 h-5 text-blue-600 shrink-0" />
+            <span>Vítejte v EduRPG!</span>
+          </DialogTitle>
+          <p className="text-xs text-muted-foreground">
+            Před začátkem používání platformy si prosím přečtěte následující pravidla a podmínky.
+          </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4">
-          <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto px-4 py-3">
+          <div className="space-y-3">
             {/* Platform Overview */}
             <Card className="bg-linear-to-br from-blue-50 to-purple-50 border-blue-200">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
-                  <BookOpen className="w-5 h-5 mr-2 shrink-0" />
+              <CardContent className="p-3">
+                <h3 className="text-sm font-semibold text-blue-900 mb-2 flex items-center">
+                  <BookOpen className="w-4 h-4 mr-2 shrink-0" />
                   O platformě EduRPG
                 </h3>
-                <p className="text-blue-800 mb-4">
+                <p className="text-xs text-blue-800 mb-2">
                   EduRPG je gamifikační platforma, která přináší RPG prvky do vzdělávání. 
                   Získejte XP za úkoly, sbírejte úspěchy a rozvíjejte své dovednosti v bezpečném prostředí.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="flex items-center space-x-2">
                     <Trophy className="w-4 h-4 text-yellow-500 shrink-0" />
                     <span className="text-sm text-blue-700">XP a úrovně</span>
@@ -97,51 +95,51 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
             </Card>
 
             {/* Rules and Guidelines */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 flex items-center">
                 <AlertTriangle className="w-5 h-5 mr-2 text-orange-500 shrink-0" />
                 Pravidla a pokyny
               </h3>
               
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+              <div className="space-y-2">
+                <div className="flex items-start space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                  <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Respektujte ostatní</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-medium text-xs text-gray-900">Respektujte ostatní</h4>
+                    <p className="text-xs text-gray-600 mt-0.5">
                       Chovejte se k ostatním uživatelům s respektem a slušností. 
                       Žádné obtěžování, šikana nebo nevhodné chování.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+                <div className="flex items-start space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                  <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Férové hraní</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-medium text-xs text-gray-900">Férové hraní</h4>
+                    <p className="text-xs text-gray-600 mt-0.5">
                       Nepoužívejte podvody, hacky nebo jiné nefér výhody. 
                       Všechny úkoly plňte samostatně a poctivě.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+                <div className="flex items-start space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                  <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Ochrana soukromí</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-medium text-xs text-gray-900">Ochrana soukromí</h4>
+                    <p className="text-xs text-gray-600 mt-0.5">
                       Nesdílejte osobní údaje ostatních uživatelů. 
                       Vaše data jsou chráněna a používána pouze pro vzdělávací účely.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+                <div className="flex items-start space-x-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                  <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   <div>
-                    <h4 className="font-medium text-gray-900">Odpovědné používání</h4>
-                    <p className="text-sm text-gray-600">
+                    <h4 className="font-medium text-xs text-gray-900">Odpovědné používání</h4>
+                    <p className="text-xs text-gray-600 mt-0.5">
                       Platforma je určena pro vzdělávání. Používejte ji zodpovědně 
                       a v souladu s pokyny vašich učitelů.
                     </p>
@@ -152,12 +150,12 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
 
             {/* Data and Privacy */}
             <Card className="border-orange-200 bg-orange-50">
-              <CardContent className="p-4">
-                <h3 className="font-medium text-orange-900 mb-2 flex items-center">
+              <CardContent className="p-3">
+                <h3 className="font-semibold text-xs text-orange-900 mb-1 flex items-center">
                   <Shield className="w-4 h-4 mr-2 shrink-0" />
                   Ochrana osobních údajů
                 </h3>
-                <p className="text-sm text-orange-800">
+                <p className="text-xs text-orange-800">
                   Vaše data jsou synchronizována z Bakaláří a používána pouze pro vzdělávací účely. 
                   Máte právo na přístup, opravu a výmaz svých údajů. Více informací najdete v našich 
                   zásadách ochrany osobních údajů.
@@ -168,15 +166,15 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
             {/* Role-specific information */}
             {session?.user?.role && (
               <Card className="border-blue-200 bg-blue-50">
-                <CardContent className="p-4">
-                  <h3 className="font-medium text-blue-900 mb-2">
+                <CardContent className="p-3">
+                  <h3 className="font-semibold text-xs text-blue-900 mb-1">
                     Vaše role: {
                       session?.user?.role === "STUDENT" ? "Student" :
                       session?.user?.role === "TEACHER" ? "Učitel" :
                       "Operátor"
                     }
                   </h3>
-                  <p className="text-sm text-blue-800">
+                  <p className="text-xs text-blue-800">
                     {session?.user?.role === "STUDENT" && 
                       "Můžete se přihlašovat k úkolům, získávat XP a účastnit se událostí."
                     }
@@ -193,8 +191,8 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-background border-t border-border">
-          <DialogFooter className="p-6 flex flex-col sm:flex-row gap-3">
+        <div className="sticky bottom-0 bg-background border-t border-border -mx-6 px-4 py-3">
+          <div className="flex flex-col sm:flex-row gap-2 justify-end">
             <Button
               variant="outline"
               onClick={onClose}
@@ -205,7 +203,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
             <Button
               onClick={handleAcknowledge}
               disabled={isAcknowledging}
-              className="w-full sm:w-auto bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              className="w-full sm:w-auto bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
             >
               {isAcknowledging ? (
                 <>
@@ -219,7 +217,7 @@ export function PolicyModal({ isOpen, onClose }: PolicyModalProps) {
                 </>
               )}
             </Button>
-          </DialogFooter>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

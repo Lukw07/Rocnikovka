@@ -40,11 +40,15 @@ export function AdminShopPanel() {
   const fetchItems = async () => {
     try {
       const response = await fetch("/api/items")
-      if (!response.ok) throw new Error("Failed to fetch items")
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error(`API Error ${response.status}:`, errorData)
+        throw new Error(`Failed to fetch items: ${response.status}`)
+      }
       const data = await response.json()
       setItems(data.items || [])
     } catch (error) {
-      console.error(error)
+      console.error("fetchItems error:", error)
       toast.error("Chyba při načítání předmětů")
     } finally {
       setLoading(false)
@@ -58,11 +62,16 @@ export function AdminShopPanel() {
         method: "POST"
       })
       
-      if (!response.ok) throw new Error("Failed to toggle item")
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error(`Toggle Error ${response.status}:`, errorData)
+        throw new Error(`Failed to toggle item: ${response.status}`)
+      }
       
       await fetchItems()
       toast.success("Stav předmětu změněn")
     } catch (error) {
+      console.error("handleToggleItem error:", error)
       toast.error("Chyba při změně stavu")
     } finally {
       setTogglingItem(null)

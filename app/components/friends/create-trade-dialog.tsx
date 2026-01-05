@@ -27,6 +27,7 @@ interface InventoryItem {
     description: string;
     imageUrl?: string;
     rarity: string;
+    isTradeable?: boolean;
   };
 }
 
@@ -57,7 +58,26 @@ export function CreateTradeDialog({ friends }: { friends: Friend[] }) {
       const data = await response.json();
       
       if (response.ok) {
-        setInventory(data.inventory || []);
+        // Filtruj pouze tradeable itemy
+        const allItems = data.inventory || [];
+        const tradeableItems = allItems.filter((invItem: InventoryItem) => {
+          // Pokud item má isTradeable === false, vynech ho
+          // Jinak (undefined nebo true) zahrnuj ho
+          const item = invItem.item as any;
+          return item.isTradeable !== false;
+        });
+        
+        console.log('All inventory items:', allItems.length);
+        console.log('Tradeable items:', tradeableItems.length);
+        console.log('Sample item:', allItems[0]);
+        
+        setInventory(tradeableItems);
+        
+        if (tradeableItems.length === 0 && allItems.length > 0) {
+          toast.info('Máte itemy v inventáři, ale žádný z nich nelze tradovat');
+        } else if (allItems.length === 0) {
+          toast.info('Váš inventář je prázdný. Kupte si itemy v obchodě!');
+        }
       }
     } catch (error) {
       console.error('Error fetching inventory:', error);

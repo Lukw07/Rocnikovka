@@ -81,7 +81,7 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
       <DashboardHeader 
         userName={user.name || "Uživateli"}
         userRole={user.role as UserRole}
-        onMenuToggle={handleMenuToggle}
+        menuItems={menuItems}
       />
       
       {isOperator && (

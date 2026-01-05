@@ -9,13 +9,17 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    console.log("POST /api/items/[id]/toggle - Starting request")
     const session = await getServerSession(authOptions)
     if (!session?.user || (session.user.role !== UserRole.OPERATOR && session.user.role !== UserRole.TEACHER)) {
+      console.warn("Toggle: Unauthorized user attempted access")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
     const { id: itemId } = await params
+    console.log(`Toggle item ${itemId}`)
     
     const updatedItem = await ItemsService.toggleItemStatus(itemId)
+    console.log(`Item ${itemId} toggled successfully`)
     
     return NextResponse.json({ item: updatedItem })
   } catch (error) {
@@ -26,6 +30,7 @@ export async function POST(
     }
     
     console.error("Item toggle error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    return NextResponse.json({ error: "Internal server error", details: errorMessage }, { status: 500 })
   }
 }

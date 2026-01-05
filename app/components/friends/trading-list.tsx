@@ -14,7 +14,7 @@ interface TradeItem {
   tradeId: string;
   itemId: string;
   quantity: number;
-  offeredBy: string;
+  isOffered: boolean;
   item: {
     id: string;
     name: string;
@@ -58,6 +58,7 @@ export function TradingList() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTrades();
@@ -71,6 +72,17 @@ export function TradingList() {
 
       if (response.ok) {
         setTrades(data.trades || []);
+        
+        // Get current user ID from the first trade
+        if (data.trades && data.trades.length > 0) {
+          const firstTrade = data.trades[0];
+          // If we're in received array, we're the recipient
+          if (data.received && data.received.some((t: Trade) => t.id === firstTrade.id)) {
+            setCurrentUserId(firstTrade.recipientId);
+          } else if (data.sent && data.sent.some((t: Trade) => t.id === firstTrade.id)) {
+            setCurrentUserId(firstTrade.requesterId);
+          }
+        }
       } else {
         toast.error('Nepodařilo se načíst obchody');
       }
@@ -133,11 +145,14 @@ export function TradingList() {
   const TradeCard = ({ trade, currentUserId }: { trade: Trade; currentUserId?: string }) => {
     const isReceived = trade.recipientId === currentUserId;
     const otherUser = isReceived ? trade.requester : trade.recipient;
+    
+    // isOffered = true znamená že requester to nabízí
+    // isOffered = false znamená že requester to chce (recipient nabízí)
     const myItems = trade.tradeItems.filter(item => 
-      isReceived ? item.offeredBy === trade.requesterId : item.offeredBy === trade.recipientId
+      isReceived ? !item.isOffered : item.isOffered
     );
     const theirItems = trade.tradeItems.filter(item => 
-      isReceived ? item.offeredBy === trade.recipientId : item.offeredBy === trade.requesterId
+      isReceived ? item.isOffered : !item.isOffered
     );
 
     return (
@@ -302,7 +317,7 @@ export function TradingList() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {pendingTrades.map(trade => (
-              <TradeCard key={trade.id} trade={trade} />
+              <TradeCard key={trade.id} trade={trade} currentUserId={currentUserId || undefined} />
             ))}
           </div>
         )}
@@ -322,7 +337,7 @@ export function TradingList() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {completedTrades.map(trade => (
-              <TradeCard key={trade.id} trade={trade} />
+              <TradeCard key={trade.id} trade={trade} currentUserId={currentUserId || undefined} />
             ))}
           </div>
         )}

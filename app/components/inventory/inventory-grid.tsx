@@ -165,35 +165,64 @@ export default function InventoryGrid() {
             </TabsList>
 
             <TabsContent value="all">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                {inventory.map((item) => (
-                  <ItemCard key={item.id} item={item} />
-                ))}
-              </div>
+              {inventory.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <ShoppingBag className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                  <p className="text-lg font-medium">Inventář je prázdný</p>
+                  <p className="text-sm mt-2">Kupte si itemy v obchodě, abyste je mohli používat a tradovat!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                  {inventory.map((item) => (
+                    <ItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="cosmetic">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                {grouped.cosmetic?.map((item: InventoryItem) => (
-                  <ItemCard key={item.id} item={item} />
-                ))}
-              </div>
+              {(grouped.cosmetic?.length || 0) === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Sparkles className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                  <p>Žádné kosmetické itemy</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                  {grouped.cosmetic?.map((item: InventoryItem) => (
+                    <ItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="boost">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                {grouped.boost?.map((item: InventoryItem) => (
-                  <ItemCard key={item.id} item={item} />
-                ))}
-              </div>
+              {(grouped.boost?.length || 0) === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Zap className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                  <p>Žádné boost itemy</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                  {grouped.boost?.map((item: InventoryItem) => (
+                    <ItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="collectible">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                {grouped.collectible?.map((item: InventoryItem) => (
-                  <ItemCard key={item.id} item={item} />
-                ))}
-              </div>
+              {(grouped.collectible?.length || 0) === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Star className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                  <p>Žádné sběratelské itemy</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                  {grouped.collectible?.map((item: InventoryItem) => (
+                    <ItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>

@@ -5,5 +5,4 @@
 
 export { PersonalGoalService } from "./personal-goals"
 export { VirtualAwardService } from "./virtual-awards"
-export { PersonalSpaceService } from "./personal-space"
 export { GamificationIntegrationService } from "./gamification-integration"
