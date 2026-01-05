@@ -46,6 +46,14 @@ const rarityBadgeClasses: Record<ItemRarity, string> = {
   [ItemRarity.LEGENDARY]: "bg-orange-100 text-orange-800 border-orange-300",
 }
 
+// Konfiguraci itemů - kterej item má jaký limit
+const ITEM_CONFIG: Record<string, { maxPerUser?: number; isSinglePurchase?: boolean }> = {
+  // Příklad: "item-id-1": { maxPerUser: 5, isSinglePurchase: false }, // max 5, dá se koupit víckrát
+  // Příklad: "item-id-2": { maxPerUser: 1, isSinglePurchase: true },  // koupit jen jednou
+  // Kosmetika - koupit jen jednou
+  // Ostatní - max 10 (default)
+}
+
 export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
   const [shopData, setShopData] = useState<ShopData>({ items: [] })
   const [loading, setLoading] = useState(true)
@@ -160,18 +168,27 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 xl:gap-5">
             {shopData.items.map((item) => {
               const purchasedCount = shopData.userPurchases?.filter(p => p.itemId === item.id).length ?? 0
-              const remaining = Math.max(MAX_PER_ITEM - purchasedCount, 0)
-              const isPurchased = purchasedCount > 0
               const isCosmetic = item.type === ItemType.COSMETIC
+              
+              // Získej konfiguraci pro tenhle item
+              const config = ITEM_CONFIG[item.id]
+              const maxPerUser = config?.maxPerUser ?? (isCosmetic ? 1 : MAX_PER_ITEM)
+              const isSinglePurchase = config?.isSinglePurchase ?? isCosmetic
+              
+              // Zbývající počet
+              const remaining = Math.max(maxPerUser - purchasedCount, 0)
+              const isPurchased = purchasedCount > 0
+              const canPurchase = remaining > 0 && !isPurchased // Pokud single purchase a už má, nemůže koupit
               
               return (
                 <RpgCard
                   key={item.id}
                   variant="quest"
                   padding="sm"
-                  className="relative overflow-hidden border-[#5c3b1d]/85 bg-gradient-to-br from-[#5a3921] via-[#4a2f1a] to-[#3a2414] shadow-[0_12px_28px_rgba(0,0,0,0.55)]"
+                  className="relative overflow-hidden border-[#5c3b1d]/85 bg-gradient-to-br from-[#5a3921] via-[#4a2f1a] to-[#3a2414] shadow-[0_12px_28px_rgba(0,0,0,0.55)] flex flex-col"
                 >
-                  <div className="relative space-y-4">
+                  <div className="relative space-y-4 flex-1 flex flex-col">
+                    {/* Header s ikonou a názvem */}
                     <div className="flex items-start gap-3">
                       <div className="relative h-20 w-20 shrink-0 rounded-xl bg-gradient-to-br from-[#8c5a2d] via-[#704722] to-[#5a3619] border-2 border-[#d1a671]/70 shadow-[0_10px_22px_rgba(0,0,0,0.35)] overflow-hidden">
                         {item.imageUrl ? (
@@ -188,55 +205,65 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
                         <div className="absolute inset-x-1 -bottom-2 h-2 rounded-full bg-black/15 blur-md" />
                       </div>
 
-                      <div className="flex-1 space-y-3">
-                        <div className="rounded-lg bg-gradient-to-r from-[#6b4526]/85 via-[#805330]/85 to-[#6b4526]/85 px-3 py-2 border border-[#d1a671]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] flex items-center justify-between gap-2">
-                          <div className="font-cinzel text-lg font-bold text-[#f7e7d2] leading-tight drop-shadow-[0_1px_0_rgba(0,0,0,0.45)]">
+                      <div className="flex-1 space-y-2">
+                        <div className="rounded-lg bg-gradient-to-r from-[#6b4526]/85 via-[#805330]/85 to-[#6b4526]/85 px-3 py-2 border border-[#d1a671]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                          <div className="font-cinzel text-sm font-bold text-[#f7e7d2] leading-tight drop-shadow-[0_1px_0_rgba(0,0,0,0.45)]">
                             {item.name}
                           </div>
-                          <Badge
-                            className={cn(
-                              "uppercase tracking-wide text-[10px] font-semibold border shadow-sm bg-[#f7e7d2] text-[#3b240e]",
-                              rarityBadgeClasses[item.rarity] || "bg-gray-100 text-gray-800 border-gray-300"
-                            )}
-                          >
-                            {item.rarity}
-                          </Badge>
                         </div>
 
-                        <p className="text-sm text-[#e8d7c0]/80 leading-relaxed px-1">{item.description}</p>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-[#f7e7d2] px-3 py-1 text-xs font-semibold text-[#2f1a0c] border border-[#d1862e]/60 shadow-sm">
-                          <ShoppingCart className="w-3 h-3" />
-                          {isCosmetic ? "Nelze tradovat" : `Zbývá: ${remaining} / ${MAX_PER_ITEM}`}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-lg border border-[#d1862e]/70 bg-gradient-to-r from-[#f7d27a] via-[#f3b74e] to-[#e98c2f] px-4 py-2 shadow-inner">
-                        <div className="flex items-center gap-2 text-[#3b240e]">
-                        <Coins className="w-5 h-5" />
-                        <span className="text-lg font-black leading-none">{item.price}</span>
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#5c3614]">mincí</span>
-                      </div>
-
-                      {userRole === UserRole.STUDENT && (
-                        <RpgButton
-                          variant="quest"
-                          size="sm"
-                          glow
-                          className="min-w-[104px]"
-                          onClick={() => setSelectedItem(item)}
-                          disabled={buyingItem === item.id || remaining <= 0}
+                        <Badge
+                          className={cn(
+                            "uppercase tracking-wide text-[10px] font-semibold border shadow-sm bg-[#f7e7d2] text-[#3b240e] w-fit",
+                            rarityBadgeClasses[item.rarity] || "bg-gray-100 text-gray-800 border-gray-300"
+                          )}
                         >
-                          {buyingItem === item.id
-                            ? "Nakupuji..."
-                            : remaining <= 0
-                              ? "Vyprodáno"
-                              : isCosmetic
-                                ? "Koupit (netradovatelné)"
-                                : "Koupit"}
-                        </RpgButton>
-                      )}
+                          {item.rarity}
+                        </Badge>
+                      </div>
                     </div>
+
+                    {/* Popis */}
+                    <p className="text-xs text-[#e8d7c0]/80 leading-relaxed px-1 flex-1">{item.description}</p>
+
+                    {/* Limit info */}
+                    <div className="inline-flex items-center gap-2 rounded-full bg-[#f7e7d2] px-3 py-1 text-xs font-semibold text-[#2f1a0c] border border-[#d1862e]/60 shadow-sm w-fit">
+                      <ShoppingCart className="w-3 h-3" />
+                      {isSinglePurchase 
+                        ? isPurchased 
+                          ? "Již vlastníte" 
+                          : "Koupit jen jednou"
+                        : `Zbývá: ${remaining} / ${maxPerUser}`
+                      }
+                    </div>
+                  </div>
+
+                  {/* Cena a tlačítko - vždycky dole */}
+                  <div className="flex items-center justify-between rounded-lg border border-[#d1862e]/70 bg-gradient-to-r from-[#f7d27a] via-[#f3b74e] to-[#e98c2f] px-4 py-2 shadow-inner mt-auto">
+                    <div className="flex items-center gap-2 text-[#3b240e]">
+                      <Coins className="w-5 h-5" />
+                      <span className="text-lg font-black leading-none">{item.price}</span>
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-[#5c3614]">mincí</span>
+                    </div>
+
+                    {userRole === UserRole.STUDENT && (
+                      <RpgButton
+                        variant="quest"
+                        size="sm"
+                        glow
+                        className="min-w-[90px]"
+                        onClick={() => setSelectedItem(item)}
+                        disabled={buyingItem === item.id || !canPurchase}
+                      >
+                        {buyingItem === item.id
+                          ? "Nakupuji..."
+                          : !canPurchase
+                            ? isPurchased && isSinglePurchase
+                              ? "Vlastníte"
+                              : "Vyprodáno"
+                            : "Koupit"}
+                      </RpgButton>
+                    )}
                   </div>
                 </RpgCard>
               )
