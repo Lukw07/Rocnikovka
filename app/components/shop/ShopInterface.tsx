@@ -258,7 +258,7 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
                         {buyingItem === item.id
                           ? "Nakupuji..."
                           : !canPurchase
-                            ? isPurchased && isSinglePurchase
+                            ? isPurchased && config.isSinglePurchase
                               ? "Vlastníte"
                               : "Vyprodáno"
                             : "Koupit"}
