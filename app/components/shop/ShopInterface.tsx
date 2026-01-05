@@ -46,12 +46,19 @@ const rarityBadgeClasses: Record<ItemRarity, string> = {
   [ItemRarity.LEGENDARY]: "bg-orange-100 text-orange-800 border-orange-300",
 }
 
-// Konfiguraci itemů - kterej item má jaký limit
-const ITEM_CONFIG: Record<string, { maxPerUser?: number; isSinglePurchase?: boolean }> = {
-  // Příklad: "item-id-1": { maxPerUser: 5, isSinglePurchase: false }, // max 5, dá se koupit víckrát
-  // Příklad: "item-id-2": { maxPerUser: 1, isSinglePurchase: true },  // koupit jen jednou
-  // Kosmetika - koupit jen jednou
-  // Ostatní - max 10 (default)
+// Helper funkce pro získání nákupní konfigurace
+const getPurchaseConfig = (item: Item) => {
+  const config = (item as any).purchaseConfig as { maxPerUser?: number; isSinglePurchase?: boolean } | null
+  
+  // Výchozí chování
+  const isCosmetic = item.type === ItemType.COSMETIC
+  const defaultMaxPerUser = isCosmetic ? 1 : MAX_PER_ITEM
+  const defaultIsSinglePurchase = isCosmetic
+  
+  return {
+    maxPerUser: config?.maxPerUser ?? defaultMaxPerUser,
+    isSinglePurchase: config?.isSinglePurchase ?? defaultIsSinglePurchase,
+  }
 }
 
 export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
@@ -168,17 +175,10 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 xl:gap-5">
             {shopData.items.map((item) => {
               const purchasedCount = shopData.userPurchases?.filter(p => p.itemId === item.id).length ?? 0
-              const isCosmetic = item.type === ItemType.COSMETIC
-              
-              // Získej konfiguraci pro tenhle item
-              const config = ITEM_CONFIG[item.id]
-              const maxPerUser = config?.maxPerUser ?? (isCosmetic ? 1 : MAX_PER_ITEM)
-              const isSinglePurchase = config?.isSinglePurchase ?? isCosmetic
-              
-              // Zbývající počet
-              const remaining = Math.max(maxPerUser - purchasedCount, 0)
+              const config = getPurchaseConfig(item)
+              const remaining = Math.max(config.maxPerUser - purchasedCount, 0)
               const isPurchased = purchasedCount > 0
-              const canPurchase = remaining > 0 && !isPurchased // Pokud single purchase a už má, nemůže koupit
+              const canPurchase = remaining > 0 && !isPurchased
               
               return (
                 <RpgCard
@@ -229,11 +229,11 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
                     {/* Limit info */}
                     <div className="inline-flex items-center gap-2 rounded-full bg-[#f7e7d2] px-3 py-1 text-xs font-semibold text-[#2f1a0c] border border-[#d1862e]/60 shadow-sm w-fit">
                       <ShoppingCart className="w-3 h-3" />
-                      {isSinglePurchase 
+                      {config.isSinglePurchase 
                         ? isPurchased 
                           ? "Již vlastníte" 
                           : "Koupit jen jednou"
-                        : `Zbývá: ${remaining} / ${maxPerUser}`
+                        : `Zbývá: ${remaining} / ${config.maxPerUser}`
                       }
                     </div>
                   </div>

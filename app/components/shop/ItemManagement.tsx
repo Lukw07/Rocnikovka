@@ -5,8 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app
 import { Button } from "@/app/components/ui/button"
 import { Badge } from "@/app/components/ui/badge"
 import { ItemRarity, ItemType } from "@/app/lib/generated"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Settings } from "lucide-react"
 import { toast } from "sonner"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { Switch } from "@/app/components/ui/switch"
 
 interface ItemManagementProps {
   onItemUpdated: () => void
@@ -21,6 +25,7 @@ interface Item {
   type: ItemType
   imageUrl?: string
   isActive: boolean
+  purchaseConfig?: { maxPerUser?: number; isSinglePurchase?: boolean } | null
 }
 
 export function ItemManagement({ onItemUpdated }: ItemManagementProps) {
@@ -28,6 +33,8 @@ export function ItemManagement({ onItemUpdated }: ItemManagementProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [togglingItem, setTogglingItem] = useState<string | null>(null)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [editConfig, setEditConfig] = useState({ maxPerUser: 10, isSinglePurchase: false })
 
   useEffect(() => {
     fetchItems()
@@ -81,6 +88,44 @@ export function ItemManagement({ onItemUpdated }: ItemManagementProps) {
     } finally {
       setTogglingItem(null)
     }
+  }
+
+  const handleSaveConfig = async (itemId: string) => {
+    try {
+      const response = await fetch("/api/items/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          itemId,
+          maxPerUser: editConfig.maxPerUser,
+          isSinglePurchase: editConfig.isSinglePurchase,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to save config")
+      }
+
+      await fetchItems()
+      setEditingItemId(null)
+      toast.success("Konfigurace uložena", {
+        description: "Limity nákupu byly aktualizovány."
+      })
+    } catch (error) {
+      console.error("Error saving config:", error)
+      const message = error instanceof Error ? error.message : "Failed to save config"
+      toast.error("Chyba", { description: message })
+    }
+  }
+
+  const openEditDialog = (item: Item) => {
+    const config = (item.purchaseConfig as any) || { maxPerUser: 10, isSinglePurchase: false }
+    setEditConfig({
+      maxPerUser: config.maxPerUser || 10,
+      isSinglePurchase: config.isSinglePurchase || false,
+    })
+    setEditingItemId(item.id)
   }
 
   const getRarityColor = (rarity: ItemRarity) => {
@@ -146,26 +191,96 @@ export function ItemManagement({ onItemUpdated }: ItemManagementProps) {
             <CardContent>
               <div className="flex items-center justify-between">
                 <span className="font-semibold">{item.price} mincí</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleToggleItem(item.id)}
-                  disabled={togglingItem === item.id}
-                >
-                  {togglingItem === item.id ? (
-                    "Načítání..."
-                  ) : item.isActive ? (
-                    <>
-                      <EyeOff className="w-4 h-4 mr-1" />
-                      Deaktivovat
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="w-4 h-4 mr-1" />
-                      Aktivovat
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openEditDialog(item)}
+                      >
+                        <Settings className="w-4 h-4 mr-1" />
+                        Limity
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Nastavit nákupní limity - {item.name}</DialogTitle>
+                        <DialogDescription>
+                          Konfiguruj kolik může hráč koupit tohoto předmětu
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="maxPerUser" className="text-base">
+                            Max počet na hráče
+                          </Label>
+                          <Input
+                            id="maxPerUser"
+                            type="number"
+                            min="1"
+                            value={editConfig.maxPerUser}
+                            onChange={(e) => setEditConfig(prev => ({
+                              ...prev,
+                              maxPerUser: parseInt(e.target.value) || 1
+                            }))}
+                            className="mt-1"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Kolikrát mohou hráči koupit tento předmět
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label htmlFor="singlePurchase" className="text-base cursor-pointer">
+                              Koupit jen jednou
+                            </Label>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Pokud zapnuto, hráč může koupit jen 1x
+                            </p>
+                          </div>
+                          <Switch
+                            id="singlePurchase"
+                            checked={editConfig.isSinglePurchase}
+                            onCheckedChange={(checked) => setEditConfig(prev => ({
+                              ...prev,
+                              isSinglePurchase: checked
+                            }))}
+                          />
+                        </div>
+
+                        <Button
+                          onClick={() => handleSaveConfig(item.id)}
+                          className="w-full"
+                        >
+                          Uložit
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleToggleItem(item.id)}
+                    disabled={togglingItem === item.id}
+                  >
+                    {togglingItem === item.id ? (
+                      "Načítání..."
+                    ) : item.isActive ? (
+                      <>
+                        <EyeOff className="w-4 h-4 mr-1" />
+                        Deaktivovat
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="w-4 h-4 mr-1" />
+                        Aktivovat
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -258,6 +258,9 @@ model Item {
   // Item effects (optional JSON for complex items)
   effects Json? // { "xpBoost": 10, "duration": 3600 }
 
+  // Purchase configuration
+  purchaseConfig Json? // { "maxPerUser": 10, "isSinglePurchase": false }
+
   // Cosmetic properties
   category String? // "avatar", "background", "frame", "badge"
 
