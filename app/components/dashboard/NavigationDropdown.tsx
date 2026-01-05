@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   DropdownMenu,
+  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -57,17 +58,16 @@ export function NavigationDropdown({ menuItems }: NavigationDropdownProps) {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="shrink-0"
-        asChild
-      >
-        <button>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="shrink-0"
+        >
           <Menu className="h-6 w-6" />
           <span className="sr-only">Navigace</span>
-        </button>
-      </Button>
+        </Button>
+      </DropdownMenuTrigger>
 
       <DropdownMenuContent 
         align="start" 
