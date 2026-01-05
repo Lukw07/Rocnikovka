@@ -162,7 +162,7 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
               const purchasedCount = shopData.userPurchases?.filter(p => p.itemId === item.id).length ?? 0
               const remaining = Math.max(MAX_PER_ITEM - purchasedCount, 0)
               const isPurchased = purchasedCount > 0
-              const isTradeOnly = item.type === ItemType.COSMETIC
+              const isCosmetic = item.type === ItemType.COSMETIC
               
               return (
                 <RpgCard
@@ -206,7 +206,7 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
                         <p className="text-sm text-[#e8d7c0]/80 leading-relaxed px-1">{item.description}</p>
                         <div className="inline-flex items-center gap-2 rounded-full bg-[#f7e7d2] px-3 py-1 text-xs font-semibold text-[#2f1a0c] border border-[#d1862e]/60 shadow-sm">
                           <ShoppingCart className="w-3 h-3" />
-                          {isTradeOnly ? "Pouze k výměně" : `Zbývá: ${remaining} / ${MAX_PER_ITEM}`}
+                          {isCosmetic ? "Nelze tradovat" : `Zbývá: ${remaining} / ${MAX_PER_ITEM}`}
                         </div>
                       </div>
                     </div>
@@ -225,14 +225,14 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
                           glow
                           className="min-w-[104px]"
                           onClick={() => setSelectedItem(item)}
-                          disabled={buyingItem === item.id || remaining <= 0 || isTradeOnly}
+                          disabled={buyingItem === item.id || remaining <= 0}
                         >
-                          {isTradeOnly
-                            ? "Pouze výměna"
-                            : buyingItem === item.id
-                              ? "Nakupuji..."
-                              : remaining <= 0
-                                ? "Vyprodáno"
+                          {buyingItem === item.id
+                            ? "Nakupuji..."
+                            : remaining <= 0
+                              ? "Vyprodáno"
+                              : isCosmetic
+                                ? "Koupit (netradovatelné)"
                                 : "Koupit"}
                         </RpgButton>
                       )}

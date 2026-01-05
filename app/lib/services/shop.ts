@@ -115,6 +115,15 @@ export class ShopService {
       if (!item.isActive) {
         throw new Error("Item is not available for purchase")
       }
+
+      // Cosmetics are always non-tradable
+      if (item.type === ItemType.COSMETIC && item.isTradeable) {
+        await tx.item.update({
+          where: { id: item.id },
+          data: { isTradeable: false },
+        })
+        item.isTradeable = false
+      }
       
       // Get user's current balance
       const moneyTransactions = await tx.moneyTx.findMany({
