@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/app/lib/auth"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 import { StudentsPanel } from "@/app/components/dashboard/students/StudentsPanel"
 
 export default async function StudentsPage() {

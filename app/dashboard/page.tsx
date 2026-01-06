@@ -3,7 +3,7 @@ import { authOptions } from "@/app/lib/auth"
 import { redirect } from "next/navigation"
 import { StudentOverview } from "@/app/components/dashboard/StudentOverview"
 import { TeacherOverview } from "@/app/components/dashboard/TeacherOverview"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)

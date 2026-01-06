@@ -21,6 +21,9 @@ type LeaderboardRow = {
   classId: string
   avatarUrl?: string | null
   badgeRarity?: ItemRarity | null
+  guildId?: string | null
+  guildName?: string | null
+  guildLogoUrl?: string | null
 }
 
 type UserData = {
@@ -422,7 +425,14 @@ export default function LeaderboardPanel() {
                                 <UserAvatarWithBadge name={row.name} className="h-12 w-12" avatarUrl={row.avatarUrl} badgeRarity={row.badgeRarity} level={row.level} />
                                 <div>
                                   <div className={`font-bold text-lg ${style.textColor} hover:underline`}>{row.name}</div>
-                                  <div className={`text-sm ${style.textColor} opacity-80`}>Level {row.level} • {row.class}</div>
+                                  <div className={`text-sm ${style.textColor} opacity-80`}>Level {row.level} • {row.class}
+                                    {row.guildName && (
+                                      <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-white/50 rounded text-xs">
+                                        {row.guildLogoUrl && <img src={row.guildLogoUrl} alt="" className="w-3 h-3 rounded" />}
+                                        <span className="font-medium">{row.guildName}</span>
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </UserProfileHoverCard>
@@ -491,7 +501,14 @@ export default function LeaderboardPanel() {
                                 <UserAvatarWithBadge name={row.name} className="h-12 w-12" avatarUrl={row.avatarUrl} badgeRarity={row.badgeRarity} level={row.level} />
                                 <div>
                                   <div className="font-semibold text-blue-900 hover:underline">{row.name}</div>
-                                  <div className="text-sm text-blue-700">Level {row.level} • {row.class}</div>
+                                  <div className="text-sm text-blue-700">Level {row.level} • {row.class}
+                                    {row.guildName && (
+                                      <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 bg-white/50 rounded text-xs">
+                                        {row.guildLogoUrl && <img src={row.guildLogoUrl} alt="" className="w-3 h-3 rounded" />}
+                                        <span className="font-medium">{row.guildName}</span>
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </UserProfileHoverCard>
@@ -559,7 +576,15 @@ export default function LeaderboardPanel() {
                               <div className="flex items-center gap-2 cursor-pointer">
                                 <UserAvatarWithBadge name={row.name} className="h-10 w-10" avatarUrl={row.avatarUrl} badgeRarity={row.badgeRarity} level={row.level} />
                                 <div>
-                                  <div className="font-medium text-green-900 text-sm hover:underline">{row.name}</div>
+                                  <div className="font-medium text-green-900 text-sm hover:underline flex items-center gap-2">
+                                    {row.name}
+                                    {row.guildName && (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/50 rounded text-xs">
+                                        {row.guildLogoUrl && <img src={row.guildLogoUrl} alt="" className="w-3 h-3 rounded" />}
+                                        <span className="font-medium">{row.guildName}</span>
+                                      </span>
+                                    )}
+                                  </div>
                                   <div className="text-xs text-green-700">Level {row.level} • {row.class}</div>
                                 </div>
                               </div>

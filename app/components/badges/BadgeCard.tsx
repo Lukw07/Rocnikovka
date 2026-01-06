@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Badge as BadgeModel, ItemRarity } from "@/app/lib/generated"
+import type { Badge as BadgeModel } from "@/app/lib/generated"
 import { Card, CardHeader } from "@/app/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
 import { Button } from "@/app/components/ui/button"
@@ -10,6 +10,8 @@ import { cn } from "@/app/lib/utils"
 import { Pin, PinOff } from "lucide-react"
 import { toast } from "sonner"
 import { AssignBadgeToClassDialog } from "./AssignBadgeToClassDialog"
+
+type ItemRarity = "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY" | string
 
 interface BadgeCardProps {
   badge: BadgeModel & { owned: boolean; isPinned?: boolean }
@@ -53,32 +55,32 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
     }
   }
 
-  const rarityStyles = {
-    [ItemRarity.COMMON]: {
+  const rarityStyles: Record<ItemRarity, { chipBg: string; chipText: string; frame: string; frameBorder: string }> = {
+    COMMON: {
       chipBg: "bg-slate-100",
       chipText: "text-slate-500",
       frame: "from-slate-300 via-slate-400 to-slate-500",
       frameBorder: "border-slate-400",
     },
-    [ItemRarity.UNCOMMON]: {
+    UNCOMMON: {
       chipBg: "bg-green-50",
       chipText: "text-green-600",
       frame: "from-emerald-400 via-emerald-500 to-teal-600",
       frameBorder: "border-emerald-500",
     },
-    [ItemRarity.RARE]: {
+    RARE: {
       chipBg: "bg-blue-50",
       chipText: "text-blue-600",
       frame: "from-blue-400 via-blue-500 to-indigo-600",
       frameBorder: "border-blue-500",
     },
-    [ItemRarity.EPIC]: {
+    EPIC: {
       chipBg: "bg-purple-50",
       chipText: "text-purple-600",
       frame: "from-purple-400 via-purple-500 to-fuchsia-600",
       frameBorder: "border-purple-500",
     },
-    [ItemRarity.LEGENDARY]: {
+    LEGENDARY: {
       chipBg: "bg-amber-50",
       chipText: "text-amber-600",
       frame: "from-yellow-300 via-amber-500 to-orange-600",
@@ -86,13 +88,18 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
     },
   }
 
-  const style = rarityStyles[badge.rarity]
-  const rarityColors = {
-    [ItemRarity.COMMON]: "border-slate-400 text-slate-500",
-    [ItemRarity.UNCOMMON]: "border-emerald-500 text-emerald-600",
-    [ItemRarity.RARE]: "border-blue-500 text-blue-600",
-    [ItemRarity.EPIC]: "border-purple-500 text-purple-600",
-    [ItemRarity.LEGENDARY]: "border-amber-500 text-amber-600",
+  const currentStyle = (rarityStyles[badge.rarity as keyof typeof rarityStyles] ?? rarityStyles.COMMON) as {
+    chipBg: string; chipText: string; frame: string; frameBorder: string
+  }
+  const frame = currentStyle.frame
+  const chipBg = currentStyle.chipBg
+  const chipText = currentStyle.chipText
+  const rarityColors: Record<ItemRarity, string> = {
+    COMMON: "border-slate-400 text-slate-500",
+    UNCOMMON: "border-emerald-500 text-emerald-600",
+    RARE: "border-blue-500 text-blue-600",
+    EPIC: "border-purple-500 text-purple-600",
+    LEGENDARY: "border-amber-500 text-amber-600",
   }
 
   return (
@@ -121,12 +128,12 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
                 <div className={cn(
                   "relative rounded-full p-1 shadow-md",
                   "bg-linear-to-br",
-                  style.frame
+                  frame
                 )}>
                   {/* Full overlay tint across badge */}
                   <div className={cn(
                     "absolute inset-0.5 rounded-full bg-linear-to-br opacity-70 pointer-events-none",
-                    style.frame
+                    frame
                   )} />
                   <Avatar className="h-24 w-24 border-2 border-white/10 shadow-inner relative">
                     <AvatarImage src={badge.imageUrl} alt={badge.name} />
@@ -136,7 +143,7 @@ export function BadgeCard({ badge, onPinToggle, isOperator }: BadgeCardProps) {
                 </div>
               </div>
               <h3 className="font-semibold text-lg leading-none">{badge.name}</h3>
-              <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full mt-2", style.chipBg, style.chipText)}>
+              <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full mt-2", chipBg, chipText)}>
                 {badge.rarity}
               </span>
               {isOperator && (

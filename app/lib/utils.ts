@@ -5,6 +5,7 @@ import { prisma } from "./prisma"
 import { LogLevel } from "./generated"
 import { NextRequest } from "next/server"
 import { safePayload, redactPII } from "./security/redact"
+import { LevelingSystem } from "./leveling"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -170,8 +171,6 @@ export function getRarityBgColor(rarity: string): string {
  * This is kept for backward compatibility only
  */
 export function calculateLevel(xp: number): { level: number; progress: number } {
-  // Import dynamically to avoid circular dependency
-  const { LevelingSystem } = require('./leveling')
   const levelInfo = LevelingSystem.getLevelInfo(xp)
   const progress = Math.round(LevelingSystem.getProgressToNextLevel(xp))
   

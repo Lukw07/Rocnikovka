@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/lib/auth"
 import { redirect } from "next/navigation"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 import JobListPanel from "@/app/components/job-list/JobListPanel"
 import { TeacherJobListPanel } from "@/app/components/dashboard/TeacherJobListPanel"
 

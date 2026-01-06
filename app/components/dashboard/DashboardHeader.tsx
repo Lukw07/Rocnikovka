@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from "@/app/components/ui/avatar"
 import Image from "next/image"
 import { signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { UserRole } from "@/app/lib/generated"
+type DashboardRole = "STUDENT" | "TEACHER" | "OPERATOR" | "ADMIN" | undefined
 import { LogOut, Coins, Bell, Loader2 } from "lucide-react"
 import { UserAvatarWithBadge } from "@/app/components/dashboard/UserAvatarWithBadge"
 import { NavigationDropdown } from "@/app/components/dashboard/NavigationDropdown"
@@ -17,7 +17,7 @@ import { Skeleton } from "@/app/components/ui/skeleton"
 
 interface DashboardHeaderProps {
   userName: string
-  userRole?: UserRole
+  userRole?: DashboardRole
   userBalance?: number
   menuItems?: MenuItem[]
 }
@@ -77,13 +77,13 @@ export function DashboardHeader({ userName, userRole, userBalance, menuItems = [
     router.push("/")
   }
 
-  const getRoleDisplayName = (role?: UserRole) => {
+  const getRoleDisplayName = (role?: DashboardRole) => {
     switch (role) {
-      case UserRole.STUDENT:
+      case "STUDENT":
         return "Student"
-      case UserRole.TEACHER:
+      case "TEACHER":
         return "Učitel"
-      case UserRole.OPERATOR:
+      case "OPERATOR":
         return "Operátor"
       default:
         return "Uživatel"

@@ -4,7 +4,7 @@
  */
 
 import { prisma } from "@/app/lib/prisma"
-import { AchievementType, AchievementCategory, ItemRarity, NotificationType } from "@/app/lib/generated"
+import { AchievementType, AchievementCategory, ItemRarity, NotificationType } from "@/app/lib/generated/client"
 
 // ============================================================================
 // Types & Interfaces

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
 import { writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import { getServerSession } from "next-auth";
@@ -27,7 +26,7 @@ export async function POST(request: NextRequest) {
   const filename = Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
   
   // Ensure directory exists
-  const uploadDir = path.join(process.cwd(), "public/uploads");
+  const uploadDir = `${process.cwd()}/public/uploads`;
   console.log("Upload dir:", uploadDir);
   
   try {
@@ -36,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
     
     await writeFile(
-      path.join(uploadDir, filename),
+      `${uploadDir}/${filename}`,
       buffer
     );
     return NextResponse.json({ url: `/uploads/${filename}` });

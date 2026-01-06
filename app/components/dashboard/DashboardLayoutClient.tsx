@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import SidebarLayout, { MenuItem } from "@/app/components/ui/Sidebar"
 import { DashboardHeader } from "@/app/components/dashboard/DashboardHeader"
-import { UserRole } from "@/app/lib/generated"
 import { Switch } from "@/app/components/ui/switch"
 import { Label } from "@/app/components/ui/label"
 import { Shield } from "lucide-react"
@@ -27,7 +26,7 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
   const { shouldShowModal } = usePolicyAcknowledgment()
   const [showPolicyModal, setShowPolicyModal] = useState(false)
 
-  const isOperator = user.role === UserRole.OPERATOR
+  const isOperator = user.role === "OPERATOR"
 
   useEffect(() => {
     setShowPolicyModal(shouldShowModal)
@@ -80,7 +79,7 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
       {/* Header - fixovaný nahoru */}
       <DashboardHeader 
         userName={user.name || "Uživateli"}
-        userRole={user.role as UserRole}
+        userRole={user.role as any}
         menuItems={menuItems}
       />
       

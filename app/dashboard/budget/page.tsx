@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/app/lib/auth"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 import { BudgetPanel } from "@/app/components/dashboard/budget/BudgetPanel"
 
 export default async function BudgetPage() {

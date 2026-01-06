@@ -1,6 +1,7 @@
 import { prisma } from "../prisma"
-import { GuildMemberRole } from "../generated"
+import { GuildMemberRole, GuildJoinRequestStatus } from "../generated"
 import { generateRequestId, sanitizeForLog } from "../utils"
+import { validateGuildName, validateGuildDescription, validateGuildMotto } from "../utils/moderation"
 
 /**
  * Service for managing guilds and guild membership
@@ -19,6 +20,7 @@ export class GuildService {
     leaderId: string
   }, requestId?: string) {
     const reqId = requestId || generateRequestId()
+    const CREATION_COST = 100 // gold fee to found a guild
 
     return await prisma.$transaction(async (tx) => {
       // Check guild name doesn't exist
@@ -30,6 +32,52 @@ export class GuildService {
         throw new Error("Guild name already exists")
       }
 
+      // Validate guild name, description, motto against profanity
+      const nameVal = validateGuildName(data.name)
+      if (!nameVal.valid) {
+        throw new Error(nameVal.error || "Invalid guild name")
+      }
+
+      const descVal = validateGuildDescription(data.description)
+      if (!descVal.valid) {
+        throw new Error(descVal.error || "Invalid guild description")
+      }
+
+      const mottoVal = validateGuildMotto(data.motto)
+      if (!mottoVal.valid) {
+        throw new Error(mottoVal.error || "Invalid guild motto")
+      }
+
+      // Check leader has enough gold
+      const leader = await tx.user.findUnique({
+        where: { id: data.leaderId },
+        select: { gold: true }
+      })
+
+      if (!leader) {
+        throw new Error("Leader not found")
+      }
+
+      if (leader.gold < CREATION_COST) {
+        throw new Error(`Potřebuješ ${CREATION_COST} gold pro založení guildy`)
+      }
+
+      // Deduct gold + log transaction
+      await tx.user.update({
+        where: { id: data.leaderId },
+        data: { gold: { decrement: CREATION_COST } }
+      })
+
+      await tx.moneyTx.create({
+        data: {
+          userId: data.leaderId,
+          amount: -CREATION_COST,
+          type: "SPENT",
+          reason: "Guild creation fee",
+          requestId: reqId
+        }
+      })
+
       // Create guild
       const guild = await tx.guild.create({
         data: {
@@ -38,7 +86,7 @@ export class GuildService {
           motto: data.motto,
           logoUrl: data.logoUrl,
           isPublic: data.isPublic ?? true,
-          maxMembers: data.maxMembers ?? 10,
+          maxMembers: Math.min(data.maxMembers ?? 10, 10), // Cap at 10 members
           leaderId: data.leaderId,
           treasury: 0,
           xp: 0,
@@ -65,7 +113,7 @@ export class GuildService {
           message: sanitizeForLog(`Guild created: ${data.name}`),
           userId: data.leaderId,
           requestId: reqId,
-          metadata: { guildId: guild.id }
+          metadata: { guildId: guild.id, goldCost: CREATION_COST }
         }
       })
 
@@ -129,6 +177,11 @@ export class GuildService {
         throw new Error("Guild not found")
       }
 
+      // Block joining private guilds unless a dedicated invite/approval flow exists
+      if (!guild.isPublic) {
+        throw new Error("Guild is private")
+      }
+
       // Check not already member
       const existing = await tx.guildMember.findUnique({
         where: {
@@ -165,6 +218,220 @@ export class GuildService {
       })
 
       return member
+    })
+  }
+
+  /**
+   * Request to join a guild (used for private guilds)
+   */
+  static async requestJoin(guildId: string, userId: string, message?: string, requestId?: string) {
+    const reqId = requestId || generateRequestId()
+
+    return await prisma.$transaction(async (tx) => {
+      const guild = await tx.guild.findUnique({ where: { id: guildId } })
+
+      if (!guild) {
+        throw new Error("Guild not found")
+      }
+
+      if (guild.memberCount >= guild.maxMembers) {
+        throw new Error("Guild is full")
+      }
+
+      const existingMember = await tx.guildMember.findUnique({
+        where: {
+          userId_guildId: { userId, guildId }
+        }
+      })
+
+      if (existingMember) {
+        throw new Error("Already a guild member")
+      }
+
+      const pending = await tx.guildJoinRequest.findFirst({
+        where: { guildId, userId, status: GuildJoinRequestStatus.PENDING }
+      })
+
+      if (pending) {
+        return pending
+      }
+
+      const request = await tx.guildJoinRequest.create({
+        data: {
+          guildId,
+          userId,
+          message,
+          status: GuildJoinRequestStatus.PENDING
+        }
+      })
+
+      await tx.guildActivity.create({
+        data: {
+          guildId,
+          userId,
+          action: "join_request",
+          details: message
+        }
+      })
+
+      await tx.systemLog.create({
+        data: {
+          level: "INFO",
+          message: sanitizeForLog(`Guild join request created: guild=${guildId} user=${userId}`),
+          userId,
+          requestId: reqId,
+          metadata: { guildId }
+        }
+      })
+
+      return request
+    })
+  }
+
+  /**
+   * Approve a join request (leader/officer)
+   */
+  static async approveJoinRequest(guildId: string, requestId: string, approverId: string, requestIdOverride?: string) {
+    const reqId = requestIdOverride || generateRequestId()
+
+    return await prisma.$transaction(async (tx) => {
+      const approver = await tx.guildMember.findUnique({
+        where: {
+          userId_guildId: { userId: approverId, guildId }
+        }
+      })
+
+      if (!approver || (approver.role !== GuildMemberRole.LEADER && approver.role !== GuildMemberRole.OFFICER)) {
+        throw new Error("Insufficient permissions")
+      }
+
+      const joinRequest = await tx.guildJoinRequest.findUnique({
+        where: { id: requestId }
+      })
+
+      if (!joinRequest || joinRequest.guildId !== guildId) {
+        throw new Error("Join request not found")
+      }
+
+      if (joinRequest.status !== GuildJoinRequestStatus.PENDING) {
+        throw new Error("Join request already processed")
+      }
+
+      const guild = await tx.guild.findUnique({ where: { id: guildId } })
+
+      if (!guild) {
+        throw new Error("Guild not found")
+      }
+
+      if (guild.memberCount >= guild.maxMembers) {
+        throw new Error("Guild is full")
+      }
+
+      const existingMember = await tx.guildMember.findUnique({
+        where: {
+          userId_guildId: { userId: joinRequest.userId, guildId }
+        }
+      })
+
+      if (existingMember) {
+        throw new Error("Already a guild member")
+      }
+
+      await tx.guildMember.create({
+        data: {
+          userId: joinRequest.userId,
+          guildId,
+          role: GuildMemberRole.MEMBER
+        }
+      })
+
+      await tx.guild.update({
+        where: { id: guildId },
+        data: { memberCount: { increment: 1 } }
+      })
+
+      const updatedRequest = await tx.guildJoinRequest.update({
+        where: { id: requestId },
+        data: {
+          status: GuildJoinRequestStatus.APPROVED,
+          decidedAt: new Date(),
+          decidedBy: approverId
+        }
+      })
+
+      await tx.guildActivity.create({
+        data: {
+          guildId,
+          userId: joinRequest.userId,
+          action: "member_joined",
+          details: "Approved join request"
+        }
+      })
+
+      await tx.systemLog.create({
+        data: {
+          level: "INFO",
+          message: sanitizeForLog(`Join request approved: ${requestId}`),
+          userId: approverId,
+          requestId: reqId,
+          metadata: { guildId, joinRequestId: requestId }
+        }
+      })
+
+      return updatedRequest
+    })
+  }
+
+  /**
+   * Reject a join request (leader/officer)
+   */
+  static async rejectJoinRequest(guildId: string, requestId: string, approverId: string, reason?: string, requestIdOverride?: string) {
+    const reqId = requestIdOverride || generateRequestId()
+
+    return await prisma.$transaction(async (tx) => {
+      const approver = await tx.guildMember.findUnique({
+        where: {
+          userId_guildId: { userId: approverId, guildId }
+        }
+      })
+
+      if (!approver || (approver.role !== GuildMemberRole.LEADER && approver.role !== GuildMemberRole.OFFICER)) {
+        throw new Error("Insufficient permissions")
+      }
+
+      const joinRequest = await tx.guildJoinRequest.findUnique({
+        where: { id: requestId }
+      })
+
+      if (!joinRequest || joinRequest.guildId !== guildId) {
+        throw new Error("Join request not found")
+      }
+
+      if (joinRequest.status !== GuildJoinRequestStatus.PENDING) {
+        throw new Error("Join request already processed")
+      }
+
+      const updatedRequest = await tx.guildJoinRequest.update({
+        where: { id: requestId },
+        data: {
+          status: GuildJoinRequestStatus.REJECTED,
+          decidedAt: new Date(),
+          decidedBy: approverId,
+          message: reason ?? joinRequest.message
+        }
+      })
+
+      await tx.systemLog.create({
+        data: {
+          level: "INFO",
+          message: sanitizeForLog(`Join request rejected: ${requestId}`),
+          userId: approverId,
+          requestId: reqId,
+          metadata: { guildId, joinRequestId: requestId }
+        }
+      })
+
+      return updatedRequest
     })
   }
 

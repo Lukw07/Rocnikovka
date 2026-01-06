@@ -1,5 +1,5 @@
 import { prisma } from "@/app/lib/prisma"
-import { Badge, ItemRarity, Prisma } from "@/app/lib/generated"
+import { Badge, ItemRarity, Prisma } from "@/app/lib/generated/client"
 
 export class BadgesService {
   static async getAllBadges() {

@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/app/components/ui/dialog"
 import { Badge } from "@/app/components/ui/badge"
-import { ItemRarity, ItemType } from "@/app/lib/generated"
+type ItemRarity = "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY" | string
+type ItemType = "COSMETIC" | "CONSUMABLE" | "EQUIPMENT" | "MATERIAL" | "BOOST" | string
 import { Coins, AlertTriangle } from "lucide-react"
 import { RpgButton } from "@/app/components/ui/rpg-button"
 import { RpgCard } from "@/app/components/ui/rpg-card"
@@ -39,17 +40,17 @@ export function BuyItemDialog({ item, userBalance, onBuy, onClose, loading }: Bu
   const canAfford = userBalance >= item.price
 
   const rarityBadgeClasses: Record<ItemRarity, string> = {
-    [ItemRarity.COMMON]: "bg-gray-100 text-gray-800 border-gray-300",
-    [ItemRarity.UNCOMMON]: "bg-green-100 text-green-800 border-green-300",
-    [ItemRarity.RARE]: "bg-blue-100 text-blue-800 border-blue-300",
-    [ItemRarity.EPIC]: "bg-purple-100 text-purple-800 border-purple-300",
-    [ItemRarity.LEGENDARY]: "bg-orange-100 text-orange-800 border-orange-300",
+    COMMON: "bg-gray-100 text-gray-800 border-gray-300",
+    UNCOMMON: "bg-green-100 text-green-800 border-green-300",
+    RARE: "bg-blue-100 text-blue-800 border-blue-300",
+    EPIC: "bg-purple-100 text-purple-800 border-purple-300",
+    LEGENDARY: "bg-orange-100 text-orange-800 border-orange-300",
   }
 
   const typeBadgeClasses: Partial<Record<ItemType, string>> = {
-    [ItemType.COSMETIC]: "bg-pink-100 text-pink-800 border-pink-300",
-    [ItemType.BOOST]: "bg-yellow-100 text-yellow-800 border-yellow-300",
-    [ItemType.COLLECTIBLE]: "bg-indigo-100 text-indigo-800 border-indigo-300",
+    COSMETIC: "bg-pink-100 text-pink-800 border-pink-300",
+    BOOST: "bg-yellow-100 text-yellow-800 border-yellow-300",
+    COLLECTIBLE: "bg-indigo-100 text-indigo-800 border-indigo-300",
   }
 
   return (

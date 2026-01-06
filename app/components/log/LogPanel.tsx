@@ -10,11 +10,12 @@ import { Input } from "@/app/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { Search, RefreshCw, AlertTriangle, Info, AlertCircle, Bug, Activity, ArrowLeft, Loader2, FileText, Bell, Briefcase, CalendarClock, Sparkles } from "lucide-react"
 import { getSystemLogs } from "@/app/actions/admin"
-import { UserRole } from "@/app/lib/generated"
 import { toast } from "sonner"
 
+type DashboardRole = "STUDENT" | "TEACHER" | "OPERATOR" | "ADMIN" | string | undefined
+
 interface LogPanelProps {
-  userRole?: UserRole
+  userRole?: DashboardRole
 }
 
 interface SystemLog {
@@ -53,7 +54,7 @@ export default function LogPanel({ userRole }: LogPanelProps) {
   })()
 
   useEffect(() => {
-    if (userRole === UserRole.OPERATOR) {
+    if (userRole === "OPERATOR") {
       fetchLogs()
     }
   }, [userRole])
@@ -92,7 +93,7 @@ export default function LogPanel({ userRole }: LogPanelProps) {
     return matchesSearch && matchesLevel
   })
 
-  if (userRole !== UserRole.OPERATOR) {
+  if (userRole !== "OPERATOR") {
     const [playerLogs, setPlayerLogs] = useState<any[]>([])
     const [playerLoading, setPlayerLoading] = useState(true)
 

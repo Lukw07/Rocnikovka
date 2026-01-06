@@ -476,8 +476,7 @@ async function seedSkills() {
     { name: "English", category: "Language", icon: "🇬🇧", maxLevel: 100, unlockLevel: 0, description: "English language proficiency" },
     { name: "Czech", category: "Language", icon: "🇨🇿", maxLevel: 100, unlockLevel: 0, description: "Czech language mastery" },
     { name: "German", category: "Language", icon: "🇩🇪", maxLevel: 100, unlockLevel: 5, description: "German language skills" },
-    { name: "Spanish", category: "Language", icon: "🇪🇸", maxLevel: 100, unlockLevel: 5, description: "Spanish language learning" },
-    
+    { name: "Ukrainian", category: "Language", icon: "🇺🇦", maxLevel: 100, unlockLevel: 5, description: "Ukrainian language skills" },
     // Design Skills
     { name: "UI/UX Design", category: "Design", icon: "🎨", maxLevel: 100, unlockLevel: 8, description: "User interface design" },
     { name: "Graphic Design", category: "Design", icon: "🖼️", maxLevel: 100, unlockLevel: 5, description: "Visual communication design" },

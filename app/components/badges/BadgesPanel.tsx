@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { useApi } from "@/app/hooks/use-api"
 import { CreateBadgeDialog } from "./CreateBadgeDialog"
 import { BadgeCard } from "./BadgeCard"
-import { Badge as BadgeModel, ItemRarity } from "@/app/lib/generated"
+import type { Badge as BadgeModel } from "@/app/lib/generated"
 import { Button as UIButton } from "@/app/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/app/components/ui/card"
 import { Badge as UiBadge } from "@/app/components/ui/badge"
@@ -53,9 +53,9 @@ export default function BadgesPanel({ isOperator = false }: { isOperator?: boole
     if (activeTab === "all") return true
     if (activeTab === "owned") return badge.owned
     if (activeTab === "unowned") return !badge.owned
-    if (activeTab === "common") return badge.rarity === ItemRarity.COMMON
-    if (activeTab === "rare") return badge.rarity === ItemRarity.RARE || badge.rarity === ItemRarity.UNCOMMON
-    if (activeTab === "epic") return badge.rarity === ItemRarity.EPIC || badge.rarity === ItemRarity.LEGENDARY
+    if (activeTab === "common") return badge.rarity === "COMMON"
+    if (activeTab === "rare") return badge.rarity === "RARE" || badge.rarity === "UNCOMMON"
+    if (activeTab === "epic") return badge.rarity === "EPIC" || badge.rarity === "LEGENDARY"
     return true
   })
 

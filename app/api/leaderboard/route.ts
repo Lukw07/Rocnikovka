@@ -62,6 +62,22 @@ export async function GET(request: NextRequest) {
         }
       }
     })
+
+    // Fetch guild memberships for these users
+    const guildMemberships = await prisma.guildMember.findMany({
+      where: { userId: { in: userIds } },
+      include: {
+        guild: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true
+          }
+        }
+      }
+    })
+
+    const guildMap = new Map(guildMemberships.map(gm => [gm.userId, gm.guild]))
     
     const userMap = new Map(usersWithData.map(u => [u.id, u]))
 
@@ -83,6 +99,7 @@ export async function GET(request: NextRequest) {
     const leaderboard = leaderboardData.map(row => {
       const user = userMap.get(row.id)
       const pinnedBadge = user?.badges[0]?.badge
+      const guild = guildMap.get(row.id)
       
       return {
         id: row.id,
@@ -92,7 +109,10 @@ export async function GET(request: NextRequest) {
         grade: row.grade || 0,
         classId: row.classId || "",
         avatarUrl: user?.avatarUrl || null,
-        badgeRarity: pinnedBadge?.rarity || null
+        badgeRarity: pinnedBadge?.rarity || null,
+        guildId: guild?.id || null,
+        guildName: guild?.name || null,
+        guildLogoUrl: guild?.logoUrl || null
       }
     })
 

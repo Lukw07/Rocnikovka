@@ -21,6 +21,7 @@ import Link from "next/link"
 import { GuildMembers } from "@/app/components/guilds/guild-members"
 import { GuildChat } from "@/app/components/guilds/guild-chat"
 import { GuildBenefits } from "@/app/components/guilds/guild-benefits"
+import { GuildJoinRequests } from "@/app/components/guilds/guild-join-requests"
 
 interface Props {
   params: Promise<{
@@ -208,6 +209,9 @@ export default async function GuildDetailPage({ params }: Props) {
         <Tabs defaultValue="members" className="w-full">
           <TabsList>
             <TabsTrigger value="members">Členové</TabsTrigger>
+            {(isLeader || isOfficer) && (
+              <TabsTrigger value="requests">Žádosti o vstup</TabsTrigger>
+            )}
             <TabsTrigger value="chat">Chat</TabsTrigger>
             <TabsTrigger value="benefits">Výhody</TabsTrigger>
             <TabsTrigger value="activities">Aktivity</TabsTrigger>
@@ -220,6 +224,16 @@ export default async function GuildDetailPage({ params }: Props) {
               isLeader={isLeader}
             />
           </TabsContent>
+
+          {(isLeader || isOfficer) && (
+            <TabsContent value="requests">
+              <GuildJoinRequests
+                guildId={guild.id}
+                isLeader={isLeader}
+                isOfficer={isOfficer}
+              />
+            </TabsContent>
+          )}
 
           <TabsContent value="chat">
             <GuildChat 

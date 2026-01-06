@@ -8,7 +8,7 @@ import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { useApiMutation, useApi } from "@/app/hooks/use-api"
-import { Badge as BadgeModel } from "@/app/lib/generated"
+import type { Badge as BadgeModel } from "@/app/lib/generated"
 import { toast } from "sonner"
 
 interface SubjectItem {

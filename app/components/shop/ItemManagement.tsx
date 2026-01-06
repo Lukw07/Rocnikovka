@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Badge } from "@/app/components/ui/badge"
-import { ItemRarity, ItemType } from "@/app/lib/generated"
+type ItemRarity = "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY" | string
+type ItemType = "COSMETIC" | "BOOST" | "COLLECTIBLE" | "CONSUMABLE" | "EQUIPMENT" | string
 import { Eye, EyeOff, Settings } from "lucide-react"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/app/components/ui/dialog"
@@ -130,20 +131,20 @@ export function ItemManagement({ onItemUpdated }: ItemManagementProps) {
 
   const getRarityColor = (rarity: ItemRarity) => {
     switch (rarity) {
-      case ItemRarity.COMMON: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-      case ItemRarity.UNCOMMON: return "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200"
-      case ItemRarity.RARE: return "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200"
-      case ItemRarity.EPIC: return "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200"
-      case ItemRarity.LEGENDARY: return "bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-200"
+      case "COMMON": return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+      case "UNCOMMON": return "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200"
+      case "RARE": return "bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200"
+      case "EPIC": return "bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200"
+      case "LEGENDARY": return "bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-200"
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
     }
   }
 
   const getTypeColor = (type: ItemType) => {
     switch (type) {
-      case ItemType.COSMETIC: return "bg-pink-100 text-pink-800 dark:bg-pink-800 dark:text-pink-200"
-      case ItemType.BOOST: return "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200"
-      case ItemType.COLLECTIBLE: return "bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-200"
+      case "COSMETIC": return "bg-pink-100 text-pink-800 dark:bg-pink-800 dark:text-pink-200"
+      case "BOOST": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200"
+      case "COLLECTIBLE": return "bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-200"
       default: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
     }
   }

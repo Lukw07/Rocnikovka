@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/lib/auth"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 import BadgesPanel from "@/app/components/badges/BadgesPanel"
 
 export default async function BadgesPage() {

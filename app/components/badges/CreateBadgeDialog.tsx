@@ -25,7 +25,9 @@ import {
   SelectValue,
 } from "@/app/components/ui/select"
 import { Checkbox } from "@/app/components/ui/checkbox"
-import { ItemRarity, ItemType } from "@/app/lib/generated"
+
+const RARITIES = ["COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"] as const
+type ItemRarity = (typeof RARITIES)[number]
 
 interface CreateBadgeDialogProps {
   onSuccess?: () => void
@@ -38,7 +40,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [imageUrl, setImageUrl] = useState("")
-  const [rarity, setRarity] = useState<ItemRarity>(ItemRarity.COMMON)
+  const [rarity, setRarity] = useState<ItemRarity>("COMMON")
   const [category, setCategory] = useState("")
   const [isUploading, setIsUploading] = useState(false)
 
@@ -83,7 +85,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
     setName("")
     setDescription("")
     setImageUrl("")
-    setRarity(ItemRarity.COMMON)
+    setRarity("COMMON")
     setCategory("")
   }
 
@@ -170,7 +172,7 @@ export function CreateBadgeDialog({ onSuccess }: CreateBadgeDialogProps) {
                   <SelectValue placeholder="Vyberte vzácnost" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.values(ItemRarity).map((r) => (
+                  {RARITIES.map((r) => (
                     <SelectItem key={r} value={r}>
                       {r}
                     </SelectItem>

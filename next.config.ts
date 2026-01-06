@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
         as: "*.js",
       },
     },
+    resolveAlias: {
+      // This helps Turbopack understand server-side module
+    },
   },
   
   // Development server configuration

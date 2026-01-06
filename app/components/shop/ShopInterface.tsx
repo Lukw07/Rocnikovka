@@ -4,7 +4,9 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
-import { UserRole, ItemRarity, ItemType } from "@/app/lib/generated"
+type UserRole = "STUDENT" | "TEACHER" | "OPERATOR" | "ADMIN" | string
+type ItemRarity = "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY" | string
+type ItemType = "COSMETIC" | "CONSUMABLE" | "EQUIPMENT" | "MATERIAL" | "BOOST" | string
 import { Coins, Package, ShoppingCart } from "lucide-react"
 import { BuyItemDialog } from "./BuyItemDialog"
 import { ItemManagement } from "./ItemManagement"
@@ -39,11 +41,11 @@ const MAX_PER_ITEM = 10
 const REFRESH_INTERVAL_LABEL = "Obchod se obnovuje každých 24 hodin"
 
 const rarityBadgeClasses: Record<ItemRarity, string> = {
-  [ItemRarity.COMMON]: "bg-gray-100 text-gray-800 border-gray-300",
-  [ItemRarity.UNCOMMON]: "bg-green-100 text-green-800 border-green-300",
-  [ItemRarity.RARE]: "bg-blue-100 text-blue-800 border-blue-300",
-  [ItemRarity.EPIC]: "bg-purple-100 text-purple-800 border-purple-300",
-  [ItemRarity.LEGENDARY]: "bg-orange-100 text-orange-800 border-orange-300",
+  COMMON: "bg-gray-100 text-gray-800 border-gray-300",
+  UNCOMMON: "bg-green-100 text-green-800 border-green-300",
+  RARE: "bg-blue-100 text-blue-800 border-blue-300",
+  EPIC: "bg-purple-100 text-purple-800 border-purple-300",
+  LEGENDARY: "bg-orange-100 text-orange-800 border-orange-300",
 }
 
 // Helper funkce pro získání nákupní konfigurace
@@ -51,7 +53,7 @@ const getPurchaseConfig = (item: Item) => {
   const config = (item as any).purchaseConfig as { maxPerUser?: number; isSinglePurchase?: boolean } | null
   
   // Výchozí chování
-  const isCosmetic = item.type === ItemType.COSMETIC
+  const isCosmetic = item.type === "COSMETIC"
   const defaultMaxPerUser = isCosmetic ? 1 : MAX_PER_ITEM
   const defaultIsSinglePurchase = isCosmetic
   
@@ -163,7 +165,7 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
             <ShoppingCart className="w-4 h-4" />
             <span>Obchod</span>
           </TabsTrigger>
-          {(userRole === UserRole.OPERATOR || userRole === UserRole.TEACHER) && (
+          {(userRole === "OPERATOR" || userRole === "TEACHER") && (
             <TabsTrigger value="management" className="flex items-center space-x-2">
               <Package className="w-4 h-4" />
               <span>Správa předmětů</span>
@@ -246,7 +248,7 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-[#5c3614]">mincí</span>
                     </div>
 
-                    {userRole === UserRole.STUDENT && (
+                    {userRole === "STUDENT" && (
                       <RpgButton
                         variant="quest"
                         size="sm"
@@ -271,7 +273,7 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
           </div>
         </TabsContent>
 
-        {(userRole === UserRole.OPERATOR || userRole === UserRole.TEACHER) && (
+        {(userRole === "OPERATOR" || userRole === "TEACHER") && (
           <TabsContent value="management">
             <ItemManagement onItemUpdated={fetchShopData} />
           </TabsContent>

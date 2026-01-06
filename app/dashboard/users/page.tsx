@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/app/lib/auth"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 import { UsersPanel } from "@/app/components/dashboard/users/UsersPanel"
 
 export default async function UsersPage() {

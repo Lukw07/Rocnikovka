@@ -1028,6 +1028,12 @@ enum GuildMemberRole {
   MEMBER // Člen
 }
 
+enum GuildJoinRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 /**
  * Guild - skupiny hráčů s společným pokladem a aktivitami
  */
@@ -1048,6 +1054,7 @@ model Guild {
   updatedAt   DateTime @updatedAt
 
   members      GuildMember[]
+  joinRequests GuildJoinRequest[]
   quests       Quest[] // Guild questy
   activities   GuildActivity[]
   benefits     GuildBenefit[]
@@ -1079,6 +1086,28 @@ model GuildMember {
   @@index([userId])
   @@index([guildId])
   @@index([role])
+}
+
+/**
+ * Guild Join Request - žádosti o vstup
+ */
+model GuildJoinRequest {
+  id        String                 @id @default(cuid())
+  guildId   String
+  userId    String
+  status    GuildJoinRequestStatus @default(PENDING)
+  message   String?
+  decidedAt DateTime?
+  decidedBy String?
+  createdAt DateTime               @default(now())
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([guildId])
+  @@index([userId])
+  @@index([status])
+  @@unique([guildId, userId, status], name: "unique_pending_request")
 }
 
 /**

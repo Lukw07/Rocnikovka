@@ -9,7 +9,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
 import { Badge } from "@/app/components/ui/badge"
 import { Skeleton } from "@/app/components/ui/skeleton"
-import { ItemRarity } from "@/app/lib/generated"
 import { cn } from "@/app/lib/utils"
 
 interface UserProfileHoverCardProps {
@@ -29,7 +28,7 @@ interface UserProfile {
       id: string
       name: string
       imageUrl: string
-      rarity: ItemRarity
+      rarity: "COMMON" | "UNCOMMON" | "RARE" | "EPIC" | "LEGENDARY" | string
     }
   }[]
 }
@@ -55,11 +54,11 @@ export function UserProfileHoverCard({ userId, name, children, className }: User
   }, [open, userId, profile, loading])
 
   const rarityStyles = {
-    [ItemRarity.COMMON]: "from-slate-300 via-slate-400 to-slate-500",
-    [ItemRarity.UNCOMMON]: "from-emerald-400 via-emerald-500 to-teal-600",
-    [ItemRarity.RARE]: "from-blue-400 via-blue-500 to-indigo-600",
-    [ItemRarity.EPIC]: "from-purple-400 via-purple-500 to-fuchsia-600",
-    [ItemRarity.LEGENDARY]: "from-yellow-300 via-amber-500 to-orange-600",
+    COMMON: "from-slate-300 via-slate-400 to-slate-500",
+    UNCOMMON: "from-emerald-400 via-emerald-500 to-teal-600",
+    RARE: "from-blue-400 via-blue-500 to-indigo-600",
+    EPIC: "from-purple-400 via-purple-500 to-fuchsia-600",
+    LEGENDARY: "from-yellow-300 via-amber-500 to-orange-600",
   }
 
   return (
@@ -109,7 +108,7 @@ export function UserProfileHoverCard({ userId, name, children, className }: User
                 <div key={badge.id} className="group relative">
                   <div className={cn(
                     "relative h-12 w-12 rounded-full p-[3px] transition-transform hover:scale-110 bg-linear-to-br",
-                    rarityStyles[badge.rarity]
+                    (rarityStyles[badge.rarity as keyof typeof rarityStyles] ?? rarityStyles.COMMON)
                   )}>
                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-white/25 border border-white/30 shadow-sm"></div>
                     <img 

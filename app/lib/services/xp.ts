@@ -259,6 +259,15 @@ export class XPService {
         }
       })
       
+      // Call achievement integration hook
+      try {
+        const { AchievementIntegrationService } = await import("./achievement-integration")
+        await AchievementIntegrationService.onXPGained(data.studentId, totalXP, data.sourceType)
+      } catch (error) {
+        console.error("Error calling achievement integration hook:", error)
+        // Don't fail the XP grant if integration fails
+      }
+      
       return {
         xpAudit,
         xpSource,

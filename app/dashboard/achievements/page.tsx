@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/lib/auth"
 import AchievementsPanel from "@/app/components/achievements/AchievementsPanel"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 
 export default async function AchievementsPage() {
   const session = await getServerSession(authOptions)

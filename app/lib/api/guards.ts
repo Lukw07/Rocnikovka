@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/lib/auth"
-import { UserRole } from "@/app/lib/generated"
+import { UserRole } from "@/app/lib/generated/client"
 import { ApiResponseHandler } from "./response"
 
 export interface AuthenticatedUser {

@@ -7,7 +7,7 @@ import { Badge } from "@/app/components/ui/badge"
 import { Progress } from "@/app/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { formatXP, calculateLevel } from "@/app/lib/utils"
-import { Sword, Trophy, Coins, Target, AlertCircle } from "lucide-react"
+import { Sword, Trophy, Coins, Target, AlertCircle, Flame } from "lucide-react"
 import { useApi, useApiMutation } from "@/app/hooks/use-api"
 
 interface StudentOverviewProps {
@@ -37,6 +37,12 @@ interface Job {
 interface DashboardData {
   jobs: Job[]
   totalXP: number
+  streak: {
+    currentStreak: number
+    maxStreak: number
+    currentMultiplier: number
+    nextMilestone?: number
+  }
 }
 
 export function StudentOverview({ userId, classId }: StudentOverviewProps) {
@@ -170,21 +176,24 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
     }, [getWeekNumber])
   
   const loadDashboard = async () => {
-    const [jobsResponse, xpResponse] = await Promise.all([
+    const [jobsResponse, xpResponse, streakResponse] = await Promise.all([
       fetch("/api/jobs"),
-      fetch("/api/xp/student")
+      fetch("/api/xp/student"),
+      fetch("/api/streak")
     ])
 
-    if (!jobsResponse.ok || !xpResponse.ok) {
+    if (!jobsResponse.ok || !xpResponse.ok || !streakResponse.ok) {
       throw new Error("Nepodařilo se načíst data dashboardu")
     }
 
     const jobsData = await jobsResponse.json()
     const xpData = await xpResponse.json()
+    const streakData = await streakResponse.json()
 
     return {
       jobs: jobsData.data?.jobs || [],
-      totalXP: xpData.totalXP || 0
+      totalXP: xpData.totalXP || 0,
+      streak: streakData.streak
     }
   }
   
@@ -485,7 +494,7 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
         </CardContent>
       </Card>
       {/* Přehled XP a levelu */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Celkové XP</CardTitle>
@@ -495,6 +504,19 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
             <div className="text-2xl font-bold">{formatXP(dashboardData?.totalXP || 0)}</div>
             <p className="text-xs text-muted-foreground">
               Level {levelData.level}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Aktuální streak</CardTitle>
+            <Flame className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{dashboardData?.streak?.currentStreak || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Max: {dashboardData?.streak?.maxStreak || 0} dní
             </p>
           </CardContent>
         </Card>

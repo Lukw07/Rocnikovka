@@ -1,5 +1,6 @@
+'use server';
+
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
 import { readFile } from "fs/promises";
 import { existsSync } from "fs";
 
@@ -14,7 +15,7 @@ export async function GET(
     return new NextResponse("Invalid filename", { status: 400 });
   }
 
-  const filePath = path.join(process.cwd(), "public/uploads", filename);
+  const filePath = `${process.cwd()}/public/uploads/${filename}`;
 
   if (!existsSync(filePath)) {
     return new NextResponse("File not found", { status: 404 });
@@ -24,7 +25,7 @@ export async function GET(
     const fileBuffer = await readFile(filePath);
     
     // Determine content type
-    const ext = path.extname(filename).toLowerCase();
+    const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
     let contentType = "application/octet-stream";
     if (ext === ".png") contentType = "image/png";
     if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";

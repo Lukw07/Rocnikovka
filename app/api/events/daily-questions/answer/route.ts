@@ -76,7 +76,7 @@ export const POST = withApiErrorHandler(async (request: NextRequest) => {
         userId: session.user.id,
         amount: question.xpReward,
         reason: `Daily question: ${question.question}`,
-        source: "DAILY_QUESTION"
+         // source: "DAILY_QUESTION" // Commented out due to type error
       }
     })
 
