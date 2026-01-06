@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Alert, AlertDescription } from "@/app/components/ui/alert"
 import { Loader2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -55,93 +54,110 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none bg-[url('/images/grid-pattern.png')] bg-repeat"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-2000"></div>
+      </div>
       
       <div className="w-full max-w-md z-10">
         {/* Back to home link */}
         <Link 
           href="/" 
-          className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6 transition-colors"
+          className="inline-flex items-center text-sm text-slate-400 hover:text-primary transition-colors mb-12 group"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Zpět na hlavní stránku
         </Link>
 
-        <Card className="shadow-xl border-primary/20">
-          <CardHeader className="text-center border-b border-border/50 pb-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-               <div className="w-8 h-8 text-primary">🛡️</div>
+        {/* Header Section - No Card Container */}
+        <div className="text-center mb-12">
+          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-primary via-primary/80 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-2xl shadow-primary/50 backdrop-blur-sm border border-primary/30">
+            <div className="text-4xl">🛡️</div>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold font-heading mb-3 text-white">
+            Vítejte zpět
+          </h1>
+          <p className="text-slate-300 text-lg">
+            Přihlaste se pomocí Bakaláři
+          </p>
+        </div>
+
+        {/* Form Container - Pure, clean, no borders */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {error && (
+            <div className="p-4 rounded-lg bg-red-500/20 border border-red-500/30 backdrop-blur-sm">
+              <p className="text-red-200 text-sm font-medium">{error}</p>
             </div>
-            <CardTitle className="text-2xl font-bold text-primary font-heading">
-              Vítejte v EduRPG
-            </CardTitle>
-            <CardDescription>
-              Přihlaste se pomocí svých Bakaláři přihlašovacích údajů
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="username">Uživatelské jméno</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Zadejte své Bakaláři uživatelské jméno"
-                  required
-                  disabled={isLoading}
-                  className="rpg-input"
-                />
-              </div>
+          )}
+          
+          {/* Username Field */}
+          <div className="space-y-2.5">
+            <Label htmlFor="username" className="text-slate-300 text-sm font-semibold block">
+              Uživatelské jméno
+            </Label>
+            <Input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Zadejte uživatelské jméno"
+              required
+              disabled={isLoading}
+              className="w-full h-12 px-4 bg-slate-700/50 border border-slate-600/30 rounded-lg text-white placeholder:text-slate-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all backdrop-blur-sm"
+            />
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Heslo</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Zadejte své Bakaláři heslo"
-                  required
-                  disabled={isLoading}
-                />
-              </div>
+          {/* Password Field */}
+          <div className="space-y-2.5">
+            <Label htmlFor="password" className="text-slate-300 text-sm font-semibold block">
+              Heslo
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Zadejte heslo"
+              required
+              disabled={isLoading}
+              className="w-full h-12 px-4 bg-slate-700/50 border border-slate-600/30 rounded-lg text-white placeholder:text-slate-400 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all backdrop-blur-sm"
+            />
+          </div>
 
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={isLoading}
-                variant="rpg"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Vstupování do světa...
-                  </>
-                ) : (
-                  "Vstoupit do světa"
-                )}
-              </Button>
-            </form>
+          {/* Submit Button */}
+          <Button 
+            type="submit" 
+            className="w-full h-12 mt-8 text-base font-bold bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-white rounded-lg shadow-lg shadow-primary/50 transition-all hover:shadow-xl hover:shadow-primary/60"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Vstupování...
+              </>
+            ) : (
+              <>
+                Pokračovat do dobrodružství
+                <span className="ml-2">→</span>
+              </>
+            )}
+          </Button>
+        </form>
 
-            <div className="mt-6 text-center text-sm text-gray-600">
-              <p>
-                Používáme Bakaláři API pro bezpečné přihlášení.
-                <br />
-                Vaše údaje se nikdy neukládají v naší databázi.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Info Section */}
+        <div className="mt-12 pt-8 border-t border-slate-700/50 text-center text-xs text-slate-400">
+          <p>
+            🔐 Bezpečné přihlášení přes Bakaláři API
+            <br />
+            Vaše data se neukládají
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
       </div>
     </div>
   )

@@ -226,7 +226,7 @@
 }
 
 html {
-  overflow: hidden;
+  overflow: auto;
   height: 100%;
 }
 
@@ -236,8 +236,8 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
   font-family: var(--font-body);
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow: hidden;
-  height: 100%;
+  overflow: auto;
+  height: auto;
 }
 
 /* RPG Typography */
