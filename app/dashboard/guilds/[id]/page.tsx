@@ -22,6 +22,8 @@ import { GuildMembers } from "@/app/components/guilds/guild-members"
 import { GuildChat } from "@/app/components/guilds/guild-chat"
 import { GuildBenefits } from "@/app/components/guilds/guild-benefits"
 import { GuildJoinRequests } from "@/app/components/guilds/guild-join-requests"
+import { TransferLeadershipWrapper } from "@/app/components/guilds/transfer-leadership-wrapper"
+import { LeaveGuildButton } from "@/app/components/guilds/leave-guild-button"
 
 interface Props {
   params: Promise<{
@@ -130,17 +132,21 @@ export default async function GuildDetailPage({ params }: Props) {
 
             {/* Join/Leave buttons */}
             <div className="flex gap-2">
+              {isLeader && (
+                <TransferLeadershipWrapper
+                  guildId={guild.id}
+                  members={guild.members}
+                  currentUserId={session.user.id}
+                />
+              )}
               {!isMember && guild.memberCount < guild.maxMembers && (
                 <Button>
                   <UserPlus className="mr-2 h-4 w-4" />
                   Připojit se
                 </Button>
               )}
-              {isMember && !isLeader && (
-                <Button variant="outline">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Opustit guildu
-                </Button>
+              {isMember && (
+                <LeaveGuildButton guildId={guild.id} guildName={guild.name} />
               )}
             </div>
           </div>

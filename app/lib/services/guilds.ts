@@ -452,9 +452,20 @@ export class GuildService {
         throw new Error("Not a guild member")
       }
 
-      // Check if guild leader - can't leave if leader
+      // Check if guild leader
       if (member.role === GuildMemberRole.LEADER) {
-        throw new Error("Guild leader cannot leave")
+        // Count how many leaders exist
+        const leaderCount = await tx.guildMember.count({
+          where: {
+            guildId,
+            role: GuildMemberRole.LEADER
+          }
+        })
+
+        // If this is the only leader, they cannot leave
+        if (leaderCount === 1) {
+          throw new Error("Jako poslední vůdce nemůžeš opustit guildu. Nejdřív přenes vedení na někoho jiného.")
+        }
       }
 
       // Remove member
