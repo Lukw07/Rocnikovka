@@ -75,8 +75,7 @@ export const POST = withApiErrorHandler(async (request: NextRequest) => {
       data: {
         userId: session.user.id,
         amount: question.xpReward,
-        reason: `Daily question: ${question.question}`,
-        source: "DAILY_QUESTION"
+        reason: `Daily question: ${question.question}`
       }
     })
 
