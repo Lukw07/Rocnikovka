@@ -19,7 +19,7 @@ interface Job {
   xpReward: number
   moneyReward: number
   status: string
-  subject: { name: string }
+  subject?: { name?: string }
   teacher: { name: string }
   assignments: Array<{ id: string; status: string }>
 }
@@ -161,7 +161,7 @@ export default function JobListPanel() {
                       </CardTitle>
                       <div className="flex items-center gap-2 mt-2">
                         <BookOpen className="w-3 h-3 text-gray-500" />
-                        <CardDescription className="text-xs">{job.subject?.name}</CardDescription>
+                        <CardDescription className="text-xs">{job.subject?.name || "Obecný úkol"}</CardDescription>
                         <span className="text-xs text-gray-400">•</span>
                         <User className="w-3 h-3 text-gray-500" />
                         <CardDescription className="text-xs">{job.teacher?.name}</CardDescription>
@@ -238,7 +238,7 @@ export default function JobListPanel() {
                     <div className="flex items-center gap-3 flex-1">
                       <Avatar className="border-2 border-blue-200 shadow-sm">
                         <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold">
-                          {job.subject?.name?.[0] || 'S'}
+                          {job.subject?.name?.[0] || 'O'}
                         </AvatarFallback>
                       </Avatar>
                       <div>
@@ -247,7 +247,7 @@ export default function JobListPanel() {
                         </CardTitle>
                         <div className="flex items-center gap-2 mt-1">
                           <BookOpen className="w-3 h-3 text-gray-500" />
-                          <CardDescription className="text-xs">{job.subject?.name}</CardDescription>
+                          <CardDescription className="text-xs">{job.subject?.name || "Obecný úkol"}</CardDescription>
                           <span className="text-xs text-gray-400">•</span>
                           <User className="w-3 h-3 text-gray-500" />
                           <CardDescription className="text-xs">{job.teacher?.name}</CardDescription>

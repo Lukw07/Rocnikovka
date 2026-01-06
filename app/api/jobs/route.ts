@@ -56,7 +56,8 @@ export const POST = withApiErrorHandler(
         requiredLevel: validatedData.requiredLevel,
         requiredSkillId: validatedData.requiredSkillId,
         requiredSkillLevel: validatedData.requiredSkillLevel,
-        estimatedHours: validatedData.estimatedHours
+        estimatedHours: validatedData.estimatedHours,
+        badgeId: validatedData.badgeId
       })
       
       return createSuccessResponse({ job }, 201, requestId)

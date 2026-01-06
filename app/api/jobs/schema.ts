@@ -9,7 +9,8 @@ export const createJobSchema = z.object({
     .min(1, "Description is required")
     .max(1000, "Description cannot exceed 1000 characters")
     .trim(),
-  subjectId: z.string().cuid("Invalid subject ID format"),
+  subjectId: z.string().cuid("Invalid subject ID format").optional(),
+  badgeId: z.string().cuid("Invalid badge ID format").optional(),
   categoryId: z.string().cuid().optional(),
   tier: z.enum(["BASIC", "INTERMEDIATE", "ADVANCED", "EXPERT", "LEGENDARY"]).default("BASIC"),
   xpReward: z.number()

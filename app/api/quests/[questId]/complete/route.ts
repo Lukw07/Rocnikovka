@@ -2,7 +2,7 @@ import { NextRequest } from "next/server"
 import { withApiErrorHandler } from "@/app/lib/api/error-responses"
 import { withRole } from "@/app/lib/api/guards"
 import { createSuccessResponse } from "@/app/lib/api/response"
-import { QuestService } from "@/app/lib/services/quests"
+import { QuestServiceEnhanced } from "@/app/lib/services/quests-enhanced"
 import { UserRole } from "@/app/lib/generated"
 
 /**
@@ -17,7 +17,7 @@ export const POST = withApiErrorHandler(
       throw new Error("Quest ID is required")
     }
 
-    const progress = await QuestService.completeQuest(
+    const progress = await QuestServiceEnhanced.completeQuest(
       questId as string,
       user.id,
       requestId

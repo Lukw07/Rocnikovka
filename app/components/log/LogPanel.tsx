@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/app/components/ui/badge"
 import { Input } from "@/app/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
-import { Search, RefreshCw, AlertTriangle, Info, AlertCircle, Bug, Activity, ArrowLeft, Loader2, FileText } from "lucide-react"
+import { Search, RefreshCw, AlertTriangle, Info, AlertCircle, Bug, Activity, ArrowLeft, Loader2, FileText, Bell, Briefcase, CalendarClock, Sparkles } from "lucide-react"
 import { getSystemLogs } from "@/app/actions/admin"
 import { UserRole } from "@/app/lib/generated"
 import { toast } from "sonner"
@@ -35,6 +35,22 @@ export default function LogPanel({ userRole }: LogPanelProps) {
   const [loading, setLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [levelFilter, setLevelFilter] = useState<string>("ALL")
+
+  const important = (() => {
+    const lower = (s: string) => s.toLowerCase()
+    const summary = {
+      jobs: 0,
+      events: 0,
+      rewards: 0
+    }
+    for (const log of logs) {
+      const msg = lower(log.message)
+      if (msg.includes("job") || msg.includes("úkol")) summary.jobs++
+      if (msg.includes("event") || msg.includes("akce")) summary.events++
+      if (msg.includes("badge") || msg.includes("odznak") || msg.includes("reward") || msg.includes("odměn")) summary.rewards++
+    }
+    return summary
+  })()
 
   useEffect(() => {
     if (userRole === UserRole.OPERATOR) {
@@ -77,30 +93,59 @@ export default function LogPanel({ userRole }: LogPanelProps) {
   })
 
   if (userRole !== UserRole.OPERATOR) {
+    const [playerLogs, setPlayerLogs] = useState<any[]>([])
+    const [playerLoading, setPlayerLoading] = useState(true)
+
+    useEffect(() => {
+      const fetch = async () => {
+        try {
+          const res = await fetch('/api/me/activity?limit=100')
+          if (res.ok) {
+            const json = await res.json()
+            setPlayerLogs(json.data?.activity || [])
+          }
+        } catch (e) {
+          console.error(e)
+        } finally {
+          setPlayerLoading(false)
+        }
+      }
+      fetch()
+    }, [])
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
-              <Activity className="w-6 h-6 text-white" />
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Záznam aktivit
+                </h2>
+                <p className="text-muted-foreground">Historie vašich finančních operací a aktivit</p>
+              </div>
             </div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Záznam aktivit
-            </h2>
           </div>
-          <Card className="border-dashed bg-white/50 backdrop-blur-sm">
-            <CardContent className="p-12 text-center">
-              <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <p className="text-lg font-medium text-gray-700 mb-2">Historie aktivit</p>
-              <p className="text-muted-foreground mb-4">Zde uvidíte historii vašich aktivit (XP, nákupy, atd.).</p>
-              <p className="text-sm text-muted-foreground mb-6">Tato sekce je pro studenty zatím ve vývoji.</p>
-              <Button 
-                onClick={() => setSelectedPanel('dashboard')} 
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Zpět na přehled
-              </Button>
+
+          <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-2">
+            <CardContent className="p-6">
+              <div className="space-y-3">
+                {playerLoading && <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="w-4 h-4 animate-spin" /> Načítám…</div>}
+                {!playerLoading && playerLogs.length === 0 && <div className="text-muted-foreground text-sm">Žádná aktivita</div>}
+                {!playerLoading && playerLogs.map((log: any) => (
+                  <div key={log.id} className="flex items-start gap-3 p-3 border rounded-lg bg-white/60">
+                    <div className="text-sm font-medium">{log.title}</div>
+                    {log.description && <div className="text-xs text-muted-foreground">{log.description}</div>}
+                    {log.amount && <div className="text-xs font-semibold" style={{color: log.direction === 'in' ? '#16a34a' : '#dc2626'}}>{
+                      log.direction === 'in' ? '+' : '-'
+                    }{Math.abs(log.amount)} {log.currency === 'money' ? 'Kč' : 'XP'}</div>}
+                    {log.createdAt && <div className="text-[11px] text-muted-foreground">{new Date(log.createdAt).toLocaleString('cs-CZ')}</div>}
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -112,15 +157,20 @@ export default function LogPanel({ userRole }: LogPanelProps) {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 flex-wrap">
             <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
-              <Activity className="w-6 h-6 text-white" />
+              <Bell className="w-6 h-6 text-white" />
             </div>
-            <div>
+            <div className="space-y-1">
               <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Systémové logy
+                Důležité notifikace
               </h2>
-              <p className="text-muted-foreground">Přehled aktivit a událostí v systému</p>
+              <p className="text-muted-foreground">Nové joby, eventy, odměny a systémové logy</p>
+              <div className="flex flex-wrap gap-2 text-sm">
+                <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1"><Briefcase className="w-3 h-3" /> {important.jobs} jobů</Badge>
+                <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1"><CalendarClock className="w-3 h-3" /> {important.events} eventů</Badge>
+                <Badge variant="secondary" className="bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1"><Sparkles className="w-3 h-3" /> {important.rewards} odměn/badge</Badge>
+              </div>
             </div>
           </div>
           <Button 

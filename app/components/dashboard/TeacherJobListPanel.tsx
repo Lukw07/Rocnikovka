@@ -18,8 +18,8 @@ interface Job {
   xpReward: number
   moneyReward: number
   status: string
-  subject: {
-    name: string
+  subject?: {
+    name?: string
   }
   assignments: Array<{
     id: string
@@ -154,7 +154,7 @@ export function TeacherJobListPanel() {
                   <CardTitle className="text-lg group-hover:text-blue-600 transition-colors">{job.title}</CardTitle>
                   <CardDescription>
                     <Badge variant="outline" className="mb-2 bg-blue-50 border-blue-200">
-                      {job.subject.name}
+                      {job.subject?.name || "Obecný úkol"}
                     </Badge>
                     <p className="text-sm text-gray-600 mt-2 line-clamp-2">{job.description}</p>
                   </CardDescription>
@@ -210,7 +210,7 @@ export function TeacherJobListPanel() {
                         <CardTitle className="text-lg">{job.title}</CardTitle>
                         <CardDescription>
                           <Badge variant="outline" className="mb-2 bg-yellow-50 border-yellow-200">
-                            {job.subject.name}
+                            {job.subject?.name || "Obecný úkol"}
                           </Badge>
                         </CardDescription>
                       </div>
@@ -274,7 +274,7 @@ export function TeacherJobListPanel() {
                   </CardTitle>
                   <CardDescription>
                     <Badge variant="outline" className="mb-2 bg-green-50 border-green-200">
-                      {job.subject.name}
+                      {job.subject?.name || "Obecný úkol"}
                     </Badge>
                     <p className="text-sm text-gray-600 mt-2 line-clamp-2">{job.description}</p>
                   </CardDescription>

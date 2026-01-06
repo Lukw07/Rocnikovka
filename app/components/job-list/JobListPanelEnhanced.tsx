@@ -26,7 +26,7 @@ interface Job {
   isTeamJob: boolean
   requiredLevel: number
   estimatedHours?: number
-  subject: { name: string }
+  subject?: { name?: string }
   category?: { name: string; icon?: string; color?: string }
   teacher: { name: string }
   requiredSkill?: { name: string }
@@ -215,7 +215,7 @@ export default function JobListPanelEnhanced() {
                     </div>
                     <CardTitle>{job.title}</CardTitle>
                     <CardDescription>
-                      {job.subject.name} • {job.teacher.name}
+                      {(job.subject?.name || "Obecný úkol")} • {job.teacher.name}
                     </CardDescription>
                   </div>
                 </div>

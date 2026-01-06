@@ -70,6 +70,16 @@ model User {
   friendQuestsAsUser1 FriendQuestProgress[] @relation("FriendQuestUser1")
   friendQuestsAsUser2 FriendQuestProgress[] @relation("FriendQuestUser2")
 
+  // Events
+  dailyQuestionAnswers DailyQuestionAnswer[] @relation("DailyQuestionAnswers")
+  dailyQuestionCreated DailyQuestion[]       @relation("DailyQuestionCreator")
+  bossEventParticipants BossEventParticipant[] @relation("BossEventParticipants")
+  bossAttacks          BossAttack[]             @relation("BossAttacks")
+
+  // Job badge requests
+  badgeRequestsAsRequester JobBadgeRequest[] @relation("JobBadgeRequestRequester")
+  badgeRequestsAsReviewer  JobBadgeRequest[] @relation("JobBadgeRequestReviewer")
+
   @@index([role])
   @@index([classId])
   @@index([bakalariId])
@@ -146,7 +156,7 @@ model Job {
   id                 String          @id @default(cuid())
   title              String
   description        String
-  subjectId          String
+  subjectId          String?
   teacherId          String
   categoryId         String?
   tier               JobTier         @default(BASIC)
@@ -161,14 +171,17 @@ model Job {
   requiredSkillId    String?
   requiredSkillLevel Int?
   estimatedHours     Int?
+  approvedBadgeId    String?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
   closedAt           DateTime?
-  subject            Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject            Subject?        @relation(fields: [subjectId], references: [id], onDelete: SetNull)
   teacher            User            @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   category           JobCategory?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   requiredSkill      Skill?          @relation(fields: [requiredSkillId], references: [id], onDelete: SetNull)
+  approvedBadge      Badge?          @relation(fields: [approvedBadgeId], references: [id], onDelete: SetNull)
   assignments        JobAssignment[]
+  badgeRequests      JobBadgeRequest[]
 
   @@index([subjectId])
   @@index([teacherId])
@@ -176,6 +189,7 @@ model Job {
   @@index([status])
   @@index([tier])
   @@index([isTeamJob])
+  @@index([approvedBadgeId])
 }
 
 model JobAssignment {
@@ -193,6 +207,28 @@ model JobAssignment {
   @@index([jobId])
   @@index([studentId])
   @@index([status])
+}
+
+model JobBadgeRequest {
+  id          String                 @id @default(cuid())
+  jobId       String
+  badgeId     String
+  requestedBy String
+  reviewerId  String?
+  status      JobBadgeRequestStatus  @default(PENDING)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  reviewedAt  DateTime?
+  job         Job                    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  badge       Badge                  @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  requester   User                   @relation("JobBadgeRequestRequester", fields: [requestedBy], references: [id], onDelete: Cascade)
+  reviewer    User?                  @relation("JobBadgeRequestReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([jobId])
+  @@index([badgeId])
+  @@index([requestedBy])
+  @@index([reviewerId])
 }
 
 model TeacherDailyBudget {
@@ -420,6 +456,8 @@ model Event {
   participations EventParticipation[]
   phases         EventPhase[] // Pro story-driven eventy
   rewards        EventReward[] // Všechny odměny pro event
+  dailyQuestions DailyQuestion[] // Denní otázky tohoto eventu
+  bossEvent      BossEvent? // Boss event spojený s tímto eventem
 
   @@index([startsAt])
   @@index([endsAt])
@@ -596,6 +634,12 @@ enum JobAssignmentStatus {
   REJECTED
 }
 
+enum JobBadgeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum MoneyTxType {
   EARNED
   SPENT
@@ -655,6 +699,8 @@ model Badge {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   users       UserBadge[]
+  badgeRequests JobBadgeRequest[] // Badge requests linking to jobs
+  jobsApproved Job[] // Jobs that have approved this badge
 }
 
 model UserBadge {
@@ -892,6 +938,7 @@ enum QuestType {
   DAILY // Denní quest
   WEEKLY // Týdenní quest
   EVENT // Speciální event quest
+  GLOBAL // Globální celoškolní quest
 }
 
 /**
@@ -904,7 +951,7 @@ model Quest {
   description       String
   category          String // e.g., "Math", "Science", "Social", "Challenge"
   difficulty        QuestDifficulty
-  questType         QuestType       @default(STANDARD) // STANDARD, MINI_GAME, GUILD, DAILY, WEEKLY
+  questType         QuestType       @default(STANDARD) // STANDARD, MINI_GAME, GUILD, DAILY, WEEKLY, GLOBAL
   requiredLevel     Int             @default(0) // Minimální level pro přijmutí
   xpReward          Int
   moneyReward       Int             @default(0)
@@ -916,6 +963,12 @@ model Quest {
   guildId           String? // Pro guild questy
   miniGameType      String? // Typ mini hry (quiz, memory, puzzle, math, typing)
   miniGameData      Json? // Data pro mini hru (questions, settings, etc.)
+  
+  // Global Quest specific fields
+  globalProgress    Int             @default(0)
+  globalTarget      Int?            // Cíl pro globální quest (např. 1000)
+  globalUnit        String?         // Jednotka (např. "grades", "hours", "hp")
+
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   createdBy         String // Teacher/Admin ID
@@ -2192,4 +2245,112 @@ model FriendQuestCompletion {
   @@index([user2Id])
   @@index([completedAt])
   @@index([friendQuestId, user1Id, user2Id, completedAt], name: "friend_quest_cooldown")
+}
+// Denní otázky pro eventy
+model DailyQuestion {
+  id              String    @id @default(cuid())
+  eventId         String
+  date            DateTime  @unique
+  question        String
+  options         String[]  // Možnosti odpovědi
+  correctAnswer   Int       // Index správné odpovědi
+  difficulty      String    @default("medium")
+  xpReward        Int       @default(50)
+  moneyReward     Int       @default(10)
+  skillpointReward Int      @default(1)
+  createdBy       String    // User ID operátora nebo AI
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  userAnswers     DailyQuestionAnswer[]
+  event           Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  creator         User      @relation("DailyQuestionCreator", fields: [createdBy], references: [id])
+
+  @@index([eventId])
+  @@index([date])
+  @@index([createdBy])
+  @@index([eventId, date])
+}
+
+// Odpovědi studentů na denní otázky
+model DailyQuestionAnswer {
+  id              String    @id @default(cuid())
+  questionId      String
+  userId          String
+  selectedAnswer  Int
+  isCorrect       Boolean   @default(false)
+  answeredAt      DateTime  @default(now())
+
+  // Relations
+  question        DailyQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user            User      @relation("DailyQuestionAnswers", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, userId])
+  @@index([questionId])
+  @@index([userId])
+  @@index([answeredAt])
+}
+
+// Boss eventy - celá škola spolupracuje na porážení bosse
+model BossEvent {
+  id              String    @id @default(cuid())
+  eventId         String    @unique
+  name            String
+  description     String?
+  maxHp           Int       @default(1000)
+  currentHp       Int       @default(1000)
+  level           Int       @default(10)
+  xpRewardPerKill Int       @default(500)
+  moneyRewardPerKill Int    @default(100)
+  phase           Int       @default(1) // Kterou fází boss projde
+  isDefeated      Boolean   @default(false)
+  defeatedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  event           Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  attacks         BossAttack[]
+  participants    BossEventParticipant[]
+
+  @@index([eventId])
+  @@index([isDefeated])
+  @@index([level])
+}
+
+// Účast ve boss eventu
+model BossEventParticipant {
+  id              String    @id @default(cuid())
+  bossEventId     String
+  userId          String
+  totalDamage     Int       @default(0)
+  attackCount     Int       @default(0)
+  joinedAt        DateTime  @default(now())
+
+  // Relations
+  bossEvent       BossEvent @relation(fields: [bossEventId], references: [id], onDelete: Cascade)
+  user            User      @relation("BossEventParticipants", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([bossEventId, userId])
+  @@index([bossEventId])
+  @@index([userId])
+  @@index([totalDamage])
+}
+
+// Útoky studentů na bosse
+model BossAttack {
+  id              String    @id @default(cuid())
+  bossEventId     String
+  userId          String
+  damage          Int       @default(1)
+  message         String?
+  attackedAt      DateTime  @default(now())
+
+  // Relations
+  bossEvent       BossEvent @relation(fields: [bossEventId], references: [id], onDelete: Cascade)
+  user            User      @relation("BossAttacks", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([bossEventId])
+  @@index([userId])
+  @@index([attackedAt])
 }

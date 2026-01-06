@@ -1,5 +1,5 @@
 import { prisma } from "../prisma"
-import { JobStatus, JobAssignmentStatus, UserRole, JobTier } from "../generated"
+import { JobStatus, JobAssignmentStatus, UserRole, JobTier, JobBadgeRequestStatus } from "../generated"
 import { generateRequestId, sanitizeForLog } from "../utils"
 import { ProgressionService } from "./progression"
 import { TeacherStatsService } from "./teacher-stats"
@@ -8,7 +8,7 @@ export class JobsService {
   static async createJob(data: {
     title: string
     description: string
-    subjectId: string
+    subjectId?: string
     teacherId: string
     categoryId?: string
     tier?: JobTier
@@ -22,6 +22,7 @@ export class JobsService {
     requiredSkillId?: string
     requiredSkillLevel?: number
     estimatedHours?: number
+    badgeId?: string
   }, requestId?: string) {
     const reqId = requestId || generateRequestId()
     
@@ -43,7 +44,7 @@ export class JobsService {
         data: {
           title: data.title,
           description: data.description,
-          subjectId: data.subjectId,
+          subjectId: data.subjectId || null,
           teacherId: data.teacherId,
           categoryId: data.categoryId,
           tier: data.tier || JobTier.BASIC,
@@ -60,6 +61,22 @@ export class JobsService {
           status: JobStatus.OPEN
         }
       })
+
+      if (data.badgeId) {
+        const badgeExists = await tx.badge.findUnique({ where: { id: data.badgeId } })
+        if (!badgeExists) {
+          throw new Error("Badge not found")
+        }
+
+        await tx.jobBadgeRequest.create({
+          data: {
+            jobId: job.id,
+            badgeId: data.badgeId,
+            requestedBy: data.teacherId,
+            status: JobBadgeRequestStatus.PENDING
+          }
+        })
+      }
       
       // Log creation
       await tx.systemLog.create({

@@ -9,7 +9,7 @@ import Image from "next/image"
 import { signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { UserRole } from "@/app/lib/generated"
-import { LogOut, Coins } from "lucide-react"
+import { LogOut, Coins, Bell, Loader2 } from "lucide-react"
 import { UserAvatarWithBadge } from "@/app/components/dashboard/UserAvatarWithBadge"
 import { NavigationDropdown } from "@/app/components/dashboard/NavigationDropdown"
 import { MenuItem } from "@/app/components/ui/Sidebar"
@@ -26,6 +26,8 @@ export function DashboardHeader({ userName, userRole, userBalance, menuItems = [
   const router = useRouter()
   const [balance, setBalance] = useState<number | undefined>(userBalance)
   const [hydrated, setHydrated] = useState(false)
+  const [notifLoading, setNotifLoading] = useState(false)
+  const [notifItems, setNotifItems] = useState<Array<{ id: string; title: string; description?: string; createdAt?: string }>>([])
 
   useEffect(() => {
     let mounted = true
@@ -46,6 +48,23 @@ export function DashboardHeader({ userName, userRole, userBalance, menuItems = [
     }
 
     fetchBalance()
+
+    const fetchNotif = async () => {
+      setNotifLoading(true)
+      try {
+        const res = await fetch('/api/me/activity?limit=10&types=job,badge,trade')
+        if (res.ok) {
+          const json = await res.json()
+          const items = json.data?.activity || []
+          setNotifItems(items.map((i: any) => ({ id: i.id, title: i.title, description: i.description, createdAt: i.createdAt })))
+        }
+      } catch (e) {
+      } finally {
+        setNotifLoading(false)
+      }
+    }
+
+    fetchNotif()
 
     return () => { mounted = false }
   }, [])
@@ -99,6 +118,39 @@ export function DashboardHeader({ userName, userRole, userBalance, menuItems = [
 
       {/* Right: User Info and Controls */}
       <div className="hidden md:flex items-center gap-3">
+        {/* Notifications */}
+        {hydrated ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" className="relative h-10 w-10">
+                <Bell className="w-5 h-5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 p-0">
+              <div className="p-3 border-b font-semibold text-sm">Nové události</div>
+              <div className="max-h-64 overflow-y-auto divide-y">
+                {notifLoading && (
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Načítám…
+                  </div>
+                )}
+                {!notifLoading && notifItems.length === 0 && (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">Žádné nové události</div>
+                )}
+                {!notifLoading && notifItems.map((n) => (
+                  <div key={n.id} className="px-3 py-2 text-sm">
+                    <div className="font-medium text-gray-900">{n.title}</div>
+                    {n.description && <div className="text-muted-foreground text-xs">{n.description}</div>}
+                    {n.createdAt && <div className="text-[11px] text-muted-foreground">{new Date(n.createdAt).toLocaleString('cs-CZ')}</div>}
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <div className="h-10 w-10 rounded-md bg-muted animate-pulse" />
+        )}
+
         {/* Role */}
         <p className="text-sm text-muted-foreground">
           Role: {getRoleDisplayName(userRole)}
@@ -144,6 +196,38 @@ export function DashboardHeader({ userName, userRole, userBalance, menuItems = [
 
       {/* Mobile: Right side - Only balance and user icon */}
       <div className="flex md:hidden items-center gap-2">
+        {hydrated ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                <Bell className="w-4 h-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-72 p-0">
+              <div className="p-3 border-b font-semibold text-sm">Nové události</div>
+              <div className="max-h-60 overflow-y-auto divide-y">
+                {notifLoading && (
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Načítám…
+                  </div>
+                )}
+                {!notifLoading && notifItems.length === 0 && (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">Žádné nové události</div>
+                )}
+                {!notifLoading && notifItems.map((n) => (
+                  <div key={n.id} className="px-3 py-2 text-sm">
+                    <div className="font-medium text-gray-900">{n.title}</div>
+                    {n.description && <div className="text-muted-foreground text-xs">{n.description}</div>}
+                    {n.createdAt && <div className="text-[11px] text-muted-foreground">{new Date(n.createdAt).toLocaleString('cs-CZ')}</div>}
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <div className="h-9 w-9 rounded-md bg-muted animate-pulse" />
+        )}
+
         {/* Balance Badge */}
         <Badge variant="secondary" className="flex items-center gap-1 px-2 py-1 text-xs">
           <Coins className="w-4 h-4" />

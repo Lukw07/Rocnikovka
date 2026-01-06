@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Coins, Gem, TrendingUp, TrendingDown, Send } from 'lucide-react';
-import { Button } from '@/app/components/ui/button';
+import { Coins, Gem } from 'lucide-react';
 
 interface WalletBalance {
   userId: string;
@@ -98,27 +97,7 @@ export default function WalletCard() {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2 pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={() => window.location.href = '/dashboard/wallet/transactions'}
-          >
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Historie
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={() => window.location.href = '/dashboard/wallet/transfer'}
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Převod
-          </Button>
-        </div>
+
       </CardContent>
     </Card>
   );

@@ -8,12 +8,26 @@ import { useApi } from "@/app/hooks/use-api"
 import { CreateBadgeDialog } from "./CreateBadgeDialog"
 import { BadgeCard } from "./BadgeCard"
 import { Badge as BadgeModel, ItemRarity } from "@/app/lib/generated"
+import { Button as UIButton } from "@/app/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/app/components/ui/card"
+import { Badge as UiBadge } from "@/app/components/ui/badge"
+import { Loader2, CheckCircle2, XCircle } from "lucide-react"
+import { toast } from "sonner"
 
 type BadgeWithOwnership = BadgeModel & { owned: boolean; isPinned?: boolean }
+type BadgeRequest = {
+  id: string
+  status: string
+  createdAt: string
+  job: { id: string; title: string }
+  badge: { id: string; name: string }
+  requester: { id: string; name: string }
+}
 
 export default function BadgesPanel({ isOperator = false }: { isOperator?: boolean }) {
   const { setSelectedPanel } = useSidebar()
   const { data, loading, error, execute } = useApi<{ badges: BadgeWithOwnership[] } | null>(null)
+  const { data: requestData, loading: requestsLoading, error: requestsError, execute: executeRequests } = useApi<{ data?: { requests: BadgeRequest[] } } | null>(null)
   const [activeTab, setActiveTab] = useState("all")
 
   useEffect(() => {
@@ -23,6 +37,15 @@ export default function BadgesPanel({ isOperator = false }: { isOperator?: boole
       return res.json()
     })
   }, [execute])
+
+  useEffect(() => {
+    if (!isOperator) return
+    executeRequests(async () => {
+      const res = await fetch('/api/admin/job-badge-requests')
+      if (!res.ok) throw new Error(`API error ${res.status}`)
+      return res.json()
+    })
+  }, [executeRequests, isOperator])
 
   const badges = data?.badges || []
 
@@ -42,6 +65,33 @@ export default function BadgesPanel({ isOperator = false }: { isOperator?: boole
       if (!res.ok) throw new Error(`API error ${res.status}`)
       return res.json()
     })
+  }
+
+  const refreshRequests = () => {
+    if (!isOperator) return
+    executeRequests(async () => {
+      const res = await fetch('/api/admin/job-badge-requests')
+      if (!res.ok) throw new Error(`API error ${res.status}`)
+      return res.json()
+    })
+  }
+
+  const handleRequest = async (requestId: string, action: "approve" | "reject") => {
+    const resp = await fetch('/api/admin/job-badge-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requestId, action })
+    })
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}))
+      toast.error('Akce se nezdařila', { description: err.error || 'Zkuste to prosím znovu' })
+      return
+    }
+
+    toast.success(action === 'approve' ? 'Badge schválen' : 'Badge zamítnut')
+    refresh()
+    refreshRequests()
   }
 
   return (
@@ -69,6 +119,47 @@ export default function BadgesPanel({ isOperator = false }: { isOperator?: boole
           <TabsTrigger value="epic" className="rounded-sm px-4 py-2">Epické+</TabsTrigger>
         </TabsList>
       </Tabs>
+
+      {isOperator && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Žádosti o badge k úkolům</h3>
+            <UIButton variant="outline" size="sm" onClick={refreshRequests}>
+              <Loader2 className="w-4 h-4 mr-2" />
+              Obnovit
+            </UIButton>
+          </div>
+          {requestsLoading && <div className="text-sm text-muted-foreground">Načítám žádosti…</div>}
+          {requestsError && <div className="text-sm text-destructive">Chyba: {requestsError}</div>}
+          {!requestsLoading && (requestData?.data?.requests?.length ?? 0) === 0 && (
+            <div className="text-sm text-muted-foreground">Žádné čekající žádosti.</div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {requestData?.data?.requests?.map((req) => (
+              <Card key={req.id} className="border-l-4 border-l-amber-400">
+                <CardHeader>
+                  <CardTitle className="text-base">{req.badge.name}</CardTitle>
+                  <CardDescription>{req.job.title}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between">
+                  <div className="space-y-1 text-sm">
+                    <div>Žádá: <UiBadge variant="outline">{req.requester.name}</UiBadge></div>
+                    <div className="text-muted-foreground">Status: {req.status}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <UIButton size="sm" variant="outline" onClick={() => handleRequest(req.id, 'reject')}>
+                      <XCircle className="w-4 h-4 mr-1 text-red-500" /> Zamítnout
+                    </UIButton>
+                    <UIButton size="sm" onClick={() => handleRequest(req.id, 'approve')}>
+                      <CheckCircle2 className="w-4 h-4 mr-1" /> Schválit
+                    </UIButton>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading && <div className="text-sm text-muted-foreground">Načítání odznaků…</div>}
       {error && <div className="text-sm text-destructive">Chyba: {error}</div>}

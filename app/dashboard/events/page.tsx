@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { EventList, EventDetailView, BossBattleUI } from "@/app/components/events"
+import { DailyQuestionPanel } from "@/app/components/events/DailyQuestionPanel"
+import { BossEventPanel } from "@/app/components/events/BossEventPanel"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { Button } from "@/app/components/ui/button"
@@ -41,10 +43,23 @@ export default function EventsPage() {
   if (selectedEventId) {
     return (
       <div className="container max-w-6xl mx-auto p-6">
+        <Button onClick={handleBack} variant="ghost" className="mb-6">
+          ← Zpět na event
+        </Button>
         <EventDetailView 
           eventId={selectedEventId} 
           onBack={handleBack}
         />
+
+        {/* Daily Question */}
+        <div className="mt-6">
+          <DailyQuestionPanel eventId={selectedEventId} />
+        </div>
+
+        {/* Boss Event */}
+        <div className="mt-6">
+          <BossEventPanel eventId={selectedEventId} />
+        </div>
         
         {/* Boss Battle Button */}
         <Card className="mt-6 border-red-500/50">

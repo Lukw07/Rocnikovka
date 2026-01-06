@@ -41,7 +41,8 @@ export default function AchievementsPanel({ canManage = false, isOperator = fals
 
   const filteredAchievements = achievements.filter(a => {
     if (activeTab === "all") return true
-    // Add more filters if needed
+    if (activeTab === "activities") return a.name.toLowerCase().includes("aktiv")
+    if (activeTab === "other") return !a.name.toLowerCase().includes("aktiv") && !a.name.toLowerCase().includes("level")
     return true
   })
 
@@ -86,9 +87,9 @@ export default function AchievementsPanel({ canManage = false, isOperator = fals
 
       <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="w-full justify-start h-auto p-1 bg-muted/50">
-          <TabsTrigger value="all" className="rounded-sm px-4 py-2">Level</TabsTrigger>
-          <TabsTrigger value="activities" className="rounded-sm px-4 py-2">Aktivity</TabsTrigger>
-          <TabsTrigger value="other" className="rounded-sm px-4 py-2">Ostatní</TabsTrigger>
+          <TabsTrigger value="all" className="rounded-sm px-4 py-2">Všechny ({achievements.length})</TabsTrigger>
+          <TabsTrigger value="activities" className="rounded-sm px-4 py-2">Aktivity ({achievements.filter(a => a.name.toLowerCase().includes("aktiv")).length})</TabsTrigger>
+          <TabsTrigger value="other" className="rounded-sm px-4 py-2">Ostatní ({achievements.filter(a => !a.name.toLowerCase().includes("aktiv") && !a.name.toLowerCase().includes("level")).length})</TabsTrigger>
         </TabsList>
       </Tabs>
 

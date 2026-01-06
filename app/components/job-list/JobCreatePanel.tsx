@@ -8,6 +8,7 @@ import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { useApiMutation, useApi } from "@/app/hooks/use-api"
+import { Badge as BadgeModel } from "@/app/lib/generated"
 import { toast } from "sonner"
 
 interface SubjectItem {
@@ -16,8 +17,11 @@ interface SubjectItem {
   code?: string
 }
 
+interface BadgeItem extends BadgeModel {}
+
 export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }) {
   const { data: subjectsData, loading: subjectsLoading, error: subjectsError, execute: loadSubjects } = useApi<{ subjects: SubjectItem[] }>()
+  const { data: badgesData, loading: badgesLoading, error: badgesError, execute: loadBadges } = useApi<{ badges: BadgeItem[] }>()
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -30,9 +34,21 @@ export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }
     loadSubjects(fetchSubjects)
   }, [loadSubjects])
 
+  useEffect(() => {
+    const fetchBadges = async () => {
+      const res = await fetch('/api/admin/badges')
+      if (!res.ok) throw new Error('Nepodařilo se načíst badge')
+      const json = await res.json()
+      return { badges: json.badges || json.data?.badges || [] }
+    }
+
+    loadBadges(fetchBadges)
+  }, [loadBadges])
+
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [subjectId, setSubjectId] = useState<string | null>(null)
+  const [badgeId, setBadgeId] = useState<string | null>(null)
   const [xpReward, setXpReward] = useState<number>(10)
   const [moneyReward, setMoneyReward] = useState<number>(0)
   const [maxStudents, setMaxStudents] = useState<number | undefined>(1)
@@ -82,10 +98,6 @@ export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }
       setFormError('Popis musí mít 1 až 1000 znaků')
       return
     }
-    if (!subjectId) {
-      setFormError('Vyberte předmět')
-      return
-    }
     if (!Number.isInteger(xpReward) || xpReward < 1 || xpReward > 10000) {
       setFormError('XP musí být celé číslo mezi 1 a 10000')
       return
@@ -102,7 +114,8 @@ export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }
     await createJob({
       title: title.trim(),
       description: description.trim(),
-      subjectId,
+      ...(subjectId ? { subjectId } : {}),
+      ...(badgeId ? { badgeId } : {}),
       xpReward,
       moneyReward,
       ...(maxStudents !== undefined && { maxStudents })
@@ -110,6 +123,7 @@ export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }
   }
 
   const subjects = subjectsData?.subjects || []
+  const badges = badgesData?.badges || []
 
   return (
     <Card>
@@ -133,17 +147,37 @@ export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }
           </div>
 
           <div>
-            <Label>Předmět</Label>
-            <Select onValueChange={(v) => setSubjectId(v)}>
+            <Label>Předmět (volitelné)</Label>
+            <Select value={subjectId ?? ""} onValueChange={(v) => setSubjectId(v || null)}>
               <SelectTrigger>
-                <SelectValue placeholder="Vyberte předmět" />
+                <SelectValue placeholder="Bez přiřazeného předmětu" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="">Bez přiřazeného předmětu</SelectItem>
                 {subjects.map(s => (
                   <SelectItem key={s.id} value={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {subjectsLoading && <div className="text-xs text-muted-foreground mt-1">Načítám předměty…</div>}
+            {subjectsError && <div className="text-xs text-destructive mt-1">Chyba při načítání předmětů</div>}
+          </div>
+
+          <div>
+            <Label>Badge (volitelné, schvaluje administrátor)</Label>
+            <Select value={badgeId ?? ""} onValueChange={(v) => setBadgeId(v || null)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Bez badge" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Bez badge</SelectItem>
+                {badges.map(b => (
+                  <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {badgesLoading && <div className="text-xs text-muted-foreground mt-1">Načítám badge…</div>}
+            {badgesError && <div className="text-xs text-destructive mt-1">Chyba při načítání badge</div>}
           </div>
 
           <div>
@@ -170,6 +204,7 @@ export default function JobCreatePanel({ onSuccess }: { onSuccess?: () => void }
           setTitle('')
           setDescription('')
           setSubjectId(null)
+          setBadgeId(null)
           setXpReward(10)
           setMoneyReward(0)
           setMaxStudents(1)

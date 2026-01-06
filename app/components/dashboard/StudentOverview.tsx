@@ -553,7 +553,7 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
                           {job.description}
                         </CardDescription>
                       </div>
-                      <Badge variant="secondary">{job.subject.name}</Badge>
+                      <Badge variant="secondary">{job.subject?.name || "Obecný úkol"}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent>

@@ -73,7 +73,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       { icon: 'Wallet', label: 'Peněženka', href: '/dashboard/wallet', section: 'Inventář' },
       { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/shop', section: 'Inventář' },
       { icon: 'Store', label: 'Marketplace', href: '/dashboard/marketplace', section: 'Inventář' },
-      { icon: 'ListChecks', label: 'Joby', href: '/dashboard/job-list', section: 'Ostatní' },
+      { icon: 'Activity', label: 'Moje aktivita', href: '/dashboard/my-activity', section: 'Inventář' },
       { icon: 'FileText', label: 'Log událostí', href: '/dashboard/log', section: 'Ostatní' },
       { icon: 'Settings', label: 'Nastavení', href: '/dashboard/settings', section: 'Ostatní' },
     ]

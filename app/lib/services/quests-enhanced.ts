@@ -25,6 +25,8 @@ export class QuestServiceEnhanced {
     guildId?: string
     miniGameType?: string
     miniGameData?: any
+    globalTarget?: number
+    globalUnit?: string
     createdBy: string
   }, requestId?: string) {
     const reqId = requestId || generateRequestId()
@@ -57,6 +59,8 @@ export class QuestServiceEnhanced {
           guildId: data.guildId,
           miniGameType: data.miniGameType,
           miniGameData: data.miniGameData,
+          globalTarget: data.globalTarget,
+          globalUnit: data.globalUnit,
           createdBy: data.createdBy
         }
       })
@@ -163,12 +167,34 @@ export class QuestServiceEnhanced {
         }
       })
 
-      if (existing && !quest.isRepeatable) {
-        if (existing.status === "COMPLETED") {
-          throw new Error("Quest already completed")
+      if (existing) {
+        const now = new Date()
+
+        // Daily / Weekly repeat logic
+        const isDaily = quest.questType === QuestType.DAILY
+        const isWeekly = quest.questType === QuestType.WEEKLY
+
+        if (!quest.isRepeatable && !isDaily && !isWeekly) {
+          if (existing.status === "COMPLETED") {
+            throw new Error("Quest already completed")
+          }
+          if (["ACCEPTED", "IN_PROGRESS"].includes(existing.status)) {
+            throw new Error("Quest already in progress")
+          }
         }
-        if (existing.status === "ACCEPTED" || existing.status === "IN_PROGRESS") {
-          throw new Error("Quest already in progress")
+
+        if (isDaily && existing.completedAt) {
+          const diffHours = (now.getTime() - existing.completedAt.getTime()) / (1000 * 60 * 60)
+          if (diffHours < 24) {
+            throw new Error("Daily quest can be accepted again in 24h")
+          }
+        }
+
+        if (isWeekly && existing.completedAt) {
+          const diffHours = (now.getTime() - existing.completedAt.getTime()) / (1000 * 60 * 60)
+          if (diffHours < 24 * 7) {
+            throw new Error("Weekly quest can be accepted again in 7 days")
+          }
         }
       }
 
@@ -428,4 +454,46 @@ export class QuestServiceEnhanced {
       return updated
     })
   }
+
+  /**
+   * Contribute to a global quest
+   */
+  static async contributeToGlobalQuest(
+    questId: string,
+    userId: string,
+    amount: number,
+    requestId?: string
+  ) {
+    const reqId = requestId || generateRequestId()
+
+    return await prisma.$transaction(async (tx) => {
+      const quest = await tx.quest.findUnique({
+        where: { id: questId }
+      })
+
+      if (!quest) throw new Error("Quest not found")
+      if (quest.questType !== QuestType.GLOBAL) throw new Error("Not a global quest")
+
+      const updated = await tx.quest.update({
+        where: { id: questId },
+        data: {
+          globalProgress: { increment: amount }
+        }
+      })
+
+      // Log contribution
+      await tx.systemLog.create({
+        data: {
+          level: "INFO",
+          message: sanitizeForLog(`Global quest contribution: ${amount}`),
+          userId,
+          requestId: reqId,
+          metadata: { questId, amount }
+        }
+      })
+
+      return updated
+    })
+  }
 }
+
