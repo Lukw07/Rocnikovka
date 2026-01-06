@@ -63,6 +63,7 @@ export function NavigationDropdown({ menuItems }: NavigationDropdownProps) {
           variant="ghost"
           size="icon"
           className="shrink-0"
+          suppressHydrationWarning
         >
           <Menu className="h-6 w-6" />
           <span className="sr-only">Navigace</span>

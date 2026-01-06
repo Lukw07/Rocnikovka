@@ -449,12 +449,12 @@ const SidebarLayout = ({
                   isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
                 }`
               : `${isCollapsed ? 'w-16' : 'w-72'}`
-          } bg-card/95 backdrop-blur-xl transition-all duration-300 ease-out border-r border-border md:min-h-[calc(100vh-4rem)] group/sidebar shadow-xl`}
+          } bg-card/95 backdrop-blur-xl transition-all duration-300 ease-out border-r border-border group/sidebar shadow-xl`}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <div className="flex flex-col h-full pt-2">
-            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-3 pb-2`}>
+            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-3 pb-2 shrink-0`}>
               {!isCollapsed && (
                 <span className="text-sm font-semibold text-muted-foreground">Menu</span>
               )}
@@ -472,12 +472,13 @@ const SidebarLayout = ({
               </button>
             </div>
             {/* Main Menu */}
-            <div className="flex-1 py-2 px-3 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted scrollbar-track-transparent flex flex-col">
+            <div className="flex-1 min-h-0 py-2 px-3 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted scrollbar-track-transparent flex flex-col">
               {renderMenuSections()}
             </div>
 
             {/* Bottom Section with Theme Toggle */}
-            <div className="p-3 border-t border-border shrink-0">
+            <div className="p-3 border-t border-border">
+              <ThemeToggle />
             </div>
           </div>
         </div>

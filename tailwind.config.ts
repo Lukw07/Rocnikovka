@@ -67,6 +67,19 @@ const config: Config = {
       },
     },
   },
+  plugins: [
+    {
+      handler: ({ addUtilities }) => {
+        addUtilities({
+          '.scrollbar-hide': {
+            '-ms-overflow-style': 'none',
+            'scrollbar-width': 'none',
+            '&::-webkit-scrollbar': {
+              display: 'none',
+            },
+          },
+        });
+      },
+    },
+  ],
 };
-
-export default config;

@@ -101,7 +101,7 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
       )}
 
       {/* Hlavní obsah - plná šířka */}
-      <div className="w-full min-h-screen">
+      <div className="w-full">
         <SidebarLayout 
           isMobileOpen={isMobileMenuOpen}
           onMobileToggle={handleMenuToggle}

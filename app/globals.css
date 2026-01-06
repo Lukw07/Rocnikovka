@@ -225,12 +225,19 @@
   border-color: hsl(var(--border));
 }
 
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
 body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   font-feature-settings: "rlig" 1, "calt" 1;
   font-family: var(--font-body);
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow: hidden;
+  height: 100%;
 }
 
 /* RPG Typography */
@@ -533,3 +540,21 @@ body.has-custom-cursor, .has-custom-cursor * {
   body.has-custom-cursor, .has-custom-cursor * { cursor: auto !important; }
   .custom-cursor-root { display: none; }
 }
+
+/* Hidden scrollbar (scrollable, but invisible) */
+.scrollbar-hidden {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
+}
+
+/* For inline style approach */
+div[style*="scrollbar-width: none"]::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+
