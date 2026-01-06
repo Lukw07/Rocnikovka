@@ -97,7 +97,7 @@ export default function LogPanel({ userRole }: LogPanelProps) {
     const [playerLoading, setPlayerLoading] = useState(true)
 
     useEffect(() => {
-      const fetch = async () => {
+      const fetchPlayerLogs = async () => {
         try {
           const res = await fetch('/api/me/activity?limit=100')
           if (res.ok) {
@@ -110,7 +110,7 @@ export default function LogPanel({ userRole }: LogPanelProps) {
           setPlayerLoading(false)
         }
       }
-      fetch()
+      fetchPlayerLogs()
     }, [])
 
     return (
