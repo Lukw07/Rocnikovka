@@ -110,8 +110,7 @@ export const POST = withApiErrorHandler(async (request: NextRequest) => {
         data: {
           userId: p.userId,
           amount: bossEvent.xpRewardPerKill,
-          reason: `Boss defeated: ${bossEvent.name}`,
-          source: "BOSS_EVENT"
+          reason: `Boss defeated: ${bossEvent.name}`
         }
       })
     }
