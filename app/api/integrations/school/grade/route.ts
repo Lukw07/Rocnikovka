@@ -48,8 +48,7 @@ export async function POST(request: NextRequest) {
                 data: {
                     userId,
                     amount: xpReward,
-                    reason: `School Grade: ${gradeValue}`,
-                    type: "ACTIVITY" // Using closest Enum
+                    reason: `School Grade: ${gradeValue}`
                 }
             })
         ])
