@@ -232,12 +232,7 @@ export default function LeaderboardPanel() {
   return (
     <div 
       className="h-full relative overflow-y-auto"
-      style={{
-        backgroundImage: 'url(/Backgrounds/leaderboard_bg.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
+
     >
       {/* Overlay pro lepší čitelnost */}
       <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px] pointer-events-none" />
