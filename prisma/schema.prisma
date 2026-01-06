@@ -80,6 +80,9 @@ model User {
   badgeRequestsAsRequester JobBadgeRequest[] @relation("JobBadgeRequestRequester")
   badgeRequestsAsReviewer  JobBadgeRequest[] @relation("JobBadgeRequestReviewer")
 
+  // Guild join requests
+  guildJoinRequests GuildJoinRequest[]
+
   @@index([role])
   @@index([classId])
   @@index([bakalariId])
