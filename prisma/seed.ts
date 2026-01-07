@@ -512,7 +512,7 @@ async function seedEconomy() {
     {
       name: 'Studijní průvodce',
       description: 'Pomůcka pro těžké questy',
-      type: ItemType.QUEST_ITEM,
+      type: ItemType.COLLECTIBLE,
       rarity: ItemRarity.UNCOMMON,
       price: 75,
       icon: '📖',
