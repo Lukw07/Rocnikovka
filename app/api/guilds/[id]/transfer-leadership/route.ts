@@ -97,10 +97,10 @@ export async function POST(
           guildId,
           userId: user.id,
           action: "leadership_transferred",
-          metadata: {
+          details: JSON.stringify({
             newLeaderId,
             oldLeaderId: user.id,
-          },
+          }),
         },
       }),
     ]);
