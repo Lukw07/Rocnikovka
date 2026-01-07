@@ -245,13 +245,11 @@ async function seedAchievements() {
     ...socialAchievements
   ]
 
-  for (const achievement of allAchievements) {
-    await prisma.achievement.upsert({
-      where: { name: achievement.name },
-      update: achievement,
-      create: achievement
-    })
-  }
+  // Smaž existující achievementy a vytvoř nové (seed by měl být idempotentní)
+  await prisma.achievement.deleteMany({})
+  await prisma.achievement.createMany({
+    data: allAchievements
+  })
 
   console.log(`✅ Vytvořeno ${allAchievements.length} achievements`)
 }
