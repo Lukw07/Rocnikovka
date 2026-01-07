@@ -34,9 +34,9 @@ export async function POST(
     // Ověř, že guild existuje a že current user je LEADER
     const currentMember = await prisma.guildMember.findUnique({
       where: {
-        guildId_userId: {
-          guildId,
+        userId_guildId: {
           userId: user.id,
+          guildId,
         },
       },
     });
@@ -51,9 +51,9 @@ export async function POST(
     // Ověř, že nový leader je členem guildy
     const newLeaderMember = await prisma.guildMember.findUnique({
       where: {
-        guildId_userId: {
-          guildId,
+        userId_guildId: {
           userId: newLeaderId,
+          guildId,
         },
       },
     });
@@ -70,9 +70,9 @@ export async function POST(
       // Změň current leadera na OFFICER
       prisma.guildMember.update({
         where: {
-          guildId_userId: {
-            guildId,
+          userId_guildId: {
             userId: user.id,
+            guildId,
           },
         },
         data: {
@@ -82,9 +82,9 @@ export async function POST(
       // Změň nového člena na LEADER
       prisma.guildMember.update({
         where: {
-          guildId_userId: {
-            guildId,
+          userId_guildId: {
             userId: newLeaderId,
+            guildId,
           },
         },
         data: {
