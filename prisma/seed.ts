@@ -328,13 +328,11 @@ async function seedSkills() {
     }
   ]
 
-  for (const skill of skills) {
-    await prisma.skill.upsert({
-      where: { name: skill.name },
-      update: skill,
-      create: skill
-    })
-  }
+  // Smaž existující skills a vytvoř nové
+  await prisma.skill.deleteMany({})
+  await prisma.skill.createMany({
+    data: skills
+  })
 
   console.log(`✅ Vytvořeno ${skills.length} skills`)
 }
@@ -391,13 +389,11 @@ async function seedJobCategories() {
     }
   ]
 
-  for (const category of jobCategories) {
-    await prisma.jobCategory.upsert({
-      where: { name: category.name },
-      update: category,
-      create: category
-    })
-  }
+  // Smaž existující job categories a vytvoř nové
+  await prisma.jobCategory.deleteMany({})
+  await prisma.jobCategory.createMany({
+    data: jobCategories
+  })
 
   console.log(`✅ Vytvořeno ${jobCategories.length} job categories`)
 }
@@ -525,13 +521,11 @@ async function seedEconomy() {
     }
   ]
 
-  for (const item of items) {
-    await prisma.item.upsert({
-      where: { name: item.name },
-      update: item,
-      create: item
-    })
-  }
+  // Smaž existující items a vytvoř nové
+  await prisma.item.deleteMany({})
+  await prisma.item.createMany({
+    data: items
+  })
 
   console.log(`✅ Vytvořeno ${items.length} items`)
 }
