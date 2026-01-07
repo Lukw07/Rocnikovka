@@ -481,7 +481,7 @@ async function seedEconomy() {
     {
       name: 'Dřevo',
       description: 'Základní materiál pro craftování',
-      type: ItemType.MATERIAL,
+      type: ItemType.COLLECTIBLE,
       rarity: ItemRarity.COMMON,
       price: 10,
       icon: '🪵',
@@ -491,7 +491,7 @@ async function seedEconomy() {
     {
       name: 'Železo',
       description: 'Kovový materiál',
-      type: ItemType.MATERIAL,
+      type: ItemType.COLLECTIBLE,
       rarity: ItemRarity.UNCOMMON,
       price: 25,
       icon: '⚙️',
@@ -501,7 +501,7 @@ async function seedEconomy() {
     {
       name: 'Krystal',
       description: 'Vzácný magický krystal',
-      type: ItemType.MATERIAL,
+      type: ItemType.COLLECTIBLE,
       rarity: ItemRarity.RARE,
       price: 100,
       icon: '💎',
