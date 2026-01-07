@@ -410,7 +410,7 @@ async function seedEconomy() {
     {
       name: 'XP Boost (1h)',
       description: '+50% XP na 1 hodinu',
-      type: ItemType.CONSUMABLE,
+      type: ItemType.BOOST,
       rarity: ItemRarity.COMMON,
       price: 100,
       icon: '⚡',
@@ -423,7 +423,7 @@ async function seedEconomy() {
     {
       name: 'XP Boost (24h)',
       description: '+100% XP na 24 hodin',
-      type: ItemType.CONSUMABLE,
+      type: ItemType.BOOST,
       rarity: ItemRarity.EPIC,
       price: 500,
       icon: '💫',
@@ -436,7 +436,7 @@ async function seedEconomy() {
     {
       name: 'Lucky Coin',
       description: '+25% šance na lepší odměny',
-      type: ItemType.CONSUMABLE,
+      type: ItemType.BOOST,
       rarity: ItemRarity.RARE,
       price: 200,
       icon: '🍀',
