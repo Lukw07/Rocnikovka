@@ -52,6 +52,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 # Copy ops directory for scripts
 COPY --from=builder --chown=nextjs:nodejs /app/ops ./ops
 
+# Copy build script to artifacts directory for deployment
+RUN mkdir -p /artifacts
+COPY --from=builder --chown=nextjs:nodejs /app/ops/build.sh /artifacts/build.sh
+RUN chmod +x /artifacts/build.sh
+
 # Set the correct permission for prerender cache
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
