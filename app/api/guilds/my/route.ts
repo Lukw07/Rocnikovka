@@ -16,7 +16,13 @@ export async function GET() {
 
     const guild = await GuildService.getUserGuild(session.user.id)
 
-    return NextResponse.json({ guild })
+    // Filter out members with null users if guild exists
+    const filteredGuild = guild ? {
+      ...guild,
+      members: guild.members.filter(member => member.user !== null)
+    } : null
+
+    return NextResponse.json({ guild: filteredGuild })
   } catch (error: any) {
     console.error("GET /api/guilds/my error:", error)
     return NextResponse.json(

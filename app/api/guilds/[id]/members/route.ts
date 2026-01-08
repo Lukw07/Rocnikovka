@@ -23,7 +23,10 @@ export async function GET(req: NextRequest, { params }: Params) {
 
     const members = await GuildService.getGuildMembers(id)
     
-    return NextResponse.json({ members })
+    // Filter out members with null users (should not happen due to cascade, but safety check)
+    const filteredMembers = members.filter(member => member.user !== null)
+    
+    return NextResponse.json({ members: filteredMembers })
   } catch (error: any) {
     console.error("GET /api/guilds/[id]/members error:", error)
     return NextResponse.json(

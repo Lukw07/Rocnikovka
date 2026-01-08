@@ -27,7 +27,13 @@ export async function GET(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "Guild not found" }, { status: 404 })
     }
     
-    return NextResponse.json({ guild })
+    // Filter out members with null users
+    const filteredGuild = {
+      ...guild,
+      members: guild.members.filter(member => member.user !== null)
+    }
+    
+    return NextResponse.json({ guild: filteredGuild })
   } catch (error: any) {
     console.error("GET /api/guilds/[id] error:", error)
     return NextResponse.json(
