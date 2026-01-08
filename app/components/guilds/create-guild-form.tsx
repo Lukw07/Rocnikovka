@@ -105,7 +105,7 @@ export function CreateGuildForm() {
               placeholder="Např. Dračí rytíři"
               required
               minLength={3}
-              maxLength={50}
+              maxLength={10}
             />
           </div>
 
