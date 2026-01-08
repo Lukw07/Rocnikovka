@@ -145,6 +145,11 @@ export class GuildService {
         guild: {
           include: {
             members: {
+              where: {
+                user: {
+                  isNot: null
+                }
+              },
               include: {
                 user: {
                   select: {
@@ -174,6 +179,11 @@ export class GuildService {
       where: { id: guildId },
       include: {
         members: {
+          where: {
+            user: {
+              isNot: null
+            }
+          },
           include: {
             user: {
               select: {
@@ -535,7 +545,12 @@ export class GuildService {
    */
   static async getGuildMembers(guildId: string) {
     return await prisma.guildMember.findMany({
-      where: { guildId },
+      where: { 
+        guildId,
+        user: {
+          isNot: null
+        }
+      },
       include: {
         user: {
           select: {
