@@ -228,6 +228,12 @@ export class GuildService {
     const reqId = requestId || generateRequestId()
 
     return await prisma.$transaction(async (tx) => {
+      // Validate user exists
+      const user = await tx.user.findUnique({ where: { id: userId } })
+      if (!user) {
+        throw new Error("User not found")
+      }
+
       const guild = await tx.guild.findUnique({ where: { id: guildId } })
 
       if (!guild) {

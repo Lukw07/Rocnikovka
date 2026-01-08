@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/lib/auth"
 import { GuildService } from "@/app/lib/services/guilds"
+import { prisma } from "@/app/lib/prisma"
 
 interface Params {
   params: Promise<{
@@ -19,6 +20,12 @@ export async function POST(req: NextRequest, { params }: Params) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Validate user exists in database
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } })
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
     const body = await req.json().catch(() => ({}))
