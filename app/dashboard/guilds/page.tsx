@@ -7,6 +7,7 @@ import { Button } from "@/app/components/ui/button"
 import { Shield, Plus, Flag } from "lucide-react"
 import Link from "next/link"
 import { GuildList } from "@/app/components/guilds/guild-list"
+import { MyGuildDisplay } from "@/app/components/guilds/my-guild-display"
 
 export const metadata: Metadata = {
   title: "Guildy | EduRPG",
@@ -68,9 +69,7 @@ export default async function GuildsPage() {
         </TabsContent>
 
         <TabsContent value="my" className="space-y-4">
-          <div className="text-center py-12 text-muted-foreground">
-            Implementace "Moje guilda" - zobrazí guildu, ve které je hráč členem
-          </div>
+          <MyGuildDisplay />
         </TabsContent>
       </Tabs>
     </div>
