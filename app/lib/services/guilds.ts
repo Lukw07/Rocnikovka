@@ -136,6 +136,37 @@ export class GuildService {
   }
 
   /**
+   * Get user's guild
+   */
+  static async getUserGuild(userId: string) {
+    const member = await prisma.guildMember.findFirst({
+      where: { userId },
+      include: {
+        guild: {
+          include: {
+            members: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatarUrl: true
+                  }
+                }
+              }
+            },
+            activities: {
+              take: 50,
+              orderBy: { createdAt: "desc" }
+            }
+          }
+        }
+      }
+    })
+    return member?.guild || null
+  }
+
+  /**
    * Get guild details
    */
   static async getGuildDetails(guildId: string) {
