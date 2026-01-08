@@ -228,6 +228,7 @@ export default async function GuildDetailPage({ params }: Props) {
               guildId={guild.id} 
               currentUserId={session.user.id}
               isLeader={isLeader}
+              isOfficer={isOfficer}
             />
           </TabsContent>
 

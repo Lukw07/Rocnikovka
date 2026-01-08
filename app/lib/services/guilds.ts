@@ -615,6 +615,71 @@ export class GuildService {
   }
 
   /**
+   * Kick member from guild (leader/officer only)
+   */
+  static async kickMember(guildId: string, targetUserId: string, actorId: string, requestId?: string) {
+    const reqId = requestId || generateRequestId()
+
+    return await prisma.$transaction(async (tx) => {
+      // Verify actor is leader or officer
+      const actor = await tx.guildMember.findUnique({
+        where: {
+          userId_guildId: { userId: actorId, guildId }
+        }
+      })
+
+      if (!actor || (actor.role !== GuildMemberRole.LEADER && actor.role !== GuildMemberRole.OFFICER)) {
+        throw new Error("Insufficient permissions")
+      }
+
+      // Get target member
+      const targetMember = await tx.guildMember.findUnique({
+        where: {
+          userId_guildId: { userId: targetUserId, guildId }
+        },
+        include: { user: true }
+      })
+
+      if (!targetMember) {
+        throw new Error("Member not found")
+      }
+
+      // Cannot kick leaders (only transfer leadership first)
+      if (targetMember.role === GuildMemberRole.LEADER) {
+        throw new Error("Nemůžeš vyhodit vůdce guildy. Nejdřív přenes vedení na někoho jiného.")
+      }
+
+      // Officers can only be kicked by leaders
+      if (targetMember.role === GuildMemberRole.OFFICER && actor.role !== GuildMemberRole.LEADER) {
+        throw new Error("Jen vůdce může vyhodit důstojníka.")
+      }
+
+      // Remove member
+      await tx.guildMember.delete({
+        where: { id: targetMember.id }
+      })
+
+      // Update member count
+      await tx.guild.update({
+        where: { id: guildId },
+        data: { memberCount: { decrement: 1 } }
+      })
+
+      // Log activity
+      await tx.guildActivity.create({
+        data: {
+          guildId,
+          userId: targetUserId,
+          action: "kicked",
+          details: sanitizeForLog(`Vyhozen ${targetMember.user.name} z guildy`)
+        }
+      })
+
+      return targetMember
+    })
+  }
+
+  /**
    * Delete guild (leader only)
    */
   static async deleteGuild(guildId: string, userId: string) {

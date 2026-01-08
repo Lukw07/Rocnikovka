@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app
 import { Badge } from "@/app/components/ui/badge"
 import { Button } from "@/app/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
-import { Crown, Shield, User } from "lucide-react"
+import { Crown, Shield, User, UserX } from "lucide-react"
 
 interface Member {
   id: string
@@ -28,9 +28,10 @@ interface GuildMembersProps {
   guildId: string
   currentUserId?: string
   isLeader?: boolean
+  isOfficer?: boolean
 }
 
-export function GuildMembers({ guildId, currentUserId, isLeader }: GuildMembersProps) {
+export function GuildMembers({ guildId, currentUserId, isLeader, isOfficer }: GuildMembersProps) {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -47,6 +48,30 @@ export function GuildMembers({ guildId, currentUserId, isLeader }: GuildMembersP
       console.error("Failed to fetch members:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleKickMember = async (targetUserId: string, userName: string) => {
+    if (!confirm(`Opravdu chceš vyhodit ${userName} z guildy?`)) {
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/guilds/${guildId}/members/${targetUserId}`, {
+        method: "DELETE"
+      })
+
+      if (!res.ok) {
+        const error = await res.json()
+        throw new Error(error.error || "Failed to kick member")
+      }
+
+      // Refresh members list
+      fetchMembers()
+      alert(`${userName} byl úspěšně vyhozen z guildy`)
+    } catch (error: any) {
+      console.error("Failed to kick member:", error)
+      alert(`Chyba při vyhazování člena: ${error.message}`)
     }
   }
 
@@ -124,6 +149,21 @@ export function GuildMembers({ guildId, currentUserId, isLeader }: GuildMembersP
                   <div className="text-xs text-muted-foreground">
                     Rep: {member.user.reputation.totalReputation}
                   </div>
+                )}
+                {/* Kick button for leaders and officers (cannot kick themselves or leaders) */}
+                {(isLeader || isOfficer) &&
+                 member.userId !== currentUserId &&
+                 member.role !== "LEADER" &&
+                 (isLeader || member.role !== "OFFICER") && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => handleKickMember(member.userId, member.user.name)}
+                  >
+                    <UserX className="h-3 w-3 mr-1" />
+                    Vyhodit
+                  </Button>
                 )}
               </div>
             </div>
