@@ -36,6 +36,21 @@ export async function POST(req: NextRequest, { params }: Params) {
     return NextResponse.json({ request }, { status: 201 })
   } catch (error: any) {
     console.error("POST /api/guilds/[id]/request error:", error)
+
+    // Handle specific error cases
+    if (error.message === "Already a guild member") {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+    if (error.message === "Guild not found") {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+    if (error.message === "User not found") {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+    if (error.message === "Guild is full") {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
     return NextResponse.json(
       { error: error.message || "Failed to request guild join" },
       { status: 500 }
