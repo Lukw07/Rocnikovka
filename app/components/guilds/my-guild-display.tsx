@@ -25,7 +25,7 @@ interface GuildMember {
     name: string
     avatarUrl: string | null
     role: string
-  }
+  } | null
   role: string
   joinedAt: string
 }
@@ -38,7 +38,7 @@ interface GuildActivity {
   user: {
     id: string
     name: string
-  }
+  } | null
 }
 
 interface MyGuild {
@@ -201,17 +201,17 @@ export function MyGuildDisplay() {
           <CardContent>
             <div className="space-y-3">
               {guild.members.map((member) => (
-                <div key={member.user.id} className="flex items-center gap-3">
+                <div key={member.user?.id || member.joinedAt} className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={member.user.avatarUrl || undefined} />
+                    <AvatarImage src={member.user?.avatarUrl || undefined} />
                     <AvatarFallback>
-                      {member.user.name.charAt(0).toUpperCase()}
+                      {member.user?.name?.charAt(0).toUpperCase() || '?'}
                     </AvatarFallback>
                   </Avatar>
 
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{member.user.name}</span>
+                      <span className="font-medium">{member.user?.name || 'Neznámý uživatel'}</span>
                       {getRoleIcon(member.role)}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -242,13 +242,13 @@ export function MyGuildDisplay() {
                   <div key={activity.id} className="flex gap-3">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="text-xs">
-                        {activity.user.name.charAt(0).toUpperCase()}
+                        {activity.user?.name?.charAt(0).toUpperCase() || '?'}
                       </AvatarFallback>
                     </Avatar>
 
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span className="font-medium">{activity.user.name}</span>
+                        <span className="font-medium">{activity.user?.name || 'Neznámý uživatel'}</span>
                         {' '}
                         {activity.action === 'join_request' && 'požádal o připojení'}
                         {activity.action === 'joined' && 'se připojil'}
