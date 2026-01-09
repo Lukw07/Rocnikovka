@@ -47,6 +47,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       { icon: 'ShoppingCart', label: 'Obchod', href: '/dashboard/admin/shop', section: 'Správa', variant: 'operator' },
       // Operator specific items
       { icon: 'Users', label: 'Správa uživatelů', href: '/dashboard/users', section: 'Admin', variant: 'operator' },
+      { icon: 'Shield', label: 'Správa klanů', href: '/dashboard/admin/guilds', section: 'Admin', variant: 'operator' },
       { icon: 'Server', label: 'Systém', href: '/dashboard/system', section: 'Admin', variant: 'operator' },
       { icon: 'Database', label: 'Zálohy', href: '/dashboard/backups', section: 'Admin', variant: 'operator' },
       { icon: 'Activity', label: 'Logy', href: '/dashboard/activity', section: 'Admin', variant: 'operator' },

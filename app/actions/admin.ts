@@ -101,6 +101,9 @@ export async function getAllUsers() {
       name: true,
       email: true,
       role: true,
+      banned: true,
+      bannedAt: true,
+      banReason: true,
       createdAt: true,
       teacherDailyBudgets: {
         where: {
@@ -188,4 +191,241 @@ export async function getSystemLogs(limit = 100) {
   })
 
   return logs
+}
+
+export async function getAllGuilds() {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const guilds = await prisma.guild.findMany({
+    include: {
+      members: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        },
+        where: {
+          role: "LEADER"
+        }
+      },
+      _count: {
+        select: {
+          members: true
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+
+  // Transform the data to include leader info
+  const guildsWithLeaders = guilds.map(guild => ({
+    ...guild,
+    leader: guild.members[0]?.user || { id: guild.leaderId, name: "Neznámý" }
+  }))
+
+  return guildsWithLeaders
+}
+
+export async function getGuildStats() {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const [total, publicCount, privateCount] = await Promise.all([
+    prisma.guild.count(),
+    prisma.guild.count({ where: { isPublic: true } }),
+    prisma.guild.count({ where: { isPublic: false } })
+  ])
+
+  return {
+    total,
+    public: publicCount,
+    private: privateCount
+  }
+}
+
+export async function deleteGuild(guildId: string) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  // First remove all guild members
+  await prisma.guildMember.deleteMany({
+    where: { guildId }
+  })
+
+  // Then delete the guild
+  await prisma.guild.delete({
+    where: { id: guildId }
+  })
+
+  revalidatePath("/dashboard/admin/guilds")
+}
+
+export async function updateGuild(guildId: string, data: { isPublic?: boolean; name?: string; description?: string }) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  await prisma.guild.update({
+    where: { id: guildId },
+    data
+  })
+
+  revalidatePath("/dashboard/admin/guilds")
+}
+
+export async function banUser(targetUserId: string, reason: string) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: targetUserId },
+    select: { role: true, banned: true }
+  })
+
+  if (!targetUser) {
+    throw new Error("User not found")
+  }
+
+  if (targetUser.role === UserRole.OPERATOR) {
+    throw new Error("Cannot ban another operator")
+  }
+
+  if (targetUser.banned) {
+    throw new Error("User is already banned")
+  }
+
+  await prisma.user.update({
+    where: { id: targetUserId },
+    data: {
+      banned: true,
+      bannedAt: new Date(),
+      bannedBy: session.user.id,
+      banReason: reason
+    }
+  })
+
+  revalidatePath("/dashboard/users")
+  return { success: true }
+}
+
+export async function unbanUser(targetUserId: string) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: targetUserId },
+    select: { banned: true }
+  })
+
+  if (!targetUser) {
+    throw new Error("User not found")
+  }
+
+  if (!targetUser.banned) {
+    throw new Error("User is not banned")
+  }
+
+  await prisma.user.update({
+    where: { id: targetUserId },
+    data: {
+      banned: false,
+      bannedAt: null,
+      bannedBy: null,
+      banReason: null
+    }
+  })
+
+  revalidatePath("/dashboard/users")
+  return { success: true }
+}
+
+export async function resetUserState(targetUserId: string) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: targetUserId },
+    select: { role: true }
+  })
+
+  if (!targetUser) {
+    throw new Error("User not found")
+  }
+
+  if (targetUser.role === UserRole.OPERATOR) {
+    throw new Error("Cannot reset operator state")
+  }
+
+  // Reset user's progress - this is a destructive operation
+  await prisma.$transaction([
+    // Reset currencies
+    prisma.user.update({
+      where: { id: targetUserId },
+      data: {
+        gold: 0,
+        gems: 0
+      }
+    }),
+    // Delete XP sources
+    prisma.xPSource.deleteMany({
+      where: { userId: targetUserId }
+    }),
+    // Reset achievement progress
+    prisma.achievementProgress.deleteMany({
+      where: { userId: targetUserId }
+    }),
+    // Reset skill points
+    prisma.skillPoint.deleteMany({
+      where: { userId: targetUserId }
+    }),
+    // Reset player skills
+    prisma.playerSkill.deleteMany({
+      where: { userId: targetUserId }
+    }),
+    // Reset reputation
+    prisma.reputation.deleteMany({
+      where: { userId: targetUserId }
+    }),
+    // Reset quest progress
+    prisma.questProgress.deleteMany({
+      where: { userId: targetUserId }
+    }),
+    // Remove from guild
+    prisma.guildMember.deleteMany({
+      where: { userId: targetUserId }
+    }),
+    // Reset inventory
+    prisma.userInventory.deleteMany({
+      where: { userId: targetUserId }
+    })
+  ])
+
+  revalidatePath("/dashboard/users")
+  return { success: true }
 }

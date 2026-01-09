@@ -24,6 +24,7 @@ import { GuildBenefits } from "@/app/components/guilds/guild-benefits"
 import { GuildJoinRequests } from "@/app/components/guilds/guild-join-requests"
 import { TransferLeadershipWrapper } from "@/app/components/guilds/transfer-leadership-wrapper"
 import { LeaveGuildButton } from "@/app/components/guilds/leave-guild-button"
+import { EditGuildForm } from "@/app/components/guilds/edit-guild-form"
 
 interface Props {
   params: Promise<{
@@ -218,6 +219,9 @@ export default async function GuildDetailPage({ params }: Props) {
             {(isLeader || isOfficer) && (
               <TabsTrigger value="requests">Žádosti o vstup</TabsTrigger>
             )}
+            {(isLeader || isOfficer) && (
+              <TabsTrigger value="settings">Nastavení</TabsTrigger>
+            )}
             <TabsTrigger value="chat">Chat</TabsTrigger>
             <TabsTrigger value="benefits">Výhody</TabsTrigger>
             <TabsTrigger value="activities">Aktivity</TabsTrigger>
@@ -236,6 +240,16 @@ export default async function GuildDetailPage({ params }: Props) {
             <TabsContent value="requests">
               <GuildJoinRequests
                 guildId={guild.id}
+                isLeader={isLeader}
+                isOfficer={isOfficer}
+              />
+            </TabsContent>
+          )}
+
+          {(isLeader || isOfficer) && (
+            <TabsContent value="settings">
+              <EditGuildForm
+                guild={guild}
                 isLeader={isLeader}
                 isOfficer={isOfficer}
               />

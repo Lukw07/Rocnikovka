@@ -571,13 +571,51 @@ export class GuildService {
         throw new Error("Insufficient permissions")
       }
 
+      // Get target member
+      const targetMember = await tx.guildMember.findUnique({
+        where: {
+          userId_guildId: { userId: targetUserId, guildId }
+        },
+        include: { user: true }
+      })
+
+      if (!targetMember) {
+        throw new Error("Member not found")
+      }
+
+      // Cannot change leader role (only transfer leadership)
+      if (targetMember.role === GuildMemberRole.LEADER) {
+        throw new Error("Nemůžeš změnit roli vůdce. Nejdřív přenes vedení na někoho jiného.")
+      }
+
+      // Officers can only promote/demote members, not other officers
+      if (targetMember.role === GuildMemberRole.OFFICER && actor.role !== GuildMemberRole.LEADER) {
+        throw new Error("Jen vůdce může měnit role důstojníků.")
+      }
+
+      const oldRole = targetMember.role
+
       // Update target member
-      return await tx.guildMember.update({
+      const updatedMember = await tx.guildMember.update({
         where: {
           userId_guildId: { userId: targetUserId, guildId }
         },
         data: { role: newRole }
       })
+
+      // Log activity
+      const action = newRole === GuildMemberRole.OFFICER ? "promoted" :
+                    newRole === GuildMemberRole.MEMBER ? "demoted" : "role_changed"
+      await tx.guildActivity.create({
+        data: {
+          guildId,
+          userId: targetUserId,
+          action,
+          details: sanitizeForLog(`${targetMember.user.name} změnil roli z ${oldRole} na ${newRole}`)
+        }
+      })
+
+      return updatedMember
     })
   }
 
@@ -587,6 +625,7 @@ export class GuildService {
   static async updateGuild(
     guildId: string,
     data: {
+      name?: string
       description?: string
       motto?: string
       logoUrl?: string
@@ -605,6 +644,31 @@ export class GuildService {
 
       if (!member || (member.role !== GuildMemberRole.LEADER && member.role !== GuildMemberRole.OFFICER)) {
         throw new Error("Insufficient permissions")
+      }
+
+      // Name change requires leader permission
+      if (data.name && member.role !== GuildMemberRole.LEADER) {
+        throw new Error("Jen vůdce může přejmenovat guildu")
+      }
+
+      // If name is being changed, check it doesn't exist
+      if (data.name) {
+        const existing = await tx.guild.findFirst({
+          where: {
+            name: data.name,
+            id: { not: guildId }
+          }
+        })
+
+        if (existing) {
+          throw new Error("Název guildy už existuje")
+        }
+
+        // Validate guild name
+        const nameVal = validateGuildName(data.name)
+        if (!nameVal.valid) {
+          throw new Error(nameVal.error || "Neplatný název guildy")
+        }
       }
 
       return await tx.guild.update({

@@ -56,11 +56,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
 
     const body = await req.json()
-    const { description, motto, logoUrl, isPublic, maxMembers } = body
+    const { name, description, motto, logoUrl, isPublic, maxMembers } = body
 
     const guild = await GuildService.updateGuild(
       id,
       {
+        name: name?.trim(),
         description: description?.trim(),
         motto: motto?.trim(),
         logoUrl,

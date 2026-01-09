@@ -5,7 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app
 import { Badge } from "@/app/components/ui/badge"
 import { Button } from "@/app/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
-import { Crown, Shield, User, UserX } from "lucide-react"
+import { Crown, Shield, User, UserX, ChevronDown } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu"
 
 interface Member {
   id: string
@@ -34,6 +40,8 @@ interface GuildMembersProps {
 export function GuildMembers({ guildId, currentUserId, isLeader, isOfficer }: GuildMembersProps) {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
+  const [kickingUserId, setKickingUserId] = useState<string | null>(null)
+  const [changingRoleUserId, setChangingRoleUserId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchMembers()
@@ -48,6 +56,64 @@ export function GuildMembers({ guildId, currentUserId, isLeader, isOfficer }: Gu
       console.error("Failed to fetch members:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const kickMember = async (targetUserId: string, targetUserName: string) => {
+    if (!confirm(`Opravdu chcete vyhodit ${targetUserName} z guildy?`)) {
+      return
+    }
+
+    setKickingUserId(targetUserId)
+    try {
+      const response = await fetch(`/api/guilds/${guildId}/members/${targetUserId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "Failed to kick member")
+      }
+
+      // Remove member from local state
+      setMembers(prev => prev.filter(member => member.userId !== targetUserId))
+    } catch (error: any) {
+      alert(`Chyba při vyhazování člena: ${error.message}`)
+    } finally {
+      setKickingUserId(null)
+    }
+  }
+
+  const changeMemberRole = async (targetUserId: string, targetUserName: string, newRole: string) => {
+    if (!confirm(`Opravdu chcete změnit roli ${targetUserName} na ${newRole === 'OFFICER' ? 'důstojník' : 'člen'}?`)) {
+      return
+    }
+
+    setChangingRoleUserId(targetUserId)
+    try {
+      const response = await fetch(`/api/guilds/${guildId}/members/${targetUserId}/role`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ role: newRole }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "Failed to change member role")
+      }
+
+      // Update member role in local state
+      setMembers(prev => prev.map(member =>
+        member.userId === targetUserId
+          ? { ...member, role: newRole as "LEADER" | "OFFICER" | "MEMBER" }
+          : member
+      ))
+    } catch (error: any) {
+      alert(`Chyba při změně role: ${error.message}`)
+    } finally {
+      setChangingRoleUserId(null)
     }
   }
 
@@ -128,7 +194,46 @@ export function GuildMembers({ guildId, currentUserId, isLeader, isOfficer }: Gu
                   <div className="flex items-center gap-2">
                     {getRoleIcon(member.role)}
                     <span className="font-medium">{member.user.name}</span>
-                    {getRoleBadge(member.role)}
+                    <div className="flex items-center gap-1">
+                      {getRoleBadge(member.role)}
+                      {/* Role management dropdown for leaders and officers */}
+                      {(isLeader || isOfficer) &&
+                       member.userId !== currentUserId &&
+                       member.role !== "LEADER" && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              disabled={changingRoleUserId === member.userId}
+                            >
+                              <ChevronDown className="h-3 w-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {member.role !== "OFFICER" && (
+                              <DropdownMenuItem
+                                onClick={() => changeMemberRole(member.userId, member.user.name, "OFFICER")}
+                                disabled={changingRoleUserId === member.userId}
+                              >
+                                <Shield className="h-4 w-4 mr-2" />
+                                Povýšit na důstojníka
+                              </DropdownMenuItem>
+                            )}
+                            {member.role !== "MEMBER" && (
+                              <DropdownMenuItem
+                                onClick={() => changeMemberRole(member.userId, member.user.name, "MEMBER")}
+                                disabled={changingRoleUserId === member.userId}
+                              >
+                                <User className="h-4 w-4 mr-2" />
+                                Degradovat na člena
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
                     Člen od {new Date(member.joinedAt).toLocaleDateString("cs-CZ")}
@@ -159,10 +264,11 @@ export function GuildMembers({ guildId, currentUserId, isLeader, isOfficer }: Gu
                     variant="destructive"
                     size="sm"
                     className="mt-2"
-                    onClick={() => handleKickMember(member.userId, member.user.name)}
+                    onClick={() => kickMember(member.userId, member.user.name)}
+                    disabled={kickingUserId === member.userId}
                   >
                     <UserX className="h-3 w-3 mr-1" />
-                    Vyhodit
+                    {kickingUserId === member.userId ? "Vyhazování..." : "Vyhodit"}
                   </Button>
                 )}
               </div>

@@ -22,8 +22,8 @@ import {
   DropdownMenuTrigger 
 } from "@/app/components/ui/dropdown-menu"
 import { Badge } from "@/app/components/ui/badge"
-import { Search, MoreHorizontal, Shield, ShieldAlert, Coins, Trophy, Star } from "lucide-react"
-import { getUserRoleStats, getAllUsers, toggleOperatorRole } from "@/app/actions/admin"
+import { Search, MoreHorizontal, Shield, ShieldAlert, Coins, Trophy, Star, Trash2 } from "lucide-react"
+import { getUserRoleStats, getAllUsers, toggleOperatorRole, banUser, unbanUser, resetUserState } from "@/app/actions/admin"
 import { toast } from "sonner"
 import { UserRole } from "@/app/lib/generated"
 import { formatXP } from "@/app/lib/utils"
@@ -40,6 +40,9 @@ interface UserData {
   name: string
   email: string
   role: string
+  banned?: boolean
+  banReason?: string | null
+  bannedAt?: Date | null
   createdAt: Date
   stats: {
     level: number
@@ -99,6 +102,61 @@ export function UsersPanel() {
     } catch (error) {
       toast.error("Chyba", {
         description: error instanceof Error ? error.message : "Nepodařilo se změnit roli",
+      })
+    }
+  }
+
+  const handleBanUser = async (userId: string, userName: string) => {
+    const reason = prompt(`Zadejte důvod pro ban uživatele ${userName}:`)
+    if (!reason || reason.trim() === "") {
+      toast.error("Důvod banu je povinný")
+      return
+    }
+
+    try {
+      await banUser(userId, reason.trim())
+      setUsers(users.map(u => 
+        u.id === userId ? { ...u, banned: true, banReason: reason.trim() } : u
+      ))
+      toast.success("Uživatel zabanován", {
+        description: `${userName} byl zabanován`,
+      })
+    } catch (error) {
+      toast.error("Chyba", {
+        description: error instanceof Error ? error.message : "Nepodařilo se zabanovat uživatele",
+      })
+    }
+  }
+
+  const handleUnbanUser = async (userId: string, userName: string) => {
+    try {
+      await unbanUser(userId)
+      setUsers(users.map(u => 
+        u.id === userId ? { ...u, banned: false, banReason: null } : u
+      ))
+      toast.success("Uživatel odbanován", {
+        description: `${userName} byl odbanován`,
+      })
+    } catch (error) {
+      toast.error("Chyba", {
+        description: error instanceof Error ? error.message : "Nepodařilo se odbanovat uživatele",
+      })
+    }
+  }
+
+  const handleResetUserState = async (userId: string, userName: string) => {
+    if (!confirm(`Opravdu chcete resetovat stav uživatele ${userName}? Tato akce je nevratná a vymaže všechen progress uživatele.`)) {
+      return
+    }
+
+    try {
+      await resetUserState(userId)
+      toast.success("Stav uživatele resetován", {
+        description: `Všechen progress uživatele ${userName} byl vymazán`,
+      })
+    } catch (error) {
+      toast.error("Chyba", {
+        description: error instanceof Error ? error.message : "Nepodařilo se resetovat stav uživatele",
       })
     }
   }
@@ -207,6 +265,7 @@ export function UsersPanel() {
                   <TableHead>Jméno</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Statistiky</TableHead>
                   <TableHead>Registrace</TableHead>
                   <TableHead className="text-right">Akce</TableHead>
@@ -215,13 +274,13 @@ export function UsersPanel() {
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
+                    <TableCell colSpan={7} className="text-center py-8">
                       Načítání uživatelů...
                     </TableCell>
                   </TableRow>
                 ) : filteredUsers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8">
+                    <TableCell colSpan={7} className="text-center py-8">
                       Žádní uživatelé nenalezeni
                     </TableCell>
                   </TableRow>
@@ -234,6 +293,17 @@ export function UsersPanel() {
                         <Badge variant={getRoleBadgeVariant(user.role)}>
                           {user.role}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {user.banned ? (
+                          <Badge variant="destructive">
+                            Zabanován
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary">
+                            Aktivní
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         {user.role === UserRole.STUDENT && (
@@ -289,7 +359,29 @@ export function UsersPanel() {
                                 )}
                               </DropdownMenuItem>
                             )}
-                            {/* Add more actions here like "Edit User" or "Delete User" if needed */}
+                            <DropdownMenuSeparator />
+                            {user.banned ? (
+                              <DropdownMenuItem onClick={() => handleUnbanUser(user.id, user.name)}>
+                                <Shield className="mr-2 h-4 w-4" />
+                                Odbanovat uživatele
+                              </DropdownMenuItem>
+                            ) : (
+                              user.role !== UserRole.OPERATOR && (
+                                <DropdownMenuItem onClick={() => handleBanUser(user.id, user.name)}>
+                                  <ShieldAlert className="mr-2 h-4 w-4" />
+                                  Zabanovat uživatele
+                                </DropdownMenuItem>
+                              )
+                            )}
+                            {user.role !== UserRole.OPERATOR && (
+                              <DropdownMenuItem 
+                                onClick={() => handleResetUserState(user.id, user.name)}
+                                className="text-destructive"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Resetovat stav
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

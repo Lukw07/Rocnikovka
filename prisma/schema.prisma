@@ -14,6 +14,10 @@ model User {
   email         String   @unique
   name          String
   role          UserRole @default(STUDENT)
+  banned        Boolean  @default(false)
+  bannedAt      DateTime?
+  bannedBy      String?
+  banReason     String?
   classId       String?
   grade         Int?
   bakalariId    String?  @unique
@@ -83,12 +87,17 @@ model User {
   // Guild join requests
   guildJoinRequests GuildJoinRequest[]
 
+  // Ban relations
+  bannedByUser User? @relation("UserBannedBy", fields: [bannedBy], references: [id])
+  bannedUsers   User[] @relation("UserBannedBy")
+
   @@index([role])
   @@index([classId])
   @@index([bakalariId])
   @@index([grade])
   @@index([gold])
   @@index([gems])
+  @@index([banned])
 }
 
 view LeaderboardView {
