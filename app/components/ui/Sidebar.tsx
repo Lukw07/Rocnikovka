@@ -419,7 +419,7 @@ const SidebarLayout = ({
                 type="button"
                 onClick={() => {
                   setOpenSections((prev) => {
-                    const next = new Set();
+                    const next = new Set<string>();
                     if (sectionTitle === 'Hlavní') {
                       // Kliknutí na Hlavní - otevři jen Hlavní
                       next.add('Hlavní');

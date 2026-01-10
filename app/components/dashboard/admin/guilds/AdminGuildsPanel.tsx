@@ -23,9 +23,11 @@ import {
 import { Progress } from "@/app/components/ui/progress"
 import { Badge } from "@/app/components/ui/badge"
 import { Search, MoreHorizontal, Shield, Users, Edit, Trash2, Eye } from "lucide-react"
-import { getAllGuilds, deleteGuild, updateGuild } from "@/app/actions/admin"
+import { getAllGuilds, deleteGuild, updateGuild, getGuildStats } from "@/app/actions/admin"
 import { toast } from "sonner"
 import { GuildWithMembers } from "@/app/lib/types"
+import { GuildDetailModal } from "./GuildDetailModal"
+import { GuildEditModal } from "./GuildEditModal"
 
 interface GuildStats {
   total: number
@@ -38,6 +40,9 @@ export function AdminGuildsPanel() {
   const [guilds, setGuilds] = useState<GuildWithMembers[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [detailModalOpen, setDetailModalOpen] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [selectedGuildId, setSelectedGuildId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchData()
@@ -45,23 +50,22 @@ export function AdminGuildsPanel() {
 
   const fetchData = async () => {
     try {
-      const [statsData, guildsData] = await Promise.all([
-        getGuildStats(),
+      const [guildsData] = await Promise.all([
         getAllGuilds()
       ])
-      setStats(statsData)
       setGuilds(guildsData)
+      
+      // Calculate stats from guilds data
+      const total = guildsData.length
+      const publicCount = guildsData.filter(g => g.isPublic).length
+      const privateCount = total - publicCount
+      setStats({ total, public: publicCount, private: privateCount })
     } catch (error) {
       console.error("Error fetching guild data:", error)
       toast.error("Chyba při načítání dat")
     } finally {
       setLoading(false)
     }
-  }
-
-  const getGuildStats = async () => {
-    // This would be implemented in admin actions
-    return { total: 0, public: 0, private: 0 }
   }
 
   const handleDeleteGuild = async (guildId: string, guildName: string) => {
@@ -82,16 +86,44 @@ export function AdminGuildsPanel() {
     }
   }
 
-  const handleToggleVisibility = async (guildId: string, currentVisibility: boolean) => {
+  const handleToggleVisibility = async (guildId: string, currentIsPublic: boolean) => {
     try {
-      await updateGuild(guildId, { isPublic: !currentVisibility })
-      setGuilds(guilds.map(g =>
-        g.id === guildId ? { ...g, isPublic: !currentVisibility } : g
+      await updateGuild(guildId, { isPublic: !currentIsPublic })
+      setGuilds(guilds.map(g => 
+        g.id === guildId ? { ...g, isPublic: !currentIsPublic } : g
       ))
-      toast.success("Viditelnost změněna")
+      toast.success("Viditelnost klanu změněna", {
+        description: `Klan je nyní ${!currentIsPublic ? "veřejný" : "soukromý"}.`,
+      })
     } catch (error) {
-      toast.error("Chyba při změně viditelnosti")
+      toast.error("Chyba", {
+        description: error instanceof Error ? error.message : "Nepodařilo se změnit viditelnost klanu",
+      })
     }
+  }
+
+  const handleViewGuild = (guildId: string) => {
+    setSelectedGuildId(guildId)
+    setDetailModalOpen(true)
+  }
+
+  const handleEditGuild = (guildId: string) => {
+    setSelectedGuildId(guildId)
+    setEditModalOpen(true)
+  }
+
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false)
+    setSelectedGuildId(null)
+  }
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false)
+    setSelectedGuildId(null)
+  }
+
+  const handleEditSuccess = () => {
+    fetchData() // Refresh the data after successful edit
   }
 
   const filteredGuilds = guilds.filter(guild =>
@@ -237,11 +269,11 @@ export function AdminGuildsPanel() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Akce</DropdownMenuLabel>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleViewGuild(guild.id)}>
                               <Eye className="mr-2 h-4 w-4" />
                               Zobrazit detail
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleEditGuild(guild.id)}>
                               <Edit className="mr-2 h-4 w-4" />
                               Upravit
                             </DropdownMenuItem>
@@ -270,6 +302,19 @@ export function AdminGuildsPanel() {
           </div>
         </CardContent>
       </Card>
+
+      <GuildDetailModal
+        guildId={selectedGuildId}
+        isOpen={detailModalOpen}
+        onClose={handleCloseDetailModal}
+      />
+
+      <GuildEditModal
+        guildId={selectedGuildId}
+        isOpen={editModalOpen}
+        onClose={handleCloseEditModal}
+        onSuccess={handleEditSuccess}
+      />
     </div>
   )
 }

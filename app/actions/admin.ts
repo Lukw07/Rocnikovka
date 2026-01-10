@@ -429,3 +429,68 @@ export async function resetUserState(targetUserId: string) {
   revalidatePath("/dashboard/users")
   return { success: true }
 }
+
+export async function getGuildDetails(guildId: string) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user || session.user.role !== UserRole.OPERATOR) {
+    throw new Error("Unauthorized")
+  }
+
+  const guild = await prisma.guild.findUnique({
+    where: { id: guildId },
+    include: {
+      members: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        },
+        orderBy: {
+          joinedAt: 'asc'
+        }
+      },
+      quests: {
+        select: {
+          id: true
+        }
+      },
+      _count: {
+        select: {
+          members: true,
+          quests: true
+        }
+      }
+    }
+  })
+
+  if (!guild) {
+    throw new Error("Guild not found")
+  }
+
+  // Find the leader
+  const leaderMember = guild.members.find(member => member.role === "LEADER")
+  const leader = leaderMember ? {
+    id: leaderMember.user.id,
+    name: leaderMember.user.name,
+    avatar: null // Avatar not available in User model
+  } : null
+
+  // Transform members data
+  const members = guild.members.map(member => ({
+    id: member.user.id,
+    username: member.user.name,
+    avatar: null, // Avatar not available in User model
+    role: member.role,
+    joinedAt: member.joinedAt
+  }))
+
+  return {
+    ...guild,
+    members,
+    leader
+  }
+}
