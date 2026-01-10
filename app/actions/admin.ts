@@ -122,14 +122,12 @@ export async function getAllUsers() {
     }
   })
 
-  // Fetch XP from LeaderboardView
-  const xpData = await prisma.leaderboardView.findMany({
-    select: {
-      id: true,
-      total_xp: true
-    }
+  // Fetch XP from XPAudit table instead of LeaderboardView
+  const xpAudits = await prisma.xPAudit.groupBy({
+    by: ['userId'],
+    _sum: { amount: true }
   })
-  const xpMap = new Map(xpData.map(x => [x.id, x.total_xp]))
+  const xpMap = new Map(xpAudits.map(x => [x.userId, x._sum.amount || 0]))
 
   // Fetch Money Balance
   const allTx = await prisma.moneyTx.groupBy({
