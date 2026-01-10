@@ -267,64 +267,56 @@ async function seedSkills() {
       description: 'Schopnost řešit matematické problémy',
       icon: '🔢',
       category: 'ACADEMIC',
-      maxLevel: 100,
-      baseXpCost: 100
+      maxLevel: 100
     },
     {
       name: 'Čeština',
       description: 'Dovednost v českém jazyce',
       icon: '📝',
       category: 'ACADEMIC',
-      maxLevel: 100,
-      baseXpCost: 100
+      maxLevel: 100
     },
     {
       name: 'Angličtina',
       description: 'Znalost anglického jazyka',
       icon: '🇬🇧',
       category: 'ACADEMIC',
-      maxLevel: 100,
-      baseXpCost: 100
+      maxLevel: 100
     },
     {
       name: 'Programování',
       description: 'Schopnost psát kód',
       icon: '💻',
       category: 'TECHNICAL',
-      maxLevel: 100,
-      baseXpCost: 150
+      maxLevel: 100
     },
     {
       name: 'Fyzika',
       description: 'Porozumění fyzikálním zákonům',
       icon: '⚛️',
       category: 'ACADEMIC',
-      maxLevel: 100,
-      baseXpCost: 120
+      maxLevel: 100
     },
     {
       name: 'Kreativita',
       description: 'Tvůrčí myšlení a inovace',
       icon: '🎨',
       category: 'SOFT',
-      maxLevel: 100,
-      baseXpCost: 80
+      maxLevel: 100
     },
     {
       name: 'Týmová práce',
       description: 'Spolupráce s ostatními',
       icon: '🤝',
       category: 'SOFT',
-      maxLevel: 100,
-      baseXpCost: 80
+      maxLevel: 100
     },
     {
       name: 'Vedení',
       description: 'Schopnost vést tým',
       icon: '👑',
       category: 'SOFT',
-      maxLevel: 100,
-      baseXpCost: 100
+      maxLevel: 100
     }
   ]
 

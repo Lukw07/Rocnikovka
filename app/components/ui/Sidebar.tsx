@@ -191,18 +191,48 @@ const SidebarLayout = ({
 
   const menuItems = customMenuItems || defaultMenuItems;
 
+  // Calculate dynamic sizing based on number of items
+  const totalItems = menuItems.length;
+  const isCompact = totalItems > 12; // If more than 12 items, use compact mode
+  const iconSize = isMobile ? (isCompact ? 36 : 40) : (isCompact ? 40 : 48);
+  const iconClass = isMobile ? (isCompact ? "w-9 h-9" : "w-10 h-10") : (isCompact ? "w-10 h-10" : "w-12 h-12");
+  const itemPadding = isMobile ? (isCompact ? 'py-1' : 'py-1.5') : (isCompact ? 'py-1.5' : 'py-2');
+  const menuPadding = isMobile ? (isCompact ? 'py-1 px-1' : 'py-1 px-2') : (isCompact ? 'py-1 px-2' : 'py-2 px-3');
+
   const [openSections, setOpenSections] = useState<Set<string>>(() => {
     const initial = new Set<string>();
-    menuItems.forEach((item) => initial.add(item.section || 'Ostatní'));
+    // On mobile or compact mode, only open essential sections by default
+    if (typeof window !== 'undefined' && (window.innerWidth < 768 || isCompact)) {
+      const essentialSections = isCompact ? ['Hlavní'] : ['Hlavní', 'Aktivity', 'Postup'];
+      menuItems.forEach((item) => {
+        const section = item.section || 'Ostatní';
+        if (essentialSections.includes(section)) {
+          initial.add(section);
+        }
+      });
+    } else {
+      menuItems.forEach((item) => initial.add(item.section || 'Ostatní'));
+    }
     return initial;
   });
 
   // Keep sections in sync if menuItems change (e.g., jiná role)
   useEffect(() => {
     const next = new Set<string>();
-    menuItems.forEach((item) => next.add(item.section || 'Ostatní'));
+    // On mobile or compact mode, only keep essential sections open
+    if (isMobile || isCompact) {
+      const essentialSections = isCompact ? ['Hlavní'] : ['Hlavní', 'Aktivity', 'Postup'];
+      menuItems.forEach((item) => {
+        const section = item.section || 'Ostatní';
+        if (essentialSections.includes(section) || openSections.has(section)) {
+          next.add(section);
+        }
+      });
+    } else {
+      menuItems.forEach((item) => next.add(item.section || 'Ostatní'));
+    }
     setOpenSections(next);
-  }, [menuItems]);
+  }, [menuItems, isMobile, isCompact]);
 
   const handleSetSelectedPanel = (panel: SidebarPanel) => {
     setSelectedPanel(panel);
@@ -298,7 +328,7 @@ const SidebarLayout = ({
           onClick={() => handleItemClick(index)}
           className={`flex items-center transition-all duration-300 ease-out ${
             showExpanded ? 'w-[92%] px-3' : 'w-12 px-0 justify-center'
-          } py-2 rounded-lg text-xs ${
+          } ${itemPadding} rounded-lg text-xs ${
             showExpanded && isHoveredItemState ? 'bg-muted/70' : ''
           }`}
         >
@@ -314,16 +344,16 @@ const SidebarLayout = ({
               <Image 
                 src={customIconPath} 
                 alt={item.label}
-                width={44}
-                height={44}
-                className="w-11 h-11 object-contain"
+                width={iconSize}
+                height={iconSize}
+                className={`${iconClass} object-contain`}
               />
             ) : (
-              <Icon className="w-11 h-11" />
+              <Icon className={iconClass} />
             )}
             {/* Badge for collapsed state */}
             {!showExpanded && item.badge && item.badge > 0 && (
-               <span className="absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-background">
+               <span className={`absolute -top-1.5 -right-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-background ${isCompact ? 'h-3 w-3 text-[8px]' : ''}`}>
                  {item.badge > 9 ? '!' : item.badge}
                </span>
             )}
@@ -333,7 +363,7 @@ const SidebarLayout = ({
           <div className={`flex items-center transition-all duration-300 ease-out overflow-hidden whitespace-nowrap ${
             showExpanded ? 'flex-1 opacity-100 translate-x-0 max-w-[200px] ml-2' : 'flex-none w-0 opacity-0 -translate-x-2 max-w-0 ml-0'
           }`}>
-            <span className={`font-medium whitespace-nowrap transition-colors duration-200 text-xs ${
+            <span className={`font-medium whitespace-nowrap transition-colors duration-200 ${isCompact ? 'text-[10px]' : 'text-xs'} ${
               isActive ? 'text-primary-foreground' : isHoveredItemState ? 'font-bold text-foreground' : 'text-foreground'
             }`}>
               {item.label}
@@ -341,14 +371,14 @@ const SidebarLayout = ({
             
             {/* Badge for expanded state */}
             {showExpanded && item.badge && item.badge > 0 && (
-                <span className={`ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center flex items-center justify-center h-5 ${isActive ? 'ring-1 ring-white/20' : ''}`}>
+                <span className={`ml-auto bg-red-500 text-white ${isCompact ? 'text-[9px]' : 'text-[10px]'} font-bold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center flex items-center justify-center ${isCompact ? 'h-4' : 'h-5'} ${isActive ? 'ring-1 ring-white/20' : ''}`}>
                   {item.badge > 99 ? '99+' : item.badge}
                 </span>
             )}
             
             {/* Active indicator */}
             {isActive && !item.badge && (
-              <ChevronRight className={`w-3 h-3 text-primary-foreground/80 ml-auto transition-all duration-300 ease-out flex-shrink-0 ${
+              <ChevronRight className={`w-3 h-3 text-primary-foreground/80 ml-auto transition-all duration-300 ease-out flex-shrink-0 ${isCompact ? 'w-2.5 h-2.5' : ''} ${
                 showExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'
               }`} />
             )}
@@ -389,18 +419,24 @@ const SidebarLayout = ({
                 type="button"
                 onClick={() => {
                   setOpenSections((prev) => {
-                    const next = new Set(prev);
-                    if (next.has(sectionTitle)) next.delete(sectionTitle); else next.add(sectionTitle);
+                    const next = new Set();
+                    if (sectionTitle === 'Hlavní') {
+                      // Kliknutí na Hlavní - otevři jen Hlavní
+                      next.add('Hlavní');
+                    } else {
+                      // Kliknutí na jinou sekci - otevři jen tu sekci
+                      next.add(sectionTitle);
+                    }
                     return next;
                   });
                 }}
                 className="w-full flex items-center justify-between px-4 py-2 text-left hover:bg-muted/50 rounded-lg transition-colors"
               >
-                <span className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-widest">
+                <span className={`text-xs font-semibold text-muted-foreground/80 uppercase tracking-widest ${isCompact ? 'text-[10px]' : ''}`}>
                   {sectionTitle}
                 </span>
                 <ChevronRight
-                  className={`w-3 h-3 text-muted-foreground transition-transform duration-200 ${
+                  className={`w-3 h-3 text-muted-foreground transition-transform duration-200 ${isCompact ? 'w-2.5 h-2.5' : ''} ${
                     isSectionOpen ? 'rotate-90' : 'rotate-0'
                   }`}
                 />
@@ -410,9 +446,12 @@ const SidebarLayout = ({
             <div
               className={`flex flex-col overflow-hidden transition-[max-height,opacity,transform] duration-200 ease-in-out ${
                 isSectionOpen || isCollapsed
-                  ? 'max-h-[480px] opacity-100 translate-y-0'
+                  ? 'opacity-100 translate-y-0'
                   : 'max-h-0 opacity-0 -translate-y-1 pointer-events-none'
               }`}
+              style={{
+                maxHeight: (isSectionOpen || isCollapsed) ? `${isCompact ? 250 : 350}px` : '0px'
+              }}
             >
               {items.map((item, index) => {
                 const itemIndex = menuItems.indexOf(item);
@@ -443,9 +482,9 @@ const SidebarLayout = ({
 
         {/* Sidebar */}
         <div 
-          className={`fixed md:relative z-50 h-screen md:h-auto ${
+          className={`fixed md:relative z-50 ${isMobile ? 'h-screen' : 'h-screen md:h-auto'} ${
             isMobile 
-              ? `transition-all duration-300 ease-out w-72 ${
+              ? `transition-all duration-300 ease-out w-64 ${
                   isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
                 }`
               : `${isCollapsed ? 'w-16' : 'w-72'}`
@@ -453,38 +492,40 @@ const SidebarLayout = ({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="flex flex-col h-full pt-2">
-            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} px-3 pb-2 shrink-0`}>
+          <div className="flex flex-col h-full">
+            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} ${isCompact ? 'px-2 pb-1 pt-2' : 'px-3 pb-2 pt-2'} shrink-0`}>
               {!isCollapsed && (
-                <span className="text-sm font-semibold text-muted-foreground">Menu</span>
+                <span className={`font-semibold text-muted-foreground ${isCompact ? 'text-xs' : 'text-sm'}`}>Menu</span>
               )}
-              <button
-                type="button"
-                onClick={() => setIsCollapsed((prev) => !prev)}
-                className="p-2 rounded-lg hover:bg-muted/70 border border-border transition-colors"
-                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                {isCollapsed ? (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-                )}
-              </button>
+              {!isMobile && (
+                <button
+                  type="button"
+                  onClick={() => setIsCollapsed((prev) => !prev)}
+                  className={`${isCompact ? 'p-2' : 'p-2.5'} rounded-lg hover:bg-muted/70 border border-border transition-colors bg-background/50 backdrop-blur-sm`}
+                  aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                  {isCollapsed ? (
+                    <ChevronRight className={`w-5 h-5 text-muted-foreground ${isCompact ? 'w-4 h-4' : ''}`} />
+                  ) : (
+                    <ChevronLeft className={`w-5 h-5 text-muted-foreground ${isCompact ? 'w-4 h-4' : ''}`} />
+                  )}
+                </button>
+              )}
             </div>
             {/* Main Menu */}
-            <div className="flex-1 min-h-0 py-2 px-3 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted scrollbar-track-transparent flex flex-col">
+            <div className={`flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted scrollbar-track-transparent flex flex-col ${isCompact ? 'gap-0.5' : 'gap-1'} ${menuPadding} max-h-[calc(100vh-140px)]`}>
               {renderMenuSections()}
             </div>
 
             {/* Bottom Section with Theme Toggle */}
-            <div className="p-3 border-t border-border">
+            <div className={`${isCompact ? 'p-2' : isMobile ? 'p-3' : 'p-4'} border-t border-border shrink-0 flex justify-center bg-background/20`}>
               <ThemeToggle />
             </div>
           </div>
         </div>
 
         {/* Main content area */}
-        <div className={`flex-1 bg-background h-screen overflow-y-auto w-full transition-all duration-300 ${
+        <div className={`flex-1 bg-background min-h-screen overflow-y-auto w-full transition-all duration-300 ${
           isMobile && isMobileOpen ? 'blur-sm' : ''
         }`}>
           {children}
