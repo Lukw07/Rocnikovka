@@ -75,7 +75,7 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background overflow-auto">
       {/* Header - fixovaný nahoru */}
       <DashboardHeader 
         userName={user.name || "Uživateli"}
@@ -100,7 +100,7 @@ export function DashboardLayoutClient({ children, user, menuItems: initialMenuIt
       )}
 
       {/* Hlavní obsah - plná šířka */}
-      <div className="w-full">
+      <div className="w-full h-[calc(100vh-140px)]">
         <SidebarLayout 
           isMobileOpen={isMobileMenuOpen}
           onMobileToggle={handleMenuToggle}

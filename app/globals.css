@@ -167,8 +167,7 @@
 
 
 html {
-  overflow: hidden;
-  height: 100%;
+  overflow: auto;
 }
 
 body {
@@ -177,8 +176,8 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
   font-family: var(--font-body);
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow: hidden;
-  height: 100%;
+  overflow: visible;
+  min-height: 100vh;
 }
 
 /* RPG Typography */
@@ -209,26 +208,26 @@ body::before {
 }
 
 /* Custom scrollbar for RPG feel */
-::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+/* ::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
 }
 
 ::-webkit-scrollbar-track {
   background: hsl(var(--muted));
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--primary) / 0.5);
-  border-radius: 6px;
+  border-radius: 8px;
   border: 2px solid hsl(var(--muted));
   transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary) / 0.7);
-}
+} */
 
 /* Glass effect utility */
 .glass-effect {

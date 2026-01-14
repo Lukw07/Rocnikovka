@@ -525,7 +525,7 @@ const SidebarLayout = ({
         </div>
 
         {/* Main content area */}
-        <div className={`flex-1 bg-background min-h-screen overflow-y-auto w-full transition-all duration-300 ${
+        <div className={`flex-1 bg-background w-full h-full transition-all duration-300 overflow-x-auto overflow-y-auto ${
           isMobile && isMobileOpen ? 'blur-sm' : ''
         }`}>
           {children}

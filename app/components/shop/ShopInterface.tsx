@@ -146,7 +146,7 @@ export function ShopInterface({ userId, userRole }: ShopInterfaceProps) {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-auto">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url(/backgrounds/shop_bc.jpg)", backgroundSize: "cover", backgroundRepeat: "no-repeat" }}

@@ -147,7 +147,7 @@ export default function HomePage() {
 
   return (
     <div 
-      className="min-h-screen transition-all duration-300 relative overflow-hidden"
+      className="min-h-screen transition-all duration-300 relative overflow-auto"
       style={{
         backgroundImage: THEME.backgroundImage,
         backgroundSize: 'cover',
