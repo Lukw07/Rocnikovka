@@ -200,39 +200,88 @@ const SidebarLayout = ({
   const menuPadding = isMobile ? (isCompact ? 'py-1 px-1' : 'py-1 px-2') : (isCompact ? 'py-1 px-2' : 'py-2 px-3');
 
   const [openSections, setOpenSections] = useState<Set<string>>(() => {
-    const initial = new Set<string>();
-    // On mobile or compact mode, only open essential sections by default
-    if (typeof window !== 'undefined' && (window.innerWidth < 768 || isCompact)) {
-      const essentialSections = isCompact ? ['Hlavní'] : ['Hlavní', 'Aktivity', 'Postup'];
-      menuItems.forEach((item) => {
-        const section = item.section || 'Ostatní';
-        if (essentialSections.includes(section)) {
-          initial.add(section);
-        }
-      });
-    } else {
-      menuItems.forEach((item) => initial.add(item.section || 'Ostatní'));
-    }
-    return initial;
+    // Initialize with empty set - sections will be determined by current route
+    return new Set<string>();
   });
 
-  // Keep sections in sync if menuItems change (e.g., jiná role)
+  // Update open sections based on current pathname
   useEffect(() => {
-    const next = new Set<string>();
-    // On mobile or compact mode, only keep essential sections open
-    if (isMobile || isCompact) {
-      const essentialSections = isCompact ? ['Hlavní'] : ['Hlavní', 'Aktivity', 'Postup'];
-      menuItems.forEach((item) => {
-        const section = item.section || 'Ostatní';
-        if (essentialSections.includes(section) || openSections.has(section)) {
-          next.add(section);
-        }
-      });
-    } else {
-      menuItems.forEach((item) => next.add(item.section || 'Ostatní'));
+    if (!pathname) return;
+
+    const routeToSectionMap: Record<string, string> = {
+      // Hlavní section
+      '/dashboard': 'Hlavní',
+      
+      // Aktivity section
+      '/dashboard/subjects': 'Aktivity',
+      '/dashboard/quests': 'Aktivity', 
+      '/dashboard/events': 'Aktivity',
+      
+      // Postup section
+      '/dashboard/achievements': 'Postup',
+      '/dashboard/leaderboard': 'Postup',
+      '/dashboard/badges': 'Postup',
+      
+      // Sociální section
+      '/dashboard/guilds': 'Sociální',
+      '/dashboard/friends': 'Sociální',
+      '/dashboard/trading': 'Sociální',
+      
+      // Inventář section
+      '/dashboard/inventory': 'Inventář',
+      '/dashboard/wallet': 'Inventář',
+      '/dashboard/shop': 'Inventář',
+      '/dashboard/marketplace': 'Inventář',
+      
+      // Výuka section (for teachers/operators)
+      '/dashboard/job-list': 'Výuka',
+      '/dashboard/students': 'Výuka',
+      '/dashboard/budget': 'Výuka',
+      
+      // Správa section
+      '/dashboard/admin/shop': 'Správa',
+      
+      // Admin section
+      '/dashboard/users': 'Admin',
+      '/dashboard/admin/guilds': 'Admin',
+      '/dashboard/system': 'Admin',
+      '/dashboard/backups': 'Admin',
+      '/dashboard/activity': 'Admin',
+      
+      // Systém section
+      '/dashboard/settings': 'Systém',
+      
+      // Ostatní section
+      '/dashboard/log': 'Ostatní',
+    };
+
+    // Find the section for current route
+    let currentSection = 'Hlavní'; // default fallback
+    
+    for (const [route, section] of Object.entries(routeToSectionMap)) {
+      if (pathname === route || pathname.startsWith(route + '/')) {
+        currentSection = section;
+        break;
+      }
     }
-    setOpenSections(next);
-  }, [menuItems, isMobile, isCompact]);
+
+    // On mobile or compact mode, only open essential sections
+    const essentialSections = isCompact ? ['Hlavní'] : ['Hlavní', 'Aktivity', 'Postup'];
+    
+    setOpenSections(prev => {
+      const next = new Set<string>();
+      if (isMobile || isCompact) {
+        // On mobile/compact, open current section plus essential sections
+        next.add(currentSection);
+        essentialSections.forEach(section => next.add(section));
+      } else {
+        // On desktop, open current section and keep previously open sections
+        next.add(currentSection);
+        prev.forEach(section => next.add(section));
+      }
+      return next;
+    });
+  }, [pathname, isMobile, isCompact]);
 
   const handleSetSelectedPanel = (panel: SidebarPanel) => {
     setSelectedPanel(panel);
@@ -419,12 +468,12 @@ const SidebarLayout = ({
                 type="button"
                 onClick={() => {
                   setOpenSections((prev) => {
-                    const next = new Set<string>();
-                    if (sectionTitle === 'Hlavní') {
-                      // Kliknutí na Hlavní - otevři jen Hlavní
-                      next.add('Hlavní');
+                    const next = new Set(prev);
+                    if (next.has(sectionTitle)) {
+                      // If section is open, close it (but keep current route section open)
+                      next.delete(sectionTitle);
                     } else {
-                      // Kliknutí na jinou sekci - otevři jen tu sekci
+                      // If section is closed, open it
                       next.add(sectionTitle);
                     }
                     return next;
