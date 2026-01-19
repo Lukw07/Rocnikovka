@@ -28,7 +28,6 @@ import {
   ArrowRightLeft,
   Sword,
 } from 'lucide-react'
-import { ThemeToggle } from "@/app/components/theme/ThemeToggle"
 
 // Custom icon mapping - maps icon names to custom PNG files
 const CUSTOM_ICON_MAP: Record<string, string> = {
@@ -531,7 +530,7 @@ const SidebarLayout = ({
 
         {/* Sidebar */}
         <div 
-          className={`fixed md:relative z-50 ${isMobile ? 'h-screen' : 'h-screen md:h-auto'} ${
+          className={`fixed md:relative h-screen ${isMobile ? 'z-50' : 'z-auto'} ${
             isMobile 
               ? `transition-all duration-300 ease-out w-64 ${
                   isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
@@ -562,19 +561,14 @@ const SidebarLayout = ({
               )}
             </div>
             {/* Main Menu */}
-            <div className={`flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted scrollbar-track-transparent flex flex-col ${isCompact ? 'gap-0.5' : 'gap-1'} ${menuPadding} max-h-[calc(100vh-140px)]`}>
+            <div className={`overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted scrollbar-track-transparent flex flex-col ${isCompact ? 'gap-0.5' : 'gap-1'} ${menuPadding}`}>
               {renderMenuSections()}
-            </div>
-
-            {/* Bottom Section with Theme Toggle */}
-            <div className={`${isCompact ? 'p-2' : isMobile ? 'p-3' : 'p-4'} border-t border-border shrink-0 flex justify-center bg-background/20`}>
-              <ThemeToggle />
             </div>
           </div>
         </div>
 
         {/* Main content area */}
-        <div className={`flex-1 bg-background w-full h-full transition-all duration-300 overflow-x-auto overflow-y-auto ${
+        <div className={`flex-1 bg-background w-full h-screen transition-all duration-300 overflow-x-auto overflow-y-auto ${
           isMobile && isMobileOpen ? 'blur-sm' : ''
         }`}>
           {children}
