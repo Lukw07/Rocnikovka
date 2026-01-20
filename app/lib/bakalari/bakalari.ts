@@ -237,8 +237,16 @@ export const getBakalariTimetable = async (
             requestDate = format(monday, 'yyyy-MM-dd');
         }
 
-        const url = new URL(`/api/3/timetable/actual`, bakalariURL);
-        url.searchParams.set('date', requestDate);
+        const url = new URL(`/api/3/timetable/permanent`, bakalariURL);
+        
+        // For now, don't send date parameter at all - let API return current data
+        // if (mode !== 'week') {
+        //     url.searchParams.set('date', requestDate);
+        // }
+        
+        console.log('[getBakalariTimetable] Calling URL:', url.toString())
+        console.log('[getBakalariTimetable] Mode:', mode)
+        console.log('[getBakalariTimetable] Request date:', requestDate)
 
         const response = await fetch(url.toString(), {
             method: "GET",
@@ -255,6 +263,8 @@ export const getBakalariTimetable = async (
 
         if (response.ok) {
             const data = await response.json();
+            console.log('[getBakalariTimetable] Response data:', JSON.stringify(data, null, 2))
+            console.log('[getBakalariTimetable] Days count:', data.Days?.length || 0)
 
             // Filter data based on mode
             if (mode === 'day' && date) {
