@@ -211,6 +211,9 @@ export default function SubjectsPanel() {
       if (timetableRes.ok) {
         const timetableResult = await timetableRes.json()
         fullTimetable = timetableResult.data?.timetable
+        console.log('[SubjectsPanel] Full timetable:', JSON.stringify(fullTimetable, null, 2))
+      } else {
+        console.log('[SubjectsPanel] Timetable fetch failed:', timetableRes.status)
       }
       
       return { ...result, fullTimetable }
@@ -278,6 +281,10 @@ export default function SubjectsPanel() {
     const days = timetable?.Days || []
     const roomLookup = timetable?.Rooms || []
     const hoursLookup = timetable?.Hours || []
+    
+    console.log('[subjects memo] Timetable:', timetable)
+    console.log('[subjects memo] Days:', days)
+    console.log('[subjects memo] Days length:', days.length)
     
     const now = new Date()
     const currentWeekNumber = getISOWeekNumber(now)
@@ -350,6 +357,9 @@ export default function SubjectsPanel() {
           };
         }
       })
+      
+      console.log('[subjects memo] Future atoms count:', futureAtoms.length)
+      console.log('[subjects memo] Next lessons:', nextLessons)
     }
     
     if (!Array.isArray(data.data)) return []

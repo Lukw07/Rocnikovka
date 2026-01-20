@@ -18,6 +18,7 @@ export {
   BakalariLoginReturn,
   loginToBakalari,
   getBakalariUserData,
+  getBakalariTimetable,
   getBakalariSubjectData,
   loginToBakalariAndFetchUserData
 } from './bakalari'

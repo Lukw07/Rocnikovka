@@ -2,6 +2,8 @@
 // Remove any surrounding quotes that might have been added in the environment variable
 const bakalariURL = (process.env.BAKALARI_URL || "https://spsul.bakalari.cz").replace(/^"|"$/g, '');
 
+import { startOfWeek, format } from 'date-fns';
+
 /**
  * Interface for the login payload as returned by Bakalari.
  */
@@ -206,14 +208,39 @@ export const getBakalariUserData = async (
 };
 
 /**
- * Get full weekly timetable from Bakalari (all days)
+ * Get timetable from Bakalari API v3 using /api/3/timetable/actual
+ * @param accessToken - Access token for authentication
+ * @param mode - 'week' for full week or 'day' for specific day
+ * @param date - Date for the timetable (YYYY-MM-DD format)
+ * @returns Promise with timetable data or null if failed
  */
-export const getBakalariWeeklyTimetable = async (
-    accessToken: string
+export const getBakalariTimetable = async (
+    accessToken: string,
+    mode: 'week' | 'day' = 'week',
+    date?: string
 ): Promise<any | null> => {
     try {
-        const url = new URL(`/api/3/timetable/permanent`, bakalariURL).toString()
-        const response = await fetch(url, {
+        // Calculate the date parameter
+        let requestDate: string;
+        if (date) {
+            // If specific date provided, use it
+            requestDate = date;
+        } else {
+            // Default to current date
+            requestDate = format(new Date(), 'yyyy-MM-dd');
+        }
+
+        // For week mode, ensure we send Monday of the week
+        if (mode === 'week') {
+            const inputDate = new Date(requestDate + 'T00:00:00');
+            const monday = startOfWeek(inputDate, { weekStartsOn: 1 }); // 1 = Monday
+            requestDate = format(monday, 'yyyy-MM-dd');
+        }
+
+        const url = new URL(`/api/3/timetable/actual`, bakalariURL);
+        url.searchParams.set('date', requestDate);
+
+        const response = await fetch(url.toString(), {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + accessToken,
@@ -225,67 +252,69 @@ export const getBakalariWeeklyTimetable = async (
             },
             cache: "no-store"
         });
-        
-        if(response.ok) {
+
+        if (response.ok) {
             const data = await response.json();
-            // Return complete weekly timetable
+
+            // Filter data based on mode
+            if (mode === 'day' && date) {
+                // For day mode, filter to only the requested day
+                if (data.Days && Array.isArray(data.Days)) {
+                    const requestedDate = date;
+                    const filteredDays = data.Days.filter((day: any) =>
+                        day.Date === requestedDate
+                    );
+                    return {
+                        ...data,
+                        Days: filteredDays
+                    };
+                }
+            }
+
+            // For week mode, return all data
             return data;
-        }
-        else {
-            return null
+        } else {
+            return null;
         }
     } catch (error) {
-        console.error("Error in getBakalariWeeklyTimetable function in @/lib/bakalari.ts");
+        console.error("Error in getBakalariTimetable function in @/lib/bakalari.ts");
         console.error(error);
         return null;
     }
-}
+};
+
+/**
+ * Get full weekly timetable from Bakalari (all days) - DEPRECATED: Use getBakalariTimetable instead
+ */
+export const getBakalariWeeklyTimetable = async (
+    accessToken: string
+): Promise<any | null> => {
+    return getBakalariTimetable(accessToken, 'week');
+};
 
 export const getBakalariSubjectData = async (
     accessToken: string 
 ): Promise<any | null> => {
     try {
-        // Use timetable/permanent to get weekly schedule
-        const url = new URL(`/api/3/timetable/permanent`, bakalariURL).toString()
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + accessToken,
-                "Content-Type": "application/json",
-                "Accept-Encoding": "gzip",
-                "Accept-Language": "cs-CZ,cs;q=0.9",
-                "Accept": "application/json",
-                "Host": "spsul.bakalari.cz"
-            },
-            cache: "no-store"
-        });
-        
-        if(response.ok) {
-            const data = await response.json();
-            // Extract today's lessons from the weekly timetable
-            const today = new Date().getDay() // 0 = Sunday, 1 = Monday, etc.
-            const dayMap: Record<number, string> = {
-                1: 'Po', 2: 'Út', 3: 'St', 4: 'Čt', 5: 'Pá', 6: 'So', 0: 'Ne'
-            }
-            const todayAbbrev = dayMap[today]
-            
-            // Extract lessons for today and include Subjects for lookup
-            if (data.Days && Array.isArray(data.Days)) {
-                const todayData = data.Days.find((d: any) => d.Abbrev === todayAbbrev || d.DayOfWeek === today)
-                // Return both today's data and the lookup arrays from root
-                return {
-                    ...todayData,
-                    Subjects: data.Subjects,   // Include subjects from root for name lookup
-                    Teachers: data.Teachers,   // Include teachers from root for name lookup
-                    Rooms: data.Rooms,         // Include rooms from root for name lookup
-                    Groups: data.Groups        // Include groups from root for name lookup
-                }
-            }
-            return data;
+        // Get today's date
+        const today = format(new Date(), 'yyyy-MM-dd');
+
+        // Use the new timetable function for today's data
+        const data = await getBakalariTimetable(accessToken, 'day', today);
+
+        if (data && data.Days && Array.isArray(data.Days) && data.Days.length > 0) {
+            const todayData = data.Days[0]; // Since we filtered to one day
+            // Return today's data and the lookup arrays from root
+            return {
+                ...todayData,
+                Subjects: data.Subjects,   // Include subjects from root for name lookup
+                Teachers: data.Teachers,   // Include teachers from root for name lookup
+                Rooms: data.Rooms,         // Include rooms from root for name lookup
+                Groups: data.Groups        // Include groups from root for name lookup
+            };
         }
-        else {
-            return null
-        }
+
+        return null;
     } catch (error) {
         console.error("Error in getBakalariSubjectData function in @/lib/bakalari.ts");
         console.error(error);
@@ -328,15 +357,13 @@ export const loginToBakalariAndFetchUserData = async (
         }
 
         console.log("User data successful, fetching subject data...")
-        const getBakalariSubjectDataResponse = await getBakalariSubjectData(loginResponse.accessToken);
+        const getBakalariSubjectDataResponse = await getBakalariTimetable(loginResponse.accessToken, 'day');
         console.log("Subject data response:", getBakalariSubjectDataResponse ? "success" : "failed")
 
         // Normalize subject payload: API often returns { Subjects: [...] } — extract array when present
         let normalizedSubjects: any[] | undefined = undefined
-        if (Array.isArray(getBakalariSubjectDataResponse)) {
-            normalizedSubjects = getBakalariSubjectDataResponse
-        } else if (getBakalariSubjectDataResponse && Array.isArray((getBakalariSubjectDataResponse as any).Subjects)) {
-            normalizedSubjects = (getBakalariSubjectDataResponse as any).Subjects
+        if (Array.isArray(getBakalariSubjectDataResponse?.Subjects)) {
+            normalizedSubjects = getBakalariSubjectDataResponse.Subjects
         } else {
             console.log("Subject data not available or malformed, continuing without it")
         }

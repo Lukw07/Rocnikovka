@@ -1,5 +1,5 @@
 ﻿import prisma from "../prisma"
-import { getBakalariSubjectData, getBakalariWeeklyTimetable } from "../bakalari/bakalari"
+import { getBakalariTimetable } from "../bakalari/bakalari"
 
 export const getUserSubjects = async (userIdString: string, fullWeek: boolean = false) => {
     // Get user with their Bakalari token
@@ -20,9 +20,11 @@ export const getUserSubjects = async (userIdString: string, fullWeek: boolean = 
 
     // Fetch subjects from Bakalari - use weekly timetable if requested
     const bakalariSubjects = fullWeek 
-        ? await getBakalariWeeklyTimetable(user.bakalariToken)
-        : await getBakalariSubjectData(user.bakalariToken)
+        ? await getBakalariTimetable(user.bakalariToken, 'week')
+        : await getBakalariTimetable(user.bakalariToken, 'day')
     console.log('[getUserSubjects] Bakalari raw response:', JSON.stringify(bakalariSubjects, null, 2))
+    console.log('[getUserSubjects] Bakalari response type:', typeof bakalariSubjects)
+    console.log('[getUserSubjects] Is array:', Array.isArray(bakalariSubjects))
 
     if (!bakalariSubjects) {
         console.log('[getUserSubjects] Bakalari fetch failed, using DB enrollments')

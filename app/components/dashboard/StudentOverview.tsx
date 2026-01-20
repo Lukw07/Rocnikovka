@@ -402,6 +402,47 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
                         const isCurrent = lesson.HourId === currentLessonId
                         const hasChange = lesson.Change !== null
                         
+                        // Get subject display name with fallback to Change object
+                        const getSubjectDisplayName = (lesson: any) => {
+                          // First try normal subject lookup
+                          if (subject?.Abbrev) {
+                            return subject.Abbrev
+                          }
+                          
+                          // If SubjectId is null, use Change object
+                          if (!lesson.SubjectId && lesson.Change) {
+                            const change = lesson.Change
+                            
+                            // Priority: TypeAbbrev -> TypeName -> Description
+                            let changeText = change.TypeAbbrev || change.TypeName || change.Description || "???"
+                            
+                            // Truncate to first 4 characters
+                            return changeText.substring(0, 4)
+                          }
+                          
+                          return "???"
+                        }
+                        
+                        // Get subject full name with fallback to Change object
+                        const getSubjectFullName = (lesson: any) => {
+                          // First try normal subject lookup
+                          if (subject?.Name) {
+                            return subject.Name
+                          }
+                          
+                          // If SubjectId is null, use Change object
+                          if (!lesson.SubjectId && lesson.Change) {
+                            const change = lesson.Change
+                            
+                            // Priority: TypeName -> Description -> TypeAbbrev
+                            return change.TypeName || change.Description || change.TypeAbbrev || "Neznámý předmět"
+                          }
+                          
+                          return "Neznámý předmět"
+                        }
+                        
+                        const subjectFullName = getSubjectFullName(lesson)
+                        
                         // Calculate break time after this lesson
                         let breakMinutes = 0
                         if (idx < upcomingLessons.length - 1) {
@@ -447,10 +488,10 @@ export function StudentOverview({ userId, classId }: StudentOverviewProps) {
                                 </div>
                               </div>
                               <div className="font-bold text-xl mb-2">
-                                {subject?.Abbrev || "???"}
+                                {getSubjectDisplayName(lesson)}
                               </div>
                               <div className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-2">
-                                {subject?.Name || "Neznámý předmět"}
+                                {getSubjectFullName(lesson)}
                               </div>
                               <div className="text-xs text-slate-500 dark:text-slate-500">
                                 {teacher && (

@@ -1,5 +1,5 @@
 
-import { getBakalariUserData, getBakalariSubjectData, loginToBakalari } from "../bakalari/bakalari"
+import { getBakalariUserData, getBakalariTimetable, loginToBakalari } from "../bakalari/bakalari"
 import { UserRole } from "../generated"
 import { logEvent } from "../utils"
 import { prisma } from "../prisma"
@@ -80,11 +80,11 @@ async function fetchBakalariClasses(accessToken: string): Promise<any[]> {
  */
 async function fetchBakalariSubjects(accessToken: string): Promise<any[]> {
   try {
-    const subjectsData = await getBakalariSubjectData(accessToken)
-    if (!subjectsData || !Array.isArray(subjectsData)) {
+    const subjectsData = await getBakalariTimetable(accessToken, 'day')
+    if (!subjectsData || !Array.isArray(subjectsData.Subjects)) {
       return []
     }
-    return subjectsData
+    return subjectsData.Subjects
   } catch (error) {
     console.error("Error fetching Bakalari subjects:", error)
     return []

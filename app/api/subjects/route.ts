@@ -18,14 +18,19 @@ export const GET = async (req: NextRequest) => {
         const listOnly = url.searchParams.get("listOnly") === "true"
         const withXP = url.searchParams.get("withXP") === "true"
         const data = await getUserSubjects(session.user.id, bakalariOnly) // Pass fullWeek flag
+        console.log('[API subjects] getUserSubjects result:', data)
+        console.log('[API subjects] Is array:', Array.isArray(data))
+        console.log('[API subjects] bakalariOnly:', bakalariOnly)
 
         if (bakalariOnly) {
             // Only return Bakaláři timetable if available
             if (Array.isArray(data)) {
                 // If fallback to DB, return empty (no Bakaláři data)
+                console.log('[API subjects] Returning null timetable (fallback to DB)')
                 return NextResponse.json({ success: true, message: "No Bakaláři subjects", data: { timetable: null } }, { status: 200 })
             }
             // Return full weekly timetable data (includes Days with Atoms and lookup Subjects)
+            console.log('[API subjects] Returning Bakaláři timetable')
             return NextResponse.json({ success: true, message: "Bakaláři timetable", data: { timetable: data } }, { status: 200 })
         }
 
